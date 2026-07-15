@@ -39,3 +39,32 @@ jobs:
 
       - name: Validate course content
         run: dart run bin/validate_content.dart ../../content/fixtures
+
+  api:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services/api
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: services/api/go.mod
+          cache: false
+
+      - name: Check formatting
+        shell: bash
+        run: test -z "$(gofmt -l .)"
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Test
+        run: go test ./...
+
+      - name: Build container
+        run: docker build -t mandarin-mission-api:test .

@@ -2,7 +2,7 @@
 
 一款面向英语使用者的零基础中文学习 App：用城市地图串联真实生活任务，通过视觉记忆、分维度复习和受控口语练习，帮助用户每天用约 10 分钟学会当天能使用的中文。
 
-> 当前状态：一期工程基础已启动。仓库包含竞品调研、产品与开发方案、纯 Dart 学习核心、课程 Schema、首个“点咖啡”Draft Fixture 和 CI；Flutter App 外壳尚未建立。
+> 当前状态：一期工程基础已启动。仓库包含竞品调研、产品与开发方案、纯 Dart 学习核心、课程 Schema、首个“点咖啡”Draft Fixture、Go API 容器骨架和 CI；Flutter App 外壳尚未建立。
 
 ## 产品定位
 
@@ -40,10 +40,12 @@
 - 客户端：Flutter，先 Android 后 iOS。
 - 架构：按功能拆分的 MVVM；UI、状态、仓储和外部服务分层。
 - 本地数据：SQLite/Drift，本地优先保存课程、进度、复习队列和待同步事件。
-- 云服务：Supabase Auth、Postgres、Storage 和 Edge Functions。
-- 订阅：RevenueCat 对接 App Store 与 Google Play。
+- 业务后端：单个自研 Go 服务部署到 Google Cloud Run，空闲缩到 0；不使用自管虚拟机或 Kubernetes。
+- 云数据：Neon PostgreSQL；Flutter App 只访问 API，不直接连接数据库。
+- 资源：Cloudflare R2（S3 兼容）+ 自定义域名 + Cloudflare 全球 CDN，大文件不经过 API。
+- 身份与订阅：API 自行维护会话和权益，对接 Apple/Google 身份及商店服务端协议，不依赖 Supabase 或 RevenueCat。
 - 语音：真人课程音频；发音评测通过服务端代理接入 Azure Speech，并保留替换供应商的接口。
-- 质量与数据：Firebase Crashlytics 和 Analytics；GitHub Actions 执行静态检查、测试与内容校验。
+- 质量与数据：业务事件和最小崩溃报告批量写入自研 API；GitHub Actions 执行静态检查、测试、内容校验与容器构建。
 
 ## 已实现的开发基础
 
@@ -52,12 +54,14 @@
 - 课程内容 JSON Schema；
 - 稳定 ID、跨引用、对话可达性和资产发布状态校验；
 - “点咖啡”第一课 Draft 内容包；
-- GitHub Actions 格式、分析、测试和内容校验流程。
+- 可部署的 Go API、健康/就绪/版本接口和多阶段 Dockerfile；
+- GitHub Actions 格式、分析、测试、内容校验和 API 容器构建流程。
 
 ## 文档
 
 - [跨电脑开发记忆准则](AGENTS.md)
 - [开发方案](docs/开发方案.md)
+- [自研托管容器后端 ADR](docs/decisions/0001-managed-container-backend.md)
 - [课程内容制作指南](docs/content-authoring.md)
 - [独立开发者一期产品方案](new-chat/outputs/英语使用者学中文App一期方案.md)
 - [竞品机制摘要](new-chat/work/中英语言学习竞品-资料/summary/00-产品机制摘要.md)
@@ -74,15 +78,18 @@
 ├─ content/                           # 课程 Schema 与开发 Fixture
 ├─ docs/
 │  ├─ 开发方案.md
+│  ├─ decisions/                       # 架构决策记录
 │  └─ content-authoring.md
 ├─ packages/
 │  └─ learning_core/                  # 纯 Dart 学习规则与内容校验器
+├─ services/
+│  └─ api/                            # 自研 Go 单体 API 与容器
 └─ new-chat/
    ├─ outputs/                         # 已确认的一期产品方案
    └─ work/中英语言学习竞品-资料/       # 调研原始资料与摘要
 ```
 
-开发启动后将按 `apps/mobile`、`content`、`packages`、`supabase` 和 `tooling` 组织代码与课程资产，详细结构见开发方案。
+开发启动后将按 `apps/mobile`、`content`、`packages`、`services/api`、`infra` 和 `tooling` 组织代码与课程资产，详细结构见开发方案。
 
 ## 当前使用方式
 
@@ -97,11 +104,22 @@ dart test
 dart run bin/validate_content.dart ../../content/fixtures
 ```
 
+API 需要 Go 1.26：
+
+```bash
+cd services/api
+go test ./...
+go run ./cmd/api
+```
+
+启动后可访问 `http://127.0.0.1:8080/healthz`、`/readyz` 和 `/v1/meta`。容器构建命令与配置边界见 [API README](services/api/README.md)。
+
 本地验证基线为 Flutter 3.44.6 自带的 Dart 3.12.2。开发前请先阅读 `AGENTS.md`、开发方案和一期产品方案。
 
 ## 路线图
 
 - [x] 建立学习核心、复习算法、内容 Schema/校验器和核心 CI。
+- [x] 建立自研 Go API 容器骨架与架构成本护栏。
 - [ ] 建立 Flutter 移动端工程并接入学习核心。
 - [ ] 完成“点咖啡”端到端垂直切片。
 - [ ] 扩展到 3 个地点、12 节课并开展封闭测试。
