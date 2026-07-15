@@ -2,7 +2,7 @@
 
 一款面向英语使用者的零基础中文学习 App：用城市地图串联真实生活任务，通过视觉记忆、分维度复习和受控口语练习，帮助用户每天用约 10 分钟学会当天能使用的中文。
 
-> 当前状态：一期工程基础已启动。仓库包含竞品调研、产品与开发方案、纯 Dart 学习核心、课程 Schema、首个“点咖啡”Draft Fixture、Go API 容器骨架和 CI；Flutter App 外壳尚未建立。
+> 当前状态：一期工程基础已启动。仓库包含竞品调研、产品与开发方案、纯 Dart 学习核心、课程 Schema、首个“点咖啡”Draft Fixture、Go API 容器，以及可运行的 Flutter Android/iOS App 外壳和 CI。
 
 ## 产品定位
 
@@ -55,7 +55,9 @@
 - 稳定 ID、跨引用、对话可达性和资产发布状态校验；
 - “点咖啡”第一课 Draft 内容包；
 - 可部署的 Go API、健康/就绪/版本接口和多阶段 Dockerfile；
-- GitHub Actions 格式、分析、测试、内容校验和 API 容器构建流程。
+- Riverpod + go_router App 外壳、Journey 到点咖啡课程概览的最小导航；
+- Flutter Widget 测试和 `learning_core` 路径依赖接入；
+- GitHub Actions 移动端、学习核心、内容校验和 API 容器构建流程。
 
 ## 文档
 
@@ -82,6 +84,8 @@
 │  └─ content-authoring.md
 ├─ packages/
 │  └─ learning_core/                  # 纯 Dart 学习规则与内容校验器
+├─ apps/
+│  └─ mobile/                         # Flutter Android/iOS App
 ├─ services/
 │  └─ api/                            # 自研 Go 单体 API 与容器
 └─ new-chat/
@@ -93,7 +97,22 @@
 
 ## 当前使用方式
 
-当前可运行学习核心测试和内容校验，但还没有移动端 App：
+Flutter App：
+
+```bash
+cd apps/mobile
+flutter pub get
+dart format --output=none --set-exit-if-changed lib test
+flutter analyze
+flutter test
+flutter build apk --debug
+flutter run
+```
+
+Android application ID 与 iOS bundle ID 均为 `com.hieronymusf.mandarinmission`。
+Android 本地构建基线为 JDK 17、Android SDK/API 36、Build Tools 36.0.0 和 NDK 28.2.13676358；在新电脑上先用 `flutter doctor -v` 确认工具链。
+
+学习核心与内容校验：
 
 ```bash
 cd packages/learning_core
@@ -120,7 +139,8 @@ go run ./cmd/api
 
 - [x] 建立学习核心、复习算法、内容 Schema/校验器和核心 CI。
 - [x] 建立自研 Go API 容器骨架与架构成本护栏。
-- [ ] 建立 Flutter 移动端工程并接入学习核心。
+- [x] 建立 Flutter 移动端工程并接入学习核心。
+- [ ] 建立 Drift 本地表与 migration 测试。
 - [ ] 完成“点咖啡”端到端垂直切片。
 - [ ] 扩展到 3 个地点、12 节课并开展封闭测试。
 - [ ] 根据激活、D1/D7 留存和 7 日回忆率决定是否扩展公开 MVP。
