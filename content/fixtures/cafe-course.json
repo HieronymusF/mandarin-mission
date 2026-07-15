@@ -1,0 +1,160 @@
+{
+  "schemaVersion": 1,
+  "status": "draft",
+  "version": "0.1.0",
+  "locations": [
+    {
+      "id": "cafe",
+      "title": "Café",
+      "order": 1,
+      "lessonIds": ["cafe-01"],
+      "challengeId": "cafe-challenge"
+    }
+  ],
+  "knowledgeItems": [
+    {
+      "id": "phrase-wo-yao",
+      "kind": "phrase",
+      "hanzi": "我要",
+      "pinyin": "wǒ yào",
+      "english": "I want",
+      "audioAssetId": "audio-wo-yao",
+      "tags": ["cafe", "ordering"]
+    },
+    {
+      "id": "noun-kafei",
+      "kind": "word",
+      "hanzi": "咖啡",
+      "pinyin": "kāfēi",
+      "english": "coffee",
+      "audioAssetId": "audio-kafei",
+      "tags": ["cafe", "drink"]
+    },
+    {
+      "id": "sentence-wo-yao-yi-bei-kafei",
+      "kind": "sentence",
+      "hanzi": "我要一杯咖啡。",
+      "pinyin": "wǒ yào yì bēi kāfēi",
+      "english": "I would like a cup of coffee.",
+      "audioAssetId": "audio-wo-yao-yi-bei-kafei",
+      "tags": ["cafe", "ordering", "counter-word"]
+    }
+  ],
+  "lessons": [
+    {
+      "id": "cafe-01",
+      "locationId": "cafe",
+      "title": "Order one coffee",
+      "estimatedMinutes": 9,
+      "prerequisites": [],
+      "itemIds": [
+        "phrase-wo-yao",
+        "noun-kafei",
+        "sentence-wo-yao-yi-bei-kafei"
+      ],
+      "steps": [
+        {
+          "id": "cafe-01-intro",
+          "type": "scene_intro",
+          "assetId": "image-cafe-counter",
+          "text": "You are ordering at a café."
+        },
+        {
+          "id": "cafe-01-teach-wo-yao",
+          "type": "teach_card",
+          "dimension": "meaning",
+          "itemId": "phrase-wo-yao"
+        },
+        {
+          "id": "cafe-01-teach-kafei",
+          "type": "teach_card",
+          "dimension": "meaning",
+          "itemId": "noun-kafei"
+        },
+        {
+          "id": "cafe-01-listen",
+          "type": "listen_choice",
+          "dimension": "listening",
+          "itemId": "sentence-wo-yao-yi-bei-kafei",
+          "optionItemIds": [
+            "sentence-wo-yao-yi-bei-kafei",
+            "phrase-wo-yao",
+            "noun-kafei"
+          ]
+        },
+        {
+          "id": "cafe-01-repeat",
+          "type": "repeat",
+          "dimension": "tone",
+          "itemId": "sentence-wo-yao-yi-bei-kafei"
+        },
+        {
+          "id": "cafe-01-dialogue",
+          "type": "dialogue_turn",
+          "dialogueId": "cafe-challenge"
+        },
+        {
+          "id": "cafe-01-summary",
+          "type": "summary"
+        }
+      ]
+    }
+  ],
+  "dialogues": [
+    {
+      "id": "cafe-challenge",
+      "locationId": "cafe",
+      "startNodeId": "shopkeeper-question",
+      "nodes": [
+        {
+          "id": "shopkeeper-question",
+          "speaker": "system",
+          "text": "您好，您想喝什么？",
+          "nextNodeId": "learner-order"
+        },
+        {
+          "id": "learner-order",
+          "speaker": "learner",
+          "itemId": "sentence-wo-yao-yi-bei-kafei",
+          "nextNodeId": "shopkeeper-confirmation"
+        },
+        {
+          "id": "shopkeeper-confirmation",
+          "speaker": "system",
+          "text": "好的，一杯咖啡。",
+          "terminal": true
+        }
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "id": "image-cafe-counter",
+      "kind": "image",
+      "status": "planned",
+      "license": "internal",
+      "credit": "Mandarin Mission"
+    },
+    {
+      "id": "audio-wo-yao",
+      "kind": "audio",
+      "status": "planned",
+      "license": "internal",
+      "credit": "Mandarin Mission"
+    },
+    {
+      "id": "audio-kafei",
+      "kind": "audio",
+      "status": "planned",
+      "license": "internal",
+      "credit": "Mandarin Mission"
+    },
+    {
+      "id": "audio-wo-yao-yi-bei-kafei",
+      "kind": "audio",
+      "status": "planned",
+      "license": "internal",
+      "credit": "Mandarin Mission"
+    }
+  ]
+}

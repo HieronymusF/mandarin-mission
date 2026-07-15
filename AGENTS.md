@@ -9,7 +9,7 @@
 - 产品：面向英语使用者的零基础简体普通话学习 App。
 - 核心承诺：用户每天用约 10 分钟，在真实场景中做到“看得懂、听得出、说得出”。
 - 开发者情况：一人独立开发。所有方案必须优先控制开发量、内容量、服务成本和长期维护成本。
-- 当前阶段：产品与技术方案已经确定，尚未建立 Flutter 可运行工程。
+- 当前阶段：产品与技术方案已经确定；纯 Dart 学习核心、复习算法、课程 Schema、咖啡课 Draft Fixture、Go API 容器骨架和核心 CI 已建立，Flutter 可运行工程尚未建立。
 - 当前下一里程碑：完成“点咖啡”一节课的 Android 端到端垂直切片。
 
 ## 2. 开始任何任务前
@@ -92,10 +92,12 @@
 - 状态与依赖：Riverpod。
 - 导航：go_router。
 - 本地数据：Drift + SQLite。
-- 云端：Supabase Auth、Postgres、Storage、Edge Functions。
-- 订阅：RevenueCat。
+- 业务后端：单个 Go 单体服务，容器部署到 Google Cloud Run；不使用自管虚拟机或 Kubernetes。
+- 云数据库：Neon PostgreSQL，客户端不得直连；迁移由仓库管理。
+- 对象存储与分发：Cloudflare R2（S3 兼容）+ 自定义域名 + Cloudflare CDN。
+- 身份与订阅：服务端自行维护会话和权益；Apple/Google 身份令牌、商店票据与服务端通知作为外部协议接入，不依赖 Supabase Auth 或 RevenueCat。
 - 语音：真人课程音频；Azure Speech 放在可替换 Provider 接口后，由服务端代理调用。
-- 分析与崩溃：Firebase Analytics + Crashlytics。
+- 分析与崩溃：业务事件批量写入自研 API；容器日志使用 Cloud Run 日志，移动端崩溃采集在 MVP 前按最小范围实现。
 - 自动化：GitHub Actions。
 
 这些是当前默认值，不是无条件永久决定。只有出现可验证的技术阻塞、成本问题或用户要求时才更换；更换前记录决策、迁移成本和回滚方案。
@@ -107,8 +109,11 @@
 - View 负责呈现，ViewModel 负责页面状态，Repository 统一数据访问，Service 包装外部接口。
 - 复习调度、课程判分、连胜和同步冲突规则写成纯 Dart 逻辑，并有单元测试。
 - 外部供应商通过 Adapter/Provider 接口接入，业务代码不能散落 SDK 调用。
-- 订阅权限以 RevenueCat entitlement 为准，本地只缓存最近状态。
-- 云端用户表默认启用 RLS，并测试用户只能访问自己的数据。
+- 一期后端保持单体，不以“未来扩展”为理由提前拆微服务。
+- Cloud Run 保持 `min-instances=0` 并设置最大实例数预算护栏；任何放宽都要有真实负载证据。
+- 订阅权限以服务端权益记录为准，本地只缓存最近状态；商店通知必须幂等处理。
+- Flutter App 不直接连接 PostgreSQL。每个用户数据请求由 API 会话确定 `user_id`，并测试用户只能访问自己的数据。
+- 课程大文件直接走 R2 自定义域名和 CDN；API 只返回元数据和短时授权，不能代理音频、图片或课程包流量。
 - 网络、语音或分析服务失败不能阻断核心课程。
 
 ## 7. 内容工程规则
@@ -154,7 +159,7 @@
 - 不在仓库、日志、分析事件或错误报告中记录密钥、Token、邮箱、原始录音、完整转写或购买票据。
 - 真实 Secret 只能进入本地环境、安全密钥库或 GitHub Secrets。
 - 仓库只允许提交 `.env.example`，不得提交真实 `.env`。
-- 客户端不得包含 Supabase service role、Azure secret 或 RevenueCat secret。
+- 客户端不得包含 PostgreSQL 连接串、R2 密钥、会话签名密钥、Azure secret 或商店服务端凭据。
 - 账号删除必须覆盖 Auth、用户数据、对象存储和第三方用户映射。
 
 ## 10. 文件操作安全
@@ -199,7 +204,8 @@
 - 纯规则放 `lib/domain`，不能依赖 Flutter Widget 或云 SDK。
 - 数据库、远端服务和 Repository 实现放 `lib/data`。
 - 课程数据和资源放 `content`，Schema 与 Fixture 一并版本控制。
-- Supabase migration 和 Edge Functions 放 `supabase`。
+- Go 业务 API、数据库迁移和服务端适配器放 `services/api`；保持单体目录，不预建空服务。
+- 基础设施声明放 `infra`；只有真正开始部署时才创建对应文件。
 - 自动生成文件按工具惯例管理，不手工编辑生成结果。
 
 不要为了“未来可能需要”建立空层、空接口或泛化框架。先支持点咖啡垂直切片，再从重复中提炼抽象。
