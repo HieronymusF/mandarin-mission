@@ -9,8 +9,9 @@
 - 产品：面向英语使用者的零基础简体普通话学习 App。
 - 核心承诺：用户每天用约 10 分钟，在真实场景中做到“看得懂、听得出、说得出”。
 - 开发者情况：一人独立开发。所有方案必须优先控制开发量、内容量、服务成本和长期维护成本。
-- 当前阶段：产品与技术方案已经确定；纯 Dart 学习核心、复习算法、课程 Schema、咖啡课 Draft Fixture、Go API 容器骨架和核心 CI 已建立，Flutter 可运行工程尚未建立。
+- 当前阶段：一期工程基础已建立；包含纯 Dart 学习核心、课程 Schema/Fixture、Go API 容器，以及可运行的 Flutter Android/iOS App 外壳和移动端 CI。
 - 当前下一里程碑：完成“点咖啡”一节课的 Android 端到端垂直切片。
+- 当前下一小模块：建立 Drift 本地数据库表、首次 migration 和 migration 测试。
 
 ## 2. 开始任何任务前
 
@@ -185,6 +186,8 @@
 
 - 默认分支为 `main`，应保持可构建。
 - 修改前后运行 `git status -sb`。
+- 每完成一个可独立验收的小模块，立即单独提交并推送到 GitHub；不要把多个已完成模块攒成一次大提交。
+- 每个小模块使用独立功能分支和草稿 PR，CI 通过后再合并；除非用户明确要求，不直接提交到 `main`。
 - 暂存时显式列出本任务文件；工作区混杂时禁止 `git add -A`。
 - 提交使用简洁 Conventional Commits，例如：
   - `feat(lesson): render data-driven steps`
