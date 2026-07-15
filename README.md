@@ -2,7 +2,7 @@
 
 一款面向英语使用者的零基础中文学习 App：用城市地图串联真实生活任务，通过视觉记忆、分维度复习和受控口语练习，帮助用户每天用约 10 分钟学会当天能使用的中文。
 
-> 当前状态：产品与技术方案阶段。仓库目前保存竞品调研、一期产品方案和开发方案，尚未包含可运行的 App 代码。
+> 当前状态：一期工程基础已启动。仓库包含竞品调研、产品与开发方案、纯 Dart 学习核心、课程 Schema、首个“点咖啡”Draft Fixture 和 CI；Flutter App 外壳尚未建立。
 
 ## 产品定位
 
@@ -45,10 +45,20 @@
 - 语音：真人课程音频；发音评测通过服务端代理接入 Azure Speech，并保留替换供应商的接口。
 - 质量与数据：Firebase Crashlytics 和 Analytics；GitHub Actions 执行静态检查、测试与内容校验。
 
+## 已实现的开发基础
+
+- 四个学习维度共用的 0—5 分箱复习算法；
+- 忘记、模糊、记得、使用提示和同日补救上限规则；
+- 课程内容 JSON Schema；
+- 稳定 ID、跨引用、对话可达性和资产发布状态校验；
+- “点咖啡”第一课 Draft 内容包；
+- GitHub Actions 格式、分析、测试和内容校验流程。
+
 ## 文档
 
 - [跨电脑开发记忆准则](AGENTS.md)
 - [开发方案](docs/开发方案.md)
+- [课程内容制作指南](docs/content-authoring.md)
 - [独立开发者一期产品方案](new-chat/outputs/英语使用者学中文App一期方案.md)
 - [竞品机制摘要](new-chat/work/中英语言学习竞品-资料/summary/00-产品机制摘要.md)
 - [海外中文学习产品资料](new-chat/work/中英语言学习竞品-资料/raw/01-海外中文学习产品.md)
@@ -60,8 +70,13 @@
 .
 ├─ AGENTS.md                         # Codex 跨电脑开发入口与长期约束
 ├─ README.md
+├─ .github/workflows/                 # 自动检查
+├─ content/                           # 课程 Schema 与开发 Fixture
 ├─ docs/
-│  └─ 开发方案.md
+│  ├─ 开发方案.md
+│  └─ content-authoring.md
+├─ packages/
+│  └─ learning_core/                  # 纯 Dart 学习规则与内容校验器
 └─ new-chat/
    ├─ outputs/                         # 已确认的一期产品方案
    └─ work/中英语言学习竞品-资料/       # 调研原始资料与摘要
@@ -71,11 +86,23 @@
 
 ## 当前使用方式
 
-本仓库目前是项目设计基线，没有可执行构建。开发前请先阅读开发方案和一期产品方案，并将范围变更记录为明确的决策项，避免原型阶段持续扩张。
+当前可运行学习核心测试和内容校验，但还没有移动端 App：
+
+```bash
+cd packages/learning_core
+dart pub get
+dart format --output=none --set-exit-if-changed .
+dart analyze --fatal-infos
+dart test
+dart run bin/validate_content.dart ../../content/fixtures
+```
+
+本地验证基线为 Flutter 3.44.6 自带的 Dart 3.12.2。开发前请先阅读 `AGENTS.md`、开发方案和一期产品方案。
 
 ## 路线图
 
-- [ ] 建立 Flutter 工程、自动化检查和内容 Schema。
+- [x] 建立学习核心、复习算法、内容 Schema/校验器和核心 CI。
+- [ ] 建立 Flutter 移动端工程并接入学习核心。
 - [ ] 完成“点咖啡”端到端垂直切片。
 - [ ] 扩展到 3 个地点、12 节课并开展封闭测试。
 - [ ] 根据激活、D1/D7 留存和 7 日回忆率决定是否扩展公开 MVP。

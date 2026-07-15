@@ -1,0 +1,208 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mandarin-mission.app/schema/course-package.schema.json",
+  "title": "Mandarin Mission course package",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "status",
+    "version",
+    "locations",
+    "knowledgeItems",
+    "lessons",
+    "dialogues",
+    "assets"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "status": { "enum": ["draft", "release"] },
+    "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "locations": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/location" }
+    },
+    "knowledgeItems": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/knowledgeItem" }
+    },
+    "lessons": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/lesson" }
+    },
+    "dialogues": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/dialogue" }
+    },
+    "assets": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/asset" }
+    }
+  },
+  "$defs": {
+    "stableId": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "location": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "order", "lessonIds", "challengeId"],
+      "properties": {
+        "id": { "$ref": "#/$defs/stableId" },
+        "title": { "type": "string", "minLength": 1 },
+        "order": { "type": "integer", "minimum": 1 },
+        "lessonIds": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/stableId" },
+          "uniqueItems": true
+        },
+        "challengeId": { "$ref": "#/$defs/stableId" }
+      }
+    },
+    "knowledgeItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "hanzi",
+        "pinyin",
+        "english",
+        "audioAssetId"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/stableId" },
+        "kind": { "enum": ["word", "phrase", "sentence"] },
+        "hanzi": { "type": "string", "minLength": 1 },
+        "pinyin": { "type": "string", "minLength": 1 },
+        "english": { "type": "string", "minLength": 1 },
+        "audioAssetId": { "$ref": "#/$defs/stableId" },
+        "tags": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/stableId" },
+          "uniqueItems": true
+        }
+      }
+    },
+    "lesson": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "locationId",
+        "title",
+        "estimatedMinutes",
+        "prerequisites",
+        "itemIds",
+        "steps"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/stableId" },
+        "locationId": { "$ref": "#/$defs/stableId" },
+        "title": { "type": "string", "minLength": 1 },
+        "estimatedMinutes": { "type": "integer", "minimum": 1, "maximum": 15 },
+        "prerequisites": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/stableId" },
+          "uniqueItems": true
+        },
+        "itemIds": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/stableId" },
+          "uniqueItems": true
+        },
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/lessonStep" }
+        }
+      }
+    },
+    "lessonStep": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type"],
+      "properties": {
+        "id": { "$ref": "#/$defs/stableId" },
+        "type": {
+          "enum": [
+            "scene_intro",
+            "teach_card",
+            "image_choice",
+            "listen_choice",
+            "tone_contrast",
+            "order_tokens",
+            "repeat",
+            "dialogue_turn",
+            "summary"
+          ]
+        },
+        "dimension": { "enum": ["meaning", "listening", "tone", "hanzi"] },
+        "itemId": { "$ref": "#/$defs/stableId" },
+        "dialogueId": { "$ref": "#/$defs/stableId" },
+        "assetId": { "$ref": "#/$defs/stableId" },
+        "text": { "type": "string", "minLength": 1 },
+        "optionItemIds": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/stableId" },
+          "uniqueItems": true
+        }
+      }
+    },
+    "dialogue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "locationId", "startNodeId", "nodes"],
+      "properties": {
+        "id": { "$ref": "#/$defs/stableId" },
+        "locationId": { "$ref": "#/$defs/stableId" },
+        "startNodeId": { "$ref": "#/$defs/stableId" },
+        "nodes": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/dialogueNode" }
+        }
+      }
+    },
+    "dialogueNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "speaker"],
+      "properties": {
+        "id": { "$ref": "#/$defs/stableId" },
+        "speaker": { "enum": ["system", "learner"] },
+        "text": { "type": "string", "minLength": 1 },
+        "itemId": { "$ref": "#/$defs/stableId" },
+        "nextNodeId": { "$ref": "#/$defs/stableId" },
+        "terminal": { "type": "boolean" }
+      }
+    },
+    "asset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "status", "license", "credit"],
+      "properties": {
+        "id": { "$ref": "#/$defs/stableId" },
+        "kind": { "enum": ["audio", "image"] },
+        "status": { "enum": ["planned", "ready"] },
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "license": { "type": "string", "minLength": 1 },
+        "credit": { "type": "string", "minLength": 1 }
+      },
+      "if": {
+        "properties": { "status": { "const": "ready" } },
+        "required": ["status"]
+      },
+      "then": { "required": ["path", "sha256"] }
+    }
+  }
+}
