@@ -47,6 +47,7 @@
 
 ## 文档
 
+- [跨电脑开发记忆准则](AGENTS.md)
 - [开发方案](docs/开发方案.md)
 - [独立开发者一期产品方案](new-chat/outputs/英语使用者学中文App一期方案.md)
 - [竞品机制摘要](new-chat/work/中英语言学习竞品-资料/summary/00-产品机制摘要.md)
@@ -57,6 +58,7 @@
 
 ```text
 .
+├─ AGENTS.md                         # Codex 跨电脑开发入口与长期约束
 ├─ README.md
 ├─ docs/
 │  └─ 开发方案.md
