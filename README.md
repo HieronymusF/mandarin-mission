@@ -47,6 +47,12 @@
 - 语音：真人课程音频；发音评测通过服务端代理接入 Azure Speech，并保留替换供应商的接口。
 - 质量与数据：业务事件和最小崩溃报告批量写入自研 API；GitHub Actions 执行静态检查、测试、内容校验与容器构建。
 
+## 设计与前端开发流程
+
+- 统一 Figma 文件：[Learn Chinese](https://www.figma.com/design/Nr644jmfVZIxlNL3KiJaMk/Learn-Chinese?node-id=0-1&t=KvAwsP1PlR813pns-1)。
+- 所有用户可见的前端页面、主要组件和交互流程，先在 `Page 1` 完成原型并取得确认，再进入 Flutter 开发。
+- 每个前端模块的草稿 PR 需要附上对应的节点级 Figma 链接，并记录实现与原型的差异。
+
 ## 已实现的开发基础
 
 - 四个学习维度共用的 0—5 分箱复习算法；
