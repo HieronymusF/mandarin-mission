@@ -15,6 +15,8 @@ dependencies:
   go_router: ^17.3.0
   learning_core:
     path: ../../packages/learning_core
+  mandarin_mission_content:
+    path: ../../content
   path_provider: ^2.1.6
 
 dev_dependencies:

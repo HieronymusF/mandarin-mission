@@ -1,6 +1,6 @@
 # Mandarin Mission Mobile
 
-Flutter Android/iOS 客户端。当前模块提供 Riverpod 依赖容器、go_router 路由、统一主题、Journey 到“点咖啡”课程概览的最小导航，以及 Drift v1 本地数据库。
+Flutter Android/iOS 客户端。当前模块提供 Riverpod 依赖容器、go_router 路由、统一主题、Journey 到“点咖啡”课程概览的最小导航、Drift v1 本地数据库，以及安装包内课程 Repository。
 
 ## 开发
 
@@ -36,6 +36,15 @@ flutter test test/drift test/data/local
 
 `app_database.g.dart`、`test/drift/generated/` 和 schema snapshot 是生成文件，不手工编辑。当前 Drift 与 `drift_dev` 固定为 2.34.0，以兼容 Flutter 3.44.6 的 analyzer/test 版本组合。
 
+## 课程内容加载
+
+- `../../content/fixtures/cafe-course.json` 是当前唯一课程内容源，并通过本地 `mandarin_mission_content` package asset 打入 App；
+- `lib/data/content/course_content_repository.dart` 从 `AssetBundle` 异步读取 JSON，运行 `learning_core` 内容校验，再提供按稳定 ID 查询；
+- `lib/data/content/course_content_models.dart` 把当前页面需要的内容转为只读的类型化课程、步骤和知识点模型；
+- `test/data/content/` 验证真实打包资产、稳定 ID 查询、非法版本和损坏 JSON。
+
+Repository 当前只读取随 App 发布的 Draft Fixture。后续增量内容下载仍应复用相同模型与校验规则，但不在本模块预建远端接口。
+
 ## 目录边界
 
 - `lib/app`：App 启动与路由；
@@ -44,4 +53,4 @@ flutter test test/drift test/data/local
 - `lib/features/<feature>`：按功能组织的页面和应用逻辑；
 - `test`：Widget 与依赖边界测试。
 
-当前课程卡片是 Journey 外壳的静态占位；下一阶段从版本化课程数据渲染，不在页面里继续硬编码课程步骤。
+当前课程卡片仍是 Journey 外壳的静态占位；下一阶段先确认 Figma 原型，再从版本化课程数据渲染，不在页面里继续硬编码课程步骤。

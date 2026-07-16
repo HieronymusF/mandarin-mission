@@ -26,6 +26,8 @@ Validated 1 content package(s).
 
 CI 还会执行格式检查、静态分析和全部单元测试。
 
+移动端通过本地 `mandarin_mission_content` package asset 和 `CourseContentRepository` 把根目录 Fixture 打入安装包，加载时再次运行跨引用校验。因此修改 Fixture 后不需要在 `apps/mobile` 复制文件，但必须同时通过内容校验和移动端 Repository 测试。
+
 ## 内容包结构
 
 一个开发内容包包含：
