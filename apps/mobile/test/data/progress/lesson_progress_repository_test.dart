@@ -70,7 +70,11 @@ void main() {
     );
     expect(
       jsonDecode(outbox.last.payloadJson),
-      containsPair('contentVersion', '0.1.0'),
+      allOf(
+        containsPair('contentVersion', '0.1.0'),
+        containsPair('lessonId', 'cafe-01'),
+        containsPair('sourceType', 'lesson'),
+      ),
     );
   });
 

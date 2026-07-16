@@ -58,8 +58,35 @@ final class LessonProgressRepository {
   }) {
     return _database.transaction(
       () => _recordExerciseAttempt(
-        lessonId: lessonId,
+        sourceType: 'lesson',
+        sourceId: lessonId,
         stepId: stepId,
+        contentVersion: contentVersion,
+        itemId: itemId,
+        dimension: dimension,
+        rating: rating,
+        correct: correct,
+        usedHint: usedHint,
+        latencyMs: latencyMs,
+        answeredAt: answeredAt,
+      ),
+    );
+  }
+
+  Future<void> recordReviewAttempt({
+    required String contentVersion,
+    required String itemId,
+    required LearningDimension dimension,
+    required ReviewRating rating,
+    required bool correct,
+    required bool usedHint,
+    required int latencyMs,
+    required DateTime answeredAt,
+  }) {
+    return _database.transaction(
+      () => _recordExerciseAttempt(
+        sourceType: 'review',
+        sourceId: 'due-queue',
         contentVersion: contentVersion,
         itemId: itemId,
         dimension: dimension,
@@ -96,7 +123,8 @@ final class LessonProgressRepository {
             ),
           );
       await _recordExerciseAttempt(
-        lessonId: lessonId,
+        sourceType: 'lesson',
+        sourceId: lessonId,
         stepId: stepId,
         contentVersion: contentVersion,
         itemId: targetId,
@@ -183,8 +211,8 @@ final class LessonProgressRepository {
   }
 
   Future<void> _recordExerciseAttempt({
-    required String lessonId,
-    required String stepId,
+    required String sourceType,
+    required String sourceId,
     required String contentVersion,
     required String itemId,
     required LearningDimension dimension,
@@ -193,6 +221,7 @@ final class LessonProgressRepository {
     required bool usedHint,
     required int latencyMs,
     required DateTime answeredAt,
+    String? stepId,
   }) async {
     final dimensionName = dimension.name;
     final existing =
@@ -252,21 +281,28 @@ final class LessonProgressRepository {
             updatedAt: answeredAt,
           ),
         );
+    final payload = <String, Object?>{
+      'attemptId': attemptId,
+      'sourceType': sourceType,
+      'sourceId': sourceId,
+      'contentVersion': contentVersion,
+      'itemId': itemId,
+      'dimension': dimensionName,
+      'result': rating.name,
+      'correct': correct,
+      'usedHint': usedHint,
+      'latencyMs': latencyMs,
+    };
+    if (stepId != null) {
+      payload['stepId'] = stepId;
+    }
+    if (sourceType == 'lesson') {
+      payload['lessonId'] = sourceId;
+    }
     await _enqueueEvent(
       entityType: 'review_attempt',
       occurredAt: answeredAt,
-      payload: {
-        'attemptId': attemptId,
-        'lessonId': lessonId,
-        'stepId': stepId,
-        'contentVersion': contentVersion,
-        'itemId': itemId,
-        'dimension': dimensionName,
-        'result': rating.name,
-        'correct': correct,
-        'usedHint': usedHint,
-        'latencyMs': latencyMs,
-      },
+      payload: payload,
     );
   }
 
