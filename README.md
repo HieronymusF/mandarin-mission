@@ -2,7 +2,7 @@
 
 一款面向英语使用者的零基础中文学习 App：用城市地图串联真实生活任务，通过视觉记忆、分维度复习和受控口语练习，帮助用户每天用约 10 分钟学会当天能使用的中文。
 
-> 当前状态：一期工程基础已启动。仓库包含竞品调研、产品与开发方案、纯 Dart 学习核心、课程 Schema、首个“点咖啡”Draft Fixture、Go API 容器，以及可运行的 Flutter Android/iOS App 外壳和 CI。
+> 当前状态：一期工程基础已启动。仓库包含竞品调研、产品与开发方案、纯 Dart 学习核心、课程 Schema、首个“点咖啡”Draft Fixture、Go API 容器、可运行的 Flutter Android/iOS App 外壳，以及 Drift v1 本地数据库和 CI。
 
 ## 产品定位
 
@@ -63,6 +63,7 @@
 - 可部署的 Go API、健康/就绪/版本接口和多阶段 Dockerfile；
 - Riverpod + go_router App 外壳、Journey 到点咖啡课程概览的最小导航；
 - Flutter Widget 测试和 `learning_core` 路径依赖接入；
+- Drift v1 本地表、schema snapshot、数据库约束和迁移验证测试；
 - GitHub Actions 移动端、学习核心、内容校验和 API 容器构建流程。
 
 ## 文档
@@ -108,6 +109,7 @@ Flutter App：
 ```bash
 cd apps/mobile
 flutter pub get
+dart run build_runner build
 dart format --output=none --set-exit-if-changed lib test
 flutter analyze
 flutter test
@@ -146,7 +148,8 @@ go run ./cmd/api
 - [x] 建立学习核心、复习算法、内容 Schema/校验器和核心 CI。
 - [x] 建立自研 Go API 容器骨架与架构成本护栏。
 - [x] 建立 Flutter 移动端工程并接入学习核心。
-- [ ] 建立 Drift 本地表与 migration 测试。
+- [x] 建立 Drift 本地表与 migration 测试。
+- [ ] 建立课程内容 Repository/加载层。
 - [ ] 完成“点咖啡”端到端垂直切片。
 - [ ] 扩展到 3 个地点、12 节课并开展封闭测试。
 - [ ] 根据激活、D1/D7 留存和 7 日回忆率决定是否扩展公开 MVP。

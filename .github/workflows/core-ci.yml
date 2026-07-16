@@ -36,6 +36,12 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Verify generated database files
+        run: |
+          dart run build_runner build
+          dart run drift_dev make-migrations
+          git diff --exit-code
+
       - name: Check formatting
         run: dart format --output=none --set-exit-if-changed lib test
 
