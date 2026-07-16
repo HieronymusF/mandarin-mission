@@ -1,0 +1,904 @@
+{
+  "_meta": {
+    "description": "This file contains a serialized version of schema entities for drift.",
+    "version": "1.3.0"
+  },
+  "options": {
+    "store_date_time_values_as_text": true
+  },
+  "entities": [
+    {
+      "id": 0,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "installed_content_packages",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "package_id",
+            "getter_name": "packageId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "version",
+            "getter_name": "version",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "schema_version",
+            "getter_name": "schemaVersion",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "manifest_hash",
+            "getter_name": "manifestHash",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "installed_at",
+            "getter_name": "installedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "is_active",
+            "getter_name": "isActive",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"is_active\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"is_active\" IN (0, 1))"
+            },
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "package_id",
+          "version"
+        ]
+      }
+    },
+    {
+      "id": 1,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "lesson_progress_entries",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "lesson_id",
+            "getter_name": "lessonId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "status",
+            "getter_name": "status",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "check": {
+                  "dart_expression": {
+                    "elements": [
+                      {
+                        "lexeme": "status",
+                        "tag": "status"
+                      },
+                      ".isIn(const ['not_started','in_progress','completed'])"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "score",
+            "getter_name": "score",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "check": {
+                  "dart_expression": {
+                    "elements": [
+                      {
+                        "lexeme": "score",
+                        "tag": "score"
+                      },
+                      ".isNull() | ",
+                      {
+                        "lexeme": "ComparableExpr",
+                        "import_uri": "package:drift/src/runtime/query_builder/query_builder.dart"
+                      },
+                      "(",
+                      {
+                        "lexeme": "score",
+                        "tag": "score"
+                      },
+                      ").isBetweenValues(0,100)"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "started_at",
+            "getter_name": "startedAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "completed_at",
+            "getter_name": "completedAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "content_version",
+            "getter_name": "contentVersion",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "lesson_id"
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "mastery_states",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "item_id",
+            "getter_name": "itemId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "dimension",
+            "getter_name": "dimension",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "check": {
+                  "dart_expression": {
+                    "elements": [
+                      {
+                        "lexeme": "dimension",
+                        "tag": "dimension"
+                      },
+                      ".isIn(const ['meaning','listening','tone','hanzi'])"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "box",
+            "getter_name": "box",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "check": {
+                  "dart_expression": {
+                    "elements": [
+                      {
+                        "lexeme": "ComparableExpr",
+                        "import_uri": "package:drift/src/runtime/query_builder/query_builder.dart"
+                      },
+                      "(",
+                      {
+                        "lexeme": "box",
+                        "tag": "box"
+                      },
+                      ").isBetweenValues(0,5)"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "confidence",
+            "getter_name": "confidence",
+            "moor_type": "double",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "check": {
+                  "dart_expression": {
+                    "elements": [
+                      {
+                        "lexeme": "ComparableExpr",
+                        "import_uri": "package:drift/src/runtime/query_builder/query_builder.dart"
+                      },
+                      "(",
+                      {
+                        "lexeme": "confidence",
+                        "tag": "confidence"
+                      },
+                      ").isBetweenValues(0,1)"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "due_at",
+            "getter_name": "dueAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "last_result",
+            "getter_name": "lastResult",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "last_reviewed_at",
+            "getter_name": "lastReviewedAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "same_day_retry_count",
+            "getter_name": "sameDayRetryCount",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "check": {
+                  "dart_expression": {
+                    "elements": [
+                      {
+                        "lexeme": "ComparableExpr",
+                        "import_uri": "package:drift/src/runtime/query_builder/query_builder.dart"
+                      },
+                      "(",
+                      {
+                        "lexeme": "sameDayRetryCount",
+                        "tag": "sameDayRetryCount"
+                      },
+                      ").isBetweenValues(0,2)"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "item_id",
+          "dimension"
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "review_attempts",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "attempt_id",
+            "getter_name": "attemptId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "item_id",
+            "getter_name": "itemId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "dimension",
+            "getter_name": "dimension",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "check": {
+                  "dart_expression": {
+                    "elements": [
+                      {
+                        "lexeme": "dimension",
+                        "tag": "dimension"
+                      },
+                      ".isIn(const ['meaning','listening','tone','hanzi'])"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "result",
+            "getter_name": "result",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "check": {
+                  "dart_expression": {
+                    "elements": [
+                      {
+                        "lexeme": "result",
+                        "tag": "result"
+                      },
+                      ".isIn(const ['forgotten','vague','remembered'])"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "correct",
+            "getter_name": "correct",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"correct\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"correct\" IN (0, 1))"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "used_hint",
+            "getter_name": "usedHint",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"used_hint\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"used_hint\" IN (0, 1))"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "latency_ms",
+            "getter_name": "latencyMs",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "check": {
+                  "dart_expression": {
+                    "elements": [
+                      {
+                        "lexeme": "ComparableExpr",
+                        "import_uri": "package:drift/src/runtime/query_builder/query_builder.dart"
+                      },
+                      "(",
+                      {
+                        "lexeme": "latencyMs",
+                        "tag": "latencyMs"
+                      },
+                      ").isBiggerOrEqualValue(0)"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "attempt_id"
+        ]
+      }
+    },
+    {
+      "id": 4,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "speaking_attempts",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "attempt_id",
+            "getter_name": "attemptId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "target_id",
+            "getter_name": "targetId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "local_score",
+            "getter_name": "localScore",
+            "moor_type": "double",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "check": {
+                  "dart_expression": {
+                    "elements": [
+                      {
+                        "lexeme": "localScore",
+                        "tag": "localScore"
+                      },
+                      ".isNull() | ",
+                      {
+                        "lexeme": "ComparableExpr",
+                        "import_uri": "package:drift/src/runtime/query_builder/query_builder.dart"
+                      },
+                      "(",
+                      {
+                        "lexeme": "localScore",
+                        "tag": "localScore"
+                      },
+                      ").isBetweenValues(0,1)"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "provider_score",
+            "getter_name": "providerScore",
+            "moor_type": "double",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "check": {
+                  "dart_expression": {
+                    "elements": [
+                      {
+                        "lexeme": "providerScore",
+                        "tag": "providerScore"
+                      },
+                      ".isNull() | ",
+                      {
+                        "lexeme": "ComparableExpr",
+                        "import_uri": "package:drift/src/runtime/query_builder/query_builder.dart"
+                      },
+                      "(",
+                      {
+                        "lexeme": "providerScore",
+                        "tag": "providerScore"
+                      },
+                      ").isBetweenValues(0,1)"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "attempt_id"
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "sync_outbox_events",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "event_id",
+            "getter_name": "eventId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "entity_type",
+            "getter_name": "entityType",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "payload_json",
+            "getter_name": "payloadJson",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "occurred_at",
+            "getter_name": "occurredAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "attempts",
+            "getter_name": "attempts",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "check": {
+                  "dart_expression": {
+                    "elements": [
+                      {
+                        "lexeme": "ComparableExpr",
+                        "import_uri": "package:drift/src/runtime/query_builder/query_builder.dart"
+                      },
+                      "(",
+                      {
+                        "lexeme": "attempts",
+                        "tag": "attempts"
+                      },
+                      ").isBiggerOrEqualValue(0)"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "acknowledged_at",
+            "getter_name": "acknowledgedAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "event_id"
+        ]
+      }
+    },
+    {
+      "id": 6,
+      "references": [
+        2
+      ],
+      "type": "index",
+      "data": {
+        "on": 2,
+        "name": "mastery_states_due_at",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "due_at",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 7,
+      "references": [
+        3
+      ],
+      "type": "index",
+      "data": {
+        "on": 3,
+        "name": "review_attempts_item_created_at",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "item_id",
+            "order_by": null
+          },
+          {
+            "column": "created_at",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 8,
+      "references": [
+        5
+      ],
+      "type": "index",
+      "data": {
+        "on": 5,
+        "name": "sync_outbox_occurred_at",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "occurred_at",
+            "order_by": null
+          }
+        ]
+      }
+    }
+  ],
+  "fixed_sql": [
+    {
+      "name": "installed_content_packages",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"installed_content_packages\" (\"package_id\" TEXT NOT NULL, \"version\" TEXT NOT NULL, \"schema_version\" INTEGER NOT NULL, \"manifest_hash\" TEXT NOT NULL, \"installed_at\" TEXT NOT NULL, \"is_active\" INTEGER NOT NULL DEFAULT 0 CHECK (\"is_active\" IN (0, 1)), PRIMARY KEY (\"package_id\", \"version\"));"
+        }
+      ]
+    },
+    {
+      "name": "lesson_progress_entries",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"lesson_progress_entries\" (\"lesson_id\" TEXT NOT NULL, \"status\" TEXT NOT NULL CHECK(\"status\" IN ('not_started', 'in_progress', 'completed')), \"score\" INTEGER NULL CHECK(\"score\" IS NULL OR \"score\" BETWEEN 0 AND 100), \"started_at\" TEXT NULL, \"completed_at\" TEXT NULL, \"content_version\" TEXT NOT NULL, \"updated_at\" TEXT NOT NULL, PRIMARY KEY (\"lesson_id\"));"
+        }
+      ]
+    },
+    {
+      "name": "mastery_states",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"mastery_states\" (\"item_id\" TEXT NOT NULL, \"dimension\" TEXT NOT NULL CHECK(\"dimension\" IN ('meaning', 'listening', 'tone', 'hanzi')), \"box\" INTEGER NOT NULL CHECK(\"box\" BETWEEN 0 AND 5), \"confidence\" REAL NOT NULL CHECK(\"confidence\" BETWEEN 0.0 AND 1.0), \"due_at\" TEXT NOT NULL, \"last_result\" TEXT NULL, \"last_reviewed_at\" TEXT NULL, \"same_day_retry_count\" INTEGER NOT NULL DEFAULT 0 CHECK(\"same_day_retry_count\" BETWEEN 0 AND 2), \"updated_at\" TEXT NOT NULL, PRIMARY KEY (\"item_id\", \"dimension\"));"
+        }
+      ]
+    },
+    {
+      "name": "review_attempts",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"review_attempts\" (\"attempt_id\" TEXT NOT NULL, \"item_id\" TEXT NOT NULL, \"dimension\" TEXT NOT NULL CHECK(\"dimension\" IN ('meaning', 'listening', 'tone', 'hanzi')), \"result\" TEXT NOT NULL CHECK(\"result\" IN ('forgotten', 'vague', 'remembered')), \"correct\" INTEGER NOT NULL CHECK (\"correct\" IN (0, 1)), \"used_hint\" INTEGER NOT NULL CHECK (\"used_hint\" IN (0, 1)), \"latency_ms\" INTEGER NOT NULL CHECK(\"latency_ms\" >= 0), \"created_at\" TEXT NOT NULL, PRIMARY KEY (\"attempt_id\"));"
+        }
+      ]
+    },
+    {
+      "name": "speaking_attempts",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"speaking_attempts\" (\"attempt_id\" TEXT NOT NULL, \"target_id\" TEXT NOT NULL, \"local_score\" REAL NULL CHECK(\"local_score\" IS NULL OR \"local_score\" BETWEEN 0.0 AND 1.0), \"provider_score\" REAL NULL CHECK(\"provider_score\" IS NULL OR \"provider_score\" BETWEEN 0.0 AND 1.0), \"created_at\" TEXT NOT NULL, PRIMARY KEY (\"attempt_id\"));"
+        }
+      ]
+    },
+    {
+      "name": "sync_outbox_events",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"sync_outbox_events\" (\"event_id\" TEXT NOT NULL, \"entity_type\" TEXT NOT NULL, \"payload_json\" TEXT NOT NULL, \"occurred_at\" TEXT NOT NULL, \"attempts\" INTEGER NOT NULL DEFAULT 0 CHECK(\"attempts\" >= 0), \"acknowledged_at\" TEXT NULL, PRIMARY KEY (\"event_id\"));"
+        }
+      ]
+    },
+    {
+      "name": "mastery_states_due_at",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX mastery_states_due_at ON mastery_states (due_at)"
+        }
+      ]
+    },
+    {
+      "name": "review_attempts_item_created_at",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX review_attempts_item_created_at ON review_attempts (item_id, created_at)"
+        }
+      ]
+    },
+    {
+      "name": "sync_outbox_occurred_at",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX sync_outbox_occurred_at ON sync_outbox_events (occurred_at)"
+        }
+      ]
+    }
+  ]
+}
