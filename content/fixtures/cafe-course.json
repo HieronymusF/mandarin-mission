@@ -17,6 +17,7 @@
       "kind": "phrase",
       "hanzi": "我要",
       "pinyin": "wǒ yào",
+      "pinyinSyllables": ["wǒ", "yào"],
       "english": "I want",
       "audioAssetId": "audio-wo-yao",
       "tags": ["cafe", "ordering"]
@@ -26,6 +27,7 @@
       "kind": "word",
       "hanzi": "咖啡",
       "pinyin": "kāfēi",
+      "pinyinSyllables": ["kā", "fēi"],
       "english": "coffee",
       "audioAssetId": "audio-kafei",
       "tags": ["cafe", "drink"]
@@ -35,6 +37,7 @@
       "kind": "sentence",
       "hanzi": "我要一杯咖啡。",
       "pinyin": "wǒ yào yì bēi kāfēi",
+      "pinyinSyllables": ["wǒ", "yào", "yì", "bēi", "kā", "fēi"],
       "english": "I would like a cup of coffee.",
       "audioAssetId": "audio-wo-yao-yi-bei-kafei",
       "tags": ["cafe", "ordering", "counter-word"]
@@ -56,26 +59,33 @@
         {
           "id": "cafe-01-intro",
           "type": "scene_intro",
+          "title": "Order at the counter",
           "assetId": "image-cafe-counter",
-          "text": "You are ordering at a café."
+          "text": "You step into a café. The barista is ready."
         },
         {
           "id": "cafe-01-teach-wo-yao",
           "type": "teach_card",
+          "title": "Say what you want",
           "dimension": "meaning",
-          "itemId": "phrase-wo-yao"
+          "itemId": "phrase-wo-yao",
+          "text": "Next, add the thing you want."
         },
         {
           "id": "cafe-01-teach-kafei",
           "type": "teach_card",
+          "title": "Name the drink",
           "dimension": "meaning",
-          "itemId": "noun-kafei"
+          "itemId": "noun-kafei",
+          "text": "Coffee completes your first order."
         },
         {
           "id": "cafe-01-listen",
           "type": "listen_choice",
+          "title": "Which phrase did you hear?",
           "dimension": "listening",
           "itemId": "sentence-wo-yao-yi-bei-kafei",
+          "text": "Choose the full order.",
           "optionItemIds": [
             "sentence-wo-yao-yi-bei-kafei",
             "phrase-wo-yao",
@@ -85,17 +95,23 @@
         {
           "id": "cafe-01-repeat",
           "type": "repeat",
+          "title": "Make the tones land",
           "dimension": "tone",
-          "itemId": "sentence-wo-yao-yi-bei-kafei"
+          "itemId": "sentence-wo-yao-yi-bei-kafei",
+          "text": "Keep wǒ low, then let yào fall clearly."
         },
         {
           "id": "cafe-01-dialogue",
           "type": "dialogue_turn",
-          "dialogueId": "cafe-challenge"
+          "title": "Take your turn",
+          "dialogueId": "cafe-challenge",
+          "text": "Say it aloud, or use the phrase ticket if you need support."
         },
         {
           "id": "cafe-01-summary",
-          "type": "summary"
+          "type": "summary",
+          "title": "Coffee ordered!",
+          "text": "Next: review this phrase when it becomes due."
         }
       ]
     }
@@ -110,6 +126,7 @@
           "id": "shopkeeper-question",
           "speaker": "system",
           "text": "您好，您想喝什么？",
+          "pinyinSyllables": ["Nín", "hǎo", "nín", "xiǎng", "hē", "shén", "me"],
           "nextNodeId": "learner-order"
         },
         {
@@ -122,6 +139,7 @@
           "id": "shopkeeper-confirmation",
           "speaker": "system",
           "text": "好的，一杯咖啡。",
+          "pinyinSyllables": ["hǎo", "de", "yì", "bēi", "kā", "fēi"],
           "terminal": true
         }
       ]

@@ -1,6 +1,6 @@
 # Mandarin Mission Mobile
 
-Flutter Android/iOS 客户端。当前模块提供 Riverpod 依赖容器、go_router 路由、统一主题、Journey 到“点咖啡”课程概览的最小导航、Drift v1 本地数据库，以及安装包内课程 Repository。
+Flutter Android/iOS 客户端。当前模块提供 Riverpod 依赖容器、go_router 路由、统一主题、Journey、Drift v1 本地数据库、安装包内课程 Repository，以及数据驱动的七步“点咖啡”课程播放器。
 
 ## 开发
 
@@ -53,4 +53,4 @@ Repository 当前只读取随 App 发布的 Draft Fixture。后续增量内容�
 - `lib/features/<feature>`：按功能组织的页面和应用逻辑；
 - `test`：Widget 与依赖边界测试。
 
-当前课程卡片仍是 Journey 外壳的静态占位；下一阶段先确认 Figma 原型，再从版本化课程数据渲染，不在页面里继续硬编码课程步骤。
+“点咖啡”课程播放器按 Fixture 中的步骤顺序渲染场景、教学卡、听力选择、口语降级、对话和完成页。逐字拼音来自 `pinyinSyllables`，标点作为独立布局单元，不参与汉字—拼音中心线计算。下一阶段将练习结果和四维掌握状态写入 Drift。
