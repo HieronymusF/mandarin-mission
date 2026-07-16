@@ -52,6 +52,13 @@ Repository 当前只读取随 App 发布的 Draft Fixture。后续增量内容�
 - 课程完成时为本课每个知识点补齐 `meaning`、`listening`、`tone`、`hanzi` 四个状态，重复完成不会重复生成完成事件；
 - `test/data/progress/` 验证 Repository 事务与状态，`test/app/app_test.dart` 验证完整七步流程确实落库。
 
+## 到期复习队列
+
+- `lib/data/review/review_queue_repository.dart` 查询 `dueAt <= now` 的本地四维掌握状态，并限制单次返回数量；
+- 队列优先最近失败项，其次是 `listening` 和 `tone`，最后按最早到期时间稳定排序；
+- 复习提交复用 `ReviewScheduler`，在同一事务中更新掌握状态、追加尝试记录并写入同步 Outbox；
+- 当前只有一个地点和一节课，暂不为“与今日新课相关”单独建立内容关系表；扩展多课时再从稳定课程元数据计算该优先级。
+
 ## 目录边界
 
 - `lib/app`：App 启动与路由；
@@ -60,4 +67,4 @@ Repository 当前只读取随 App 发布的 Draft Fixture。后续增量内容�
 - `lib/features/<feature>`：按功能组织的页面和应用逻辑；
 - `test`：Widget 与依赖边界测试。
 
-“点咖啡”课程播放器按 Fixture 中的步骤顺序渲染场景、教学卡、听力选择、口语降级、对话和完成页。逐字拼音来自 `pinyinSyllables`，标点作为独立布局单元，不参与汉字—拼音中心线计算。下一阶段将基于持久化的 `dueAt` 建立本地到期复习队列。
+“点咖啡”课程播放器按 Fixture 中的步骤顺序渲染场景、教学卡、听力选择、口语降级、对话和完成页。逐字拼音来自 `pinyinSyllables`，标点作为独立布局单元，不参与汉字—拼音中心线计算。下一阶段先在 Figma 确认复习入口和四维答题流程，再实现到期复习 UI。
