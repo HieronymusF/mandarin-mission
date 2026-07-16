@@ -17,6 +17,7 @@ service-account*.json
 build/
 coverage/
 **/doc/api/
+/content/pubspec.lock
 
 # Android
 **/android/.gradle/
