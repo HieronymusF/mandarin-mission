@@ -1,6 +1,6 @@
 # Mandarin Mission Mobile
 
-Flutter Android/iOS 客户端。当前模块提供 Riverpod 依赖容器、go_router 路由、统一主题、Journey、Drift v1 本地数据库、安装包内课程 Repository，以及数据驱动的七步“点咖啡”课程播放器。
+Flutter Android/iOS 客户端。当前模块提供 Riverpod 依赖容器、go_router 路由、统一主题、Journey、Drift v1 本地数据库、安装包内课程 Repository、数据驱动的七步“点咖啡”课程播放器，以及课程进度与四维掌握状态持久化。
 
 ## 开发
 
@@ -45,6 +45,13 @@ flutter test test/drift test/data/local
 
 Repository 当前只读取随 App 发布的 Draft Fixture。后续增量内容下载仍应复用相同模型与校验规则，但不在本模块预建远端接口。
 
+## 学习进度持久化
+
+- `lib/data/progress/lesson_progress_repository.dart` 在本地事务中写入练习尝试、口语尝试、四维掌握状态、课程完成进度和同步 Outbox；
+- 听辨错误会立即降低对应维度并安排补救，提示后答对不升级；口语降级自评写入 `tone` 维度；
+- 课程完成时为本课每个知识点补齐 `meaning`、`listening`、`tone`、`hanzi` 四个状态，重复完成不会重复生成完成事件；
+- `test/data/progress/` 验证 Repository 事务与状态，`test/app/app_test.dart` 验证完整七步流程确实落库。
+
 ## 目录边界
 
 - `lib/app`：App 启动与路由；
@@ -53,4 +60,4 @@ Repository 当前只读取随 App 发布的 Draft Fixture。后续增量内容�
 - `lib/features/<feature>`：按功能组织的页面和应用逻辑；
 - `test`：Widget 与依赖边界测试。
 
-“点咖啡”课程播放器按 Fixture 中的步骤顺序渲染场景、教学卡、听力选择、口语降级、对话和完成页。逐字拼音来自 `pinyinSyllables`，标点作为独立布局单元，不参与汉字—拼音中心线计算。下一阶段将练习结果和四维掌握状态写入 Drift。
+“点咖啡”课程播放器按 Fixture 中的步骤顺序渲染场景、教学卡、听力选择、口语降级、对话和完成页。逐字拼音来自 `pinyinSyllables`，标点作为独立布局单元，不参与汉字—拼音中心线计算。下一阶段将基于持久化的 `dueAt` 建立本地到期复习队列。
