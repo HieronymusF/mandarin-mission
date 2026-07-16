@@ -185,6 +185,20 @@ final class ContentValidator {
           issues.add(ContentValidationIssue('$path.$field', 'is required'));
         }
       }
+      final hanzi = items[index]['hanzi'];
+      final syllables = _stringList(
+        items[index]['pinyinSyllables'],
+        '$path.pinyinSyllables',
+        issues,
+      );
+      if (hanzi is String && syllables.length != _hanziCount(hanzi)) {
+        issues.add(
+          ContentValidationIssue(
+            '$path.pinyinSyllables',
+            'must contain one syllable for each Hanzi character',
+          ),
+        );
+      }
       final audioAssetId = items[index]['audioAssetId'];
       if (audioAssetId is! String || !assetIds.contains(audioAssetId)) {
         issues.add(
@@ -346,6 +360,22 @@ final class ContentValidator {
             ContentValidationIssue('$nodePath.itemId', 'unknown item $itemId'),
           );
         }
+        if (node['speaker'] == 'system') {
+          final text = node['text'];
+          final syllables = _stringList(
+            node['pinyinSyllables'],
+            '$nodePath.pinyinSyllables',
+            issues,
+          );
+          if (text is String && syllables.length != _hanziCount(text)) {
+            issues.add(
+              ContentValidationIssue(
+                '$nodePath.pinyinSyllables',
+                'must contain one syllable for each Hanzi character',
+              ),
+            );
+          }
+        }
       }
 
       final startNodeId = dialogue['startNodeId'];
@@ -465,6 +495,13 @@ final class ContentValidator {
       }
     }
     return result;
+  }
+
+  int _hanziCount(String value) {
+    return value.runes.where((rune) {
+      return (rune >= 0x3400 && rune <= 0x4DBF) ||
+          (rune >= 0x4E00 && rune <= 0x9FFF);
+    }).length;
   }
 
   List<String> _stringListIfPresent(

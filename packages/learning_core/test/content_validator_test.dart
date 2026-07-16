@@ -21,6 +21,7 @@ void main() {
         'id': 'phrase-wo-yao',
         'hanzi': '我要',
         'pinyin': 'wǒ yào',
+        'pinyinSyllables': ['wǒ', 'yào'],
         'english': 'I want',
         'audioAssetId': 'audio-wo-yao',
       },
@@ -48,13 +49,26 @@ void main() {
         'locationId': 'cafe',
         'startNodeId': 'shopkeeper-question',
         'nodes': [
-          {'id': 'shopkeeper-question', 'nextNodeId': 'learner-answer'},
+          {
+            'id': 'shopkeeper-question',
+            'speaker': 'system',
+            'text': '您好',
+            'pinyinSyllables': ['nín', 'hǎo'],
+            'nextNodeId': 'learner-answer',
+          },
           {
             'id': 'learner-answer',
+            'speaker': 'learner',
             'itemId': 'phrase-wo-yao',
             'nextNodeId': 'challenge-end',
           },
-          {'id': 'challenge-end', 'terminal': true},
+          {
+            'id': 'challenge-end',
+            'speaker': 'system',
+            'text': '好的',
+            'pinyinSyllables': ['hǎo', 'de'],
+            'terminal': true,
+          },
         ],
       },
     ],
@@ -81,6 +95,31 @@ void main() {
     expect(
       validator.validate(package).map((issue) => issue.message),
       contains('unknown item missing-item'),
+    );
+  });
+
+  test('rejects pinyin syllables that do not match the Hanzi count', () {
+    final package = validPackage();
+    final item =
+        (package['knowledgeItems'] as List).single as Map<String, Object?>;
+    item['pinyinSyllables'] = ['wǒ'];
+
+    expect(
+      validator.validate(package).map((issue) => issue.message),
+      contains('must contain one syllable for each Hanzi character'),
+    );
+  });
+
+  test('rejects misaligned pinyin on system dialogue text', () {
+    final package = validPackage();
+    final dialogue =
+        (package['dialogues'] as List).single as Map<String, Object?>;
+    final node = (dialogue['nodes'] as List).first as Map<String, Object?>;
+    node['pinyinSyllables'] = ['nín'];
+
+    expect(
+      validator.validate(package).map((issue) => issue.message),
+      contains('must contain one syllable for each Hanzi character'),
     );
   });
 

@@ -21,6 +21,14 @@ void main() {
         package.knowledgeItem('sentence-wo-yao-yi-bei-kafei').hanzi,
         '我要一杯咖啡。',
       );
+      expect(
+        package.knowledgeItem('sentence-wo-yao-yi-bei-kafei').pinyinSyllables,
+        ['wǒ', 'yào', 'yì', 'bēi', 'kā', 'fēi'],
+      );
+      expect(
+        package.dialogue('cafe-challenge').node('shopkeeper-question').text,
+        '您好，您想喝什么？',
+      );
     });
 
     test('returns a typed lesson by stable id', () async {

@@ -74,6 +74,7 @@
         "kind",
         "hanzi",
         "pinyin",
+        "pinyinSyllables",
         "english",
         "audioAssetId"
       ],
@@ -82,6 +83,11 @@
         "kind": { "enum": ["word", "phrase", "sentence"] },
         "hanzi": { "type": "string", "minLength": 1 },
         "pinyin": { "type": "string", "minLength": 1 },
+        "pinyinSyllables": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
         "english": { "type": "string", "minLength": 1 },
         "audioAssetId": { "$ref": "#/$defs/stableId" },
         "tags": {
@@ -145,6 +151,7 @@
             "summary"
           ]
         },
+        "title": { "type": "string", "minLength": 1 },
         "dimension": { "enum": ["meaning", "listening", "tone", "hanzi"] },
         "itemId": { "$ref": "#/$defs/stableId" },
         "dialogueId": { "$ref": "#/$defs/stableId" },
@@ -180,6 +187,11 @@
         "id": { "$ref": "#/$defs/stableId" },
         "speaker": { "enum": ["system", "learner"] },
         "text": { "type": "string", "minLength": 1 },
+        "pinyinSyllables": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
         "itemId": { "$ref": "#/$defs/stableId" },
         "nextNodeId": { "$ref": "#/$defs/stableId" },
         "terminal": { "type": "boolean" }
