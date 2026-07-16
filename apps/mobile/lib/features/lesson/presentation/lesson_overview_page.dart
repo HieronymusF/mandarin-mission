@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:learning_core/learning_core.dart';
 
 import '../../../data/content/course_content_models.dart';
+import '../../../data/progress/lesson_progress_repository.dart';
 import '../application/lesson_providers.dart';
 import 'hanzi_pinyin_text.dart';
 
@@ -101,6 +103,7 @@ class _LessonPlayerPage extends ConsumerWidget {
     final provider = lessonPlayerControllerProvider(lessonId);
     final state = ref.watch(provider);
     final controller = ref.read(provider.notifier);
+    final progressRepository = ref.read(lessonProgressRepositoryProvider);
     final lesson = content.lesson;
     final step = lesson.steps[state.stepIndex];
     final presentation = _presentationFor(
@@ -110,6 +113,7 @@ class _LessonPlayerPage extends ConsumerWidget {
       step,
       state,
       controller,
+      progressRepository,
     );
 
     return Scaffold(
@@ -162,7 +166,9 @@ class _LessonPlayerPage extends ConsumerWidget {
                   padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
                   child: FilledButton(
                     key: const Key('lesson-primary-action'),
-                    onPressed: presentation.onPrimary,
+                    onPressed: presentation.onPrimary == null
+                        ? null
+                        : () async => presentation.onPrimary!(),
                     child: Text(presentation.primaryLabel),
                   ),
                 ),
@@ -181,6 +187,7 @@ class _LessonPlayerPage extends ConsumerWidget {
     CourseLessonStep step,
     LessonPlayerState state,
     LessonPlayerController controller,
+    LessonProgressRepository progressRepository,
   ) {
     void next() => controller.next(lesson.steps.length);
     switch (step.type) {
@@ -189,7 +196,7 @@ class _LessonPlayerPage extends ConsumerWidget {
           eyebrow: 'YOUR MISSION',
           body: _SceneIntro(step: step),
           primaryLabel: "I'm ready",
-          onPrimary: next,
+          onPrimary: () async => next(),
         );
       case 'teach_card':
         final item = package.knowledgeItem(step.itemId!);
@@ -204,7 +211,7 @@ class _LessonPlayerPage extends ConsumerWidget {
             supportText: step.text,
           ),
           primaryLabel: 'Got it',
-          onPrimary: next,
+          onPrimary: () async => next(),
         );
       case 'listen_choice':
         final selected = state.selectedOptionId;
@@ -225,8 +232,38 @@ class _LessonPlayerPage extends ConsumerWidget {
           onPrimary: selected == null
               ? null
               : correct
-              ? next
-              : controller.retryChoice,
+              ? () async {
+                  final answeredAt = DateTime.now().toUtc();
+                  await progressRepository.recordExerciseAttempt(
+                    lessonId: lesson.id,
+                    stepId: step.id,
+                    contentVersion: package.version,
+                    itemId: step.itemId!,
+                    dimension: lessonDimension(step.dimension!),
+                    rating: ReviewRating.remembered,
+                    correct: true,
+                    usedHint: state.usedListeningHint,
+                    latencyMs: state.latencyMs(answeredAt),
+                    answeredAt: answeredAt,
+                  );
+                  next();
+                }
+              : () async {
+                  final answeredAt = DateTime.now().toUtc();
+                  await progressRepository.recordExerciseAttempt(
+                    lessonId: lesson.id,
+                    stepId: step.id,
+                    contentVersion: package.version,
+                    itemId: step.itemId!,
+                    dimension: lessonDimension(step.dimension!),
+                    rating: ReviewRating.forgotten,
+                    correct: false,
+                    usedHint: false,
+                    latencyMs: state.latencyMs(answeredAt),
+                    answeredAt: answeredAt,
+                  );
+                  controller.retryChoice();
+                },
         );
       case 'repeat':
         final item = package.knowledgeItem(step.itemId!);
@@ -241,14 +278,33 @@ class _LessonPlayerPage extends ConsumerWidget {
               onSelected: controller.selectSelfCheck,
             ),
             primaryLabel: 'Continue with self-check',
-            onPrimary: state.selfCheck == null ? null : next,
+            onPrimary: state.selfCheck == null
+                ? null
+                : () async {
+                    final answeredAt = DateTime.now().toUtc();
+                    final soundedClose = state.selfCheck == 'sounded-close';
+                    await progressRepository.recordSpeakingAttempt(
+                      lessonId: lesson.id,
+                      stepId: step.id,
+                      contentVersion: package.version,
+                      targetId: step.itemId!,
+                      rating: soundedClose
+                          ? ReviewRating.remembered
+                          : ReviewRating.forgotten,
+                      correct: soundedClose,
+                      localScore: soundedClose ? 1 : 0,
+                      latencyMs: state.latencyMs(answeredAt),
+                      answeredAt: answeredAt,
+                    );
+                    next();
+                  },
           );
         }
         return _StepPresentation(
           eyebrow: 'TONE · SPEAKING',
           body: _RepeatStep(item: item, tip: step.text),
           primaryLabel: '●  Start recording',
-          onPrimary: controller.useSpeakingFallback,
+          onPrimary: () async => controller.useSpeakingFallback(),
         );
       case 'dialogue_turn':
         final dialogue = package.dialogue(step.dialogueId!);
@@ -260,21 +316,32 @@ class _LessonPlayerPage extends ConsumerWidget {
             supportText: step.text,
           ),
           primaryLabel: 'Send reply',
-          onPrimary: next,
+          onPrimary: () async => next(),
         );
       case 'summary':
         return _StepPresentation(
           eyebrow: 'MISSION COMPLETE',
           body: _SummaryStep(supportText: step.text),
           primaryLabel: 'Back to journey',
-          onPrimary: () => context.go('/'),
+          onPrimary: () async {
+            await progressRepository.completeLesson(
+              lessonId: lesson.id,
+              itemIds: lesson.itemIds,
+              contentVersion: package.version,
+              score: state.score,
+              completedAt: DateTime.now().toUtc(),
+            );
+            if (context.mounted) {
+              context.go('/');
+            }
+          },
         );
       default:
         return _StepPresentation(
           eyebrow: 'LESSON',
           body: Text('Unsupported lesson step: ${step.type}'),
           primaryLabel: 'Continue',
-          onPrimary: next,
+          onPrimary: () async => next(),
         );
     }
   }
@@ -1032,5 +1099,5 @@ final class _StepPresentation {
   final Color eyebrowColor;
   final Widget body;
   final String primaryLabel;
-  final VoidCallback? onPrimary;
+  final Future<void> Function()? onPrimary;
 }

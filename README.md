@@ -2,7 +2,7 @@
 
 一款面向英语使用者的零基础中文学习 App：用城市地图串联真实生活任务，通过视觉记忆、分维度复习和受控口语练习，帮助用户每天用约 10 分钟学会当天能使用的中文。
 
-> 当前状态：一期工程基础已启动。仓库包含竞品调研、产品与开发方案、纯 Dart 学习核心、课程 Schema、首个“点咖啡”Draft Fixture、Go API 容器、可运行的 Flutter Android/iOS App、Drift v1 本地数据库、安装包内课程 Repository、数据驱动的七步课程播放器和 CI。
+> 当前状态：一期工程基础已启动。仓库包含竞品调研、产品与开发方案、纯 Dart 学习核心、课程 Schema、首个“点咖啡”Draft Fixture、Go API 容器、可运行的 Flutter Android/iOS App、Drift v1 本地数据库、安装包内课程 Repository、数据驱动的七步课程播放器，以及练习结果、四维掌握度、课程进度与同步 Outbox 的本地持久化。
 
 ## 产品定位
 
@@ -65,6 +65,7 @@
 - Flutter Widget 测试和 `learning_core` 路径依赖接入；
 - Drift v1 本地表、schema snapshot、数据库约束和迁移验证测试；
 - 从安装包加载、校验并按稳定 ID 查询版本化课程内容的 Repository；
+- 事务写入课程进度、练习/口语尝试、四维掌握状态和同步 Outbox 的进度 Repository；
 - GitHub Actions 移动端、学习核心、内容校验和 API 容器构建流程。
 
 ## 文档
@@ -152,7 +153,8 @@ go run ./cmd/api
 - [x] 建立 Drift 本地表与 migration 测试。
 - [x] 建立课程内容 Repository/加载层。
 - [x] 在 Figma 中确认并实现数据驱动的课程步骤。
-- [ ] 持久化课程练习结果和四维掌握状态。
+- [x] 持久化课程练习结果和四维掌握状态。
+- [ ] 建立本地到期复习队列并接入 v1 分箱调度。
 - [ ] 完成“点咖啡”端到端垂直切片。
 - [ ] 扩展到 3 个地点、12 节课并开展封闭测试。
 - [ ] 根据激活、D1/D7 留存和 7 日回忆率决定是否扩展公开 MVP。

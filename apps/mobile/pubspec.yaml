@@ -18,6 +18,7 @@ dependencies:
   mandarin_mission_content:
     path: ../../content
   path_provider: ^2.1.6
+  uuid: ^4.5.3
 
 dev_dependencies:
   build_runner: ^2.15.0

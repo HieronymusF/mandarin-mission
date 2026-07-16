@@ -1,11 +1,21 @@
+import 'package:drift/native.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mandarin_mission/app/app.dart';
+import 'package:mandarin_mission/data/local/app_database.dart';
+import 'package:mandarin_mission/data/local/app_database_provider.dart';
 
 void main() {
   testWidgets('completes the data-driven café lesson flow', (tester) async {
-    await tester.pumpWidget(const ProviderScope(child: MandarinMissionApp()));
+    final database = AppDatabase(NativeDatabase.memory());
+    addTearDown(database.close);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [appDatabaseProvider.overrideWithValue(database)],
+        child: const MandarinMissionApp(),
+      ),
+    );
     await tester.pumpAndSettle();
 
     expect(find.text('Your Mandarin journey'), findsOneWidget);
@@ -69,5 +79,20 @@ void main() {
     await tester.tap(find.byKey(const Key('lesson-primary-action')));
     await tester.pumpAndSettle();
     expect(find.text('Your Mandarin journey'), findsOneWidget);
+
+    final progress = await database
+        .select(database.lessonProgressEntries)
+        .getSingle();
+    final mastery = await database.select(database.masteryStates).get();
+    final attempts = await database.select(database.reviewAttempts).get();
+    final speaking = await database.select(database.speakingAttempts).get();
+    final outbox = await database.select(database.syncOutboxEvents).get();
+
+    expect(progress.status, 'completed');
+    expect(progress.score, 80);
+    expect(mastery, hasLength(12));
+    expect(attempts, hasLength(3));
+    expect(speaking, hasLength(1));
+    expect(outbox, hasLength(5));
   });
 }
