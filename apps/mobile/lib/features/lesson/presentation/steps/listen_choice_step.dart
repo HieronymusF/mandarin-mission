@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../../../../core/theme/app_layout.dart';
 import '../../../../data/content/course_content_models.dart';
+import '../../../../shared/presentation/app_leading_row.dart';
 import '../hanzi_pinyin_text.dart';
 import '../lesson_audio_notice.dart';
 
@@ -29,13 +31,13 @@ class ListenChoiceStep extends StatelessWidget {
         ShadButton.secondary(
           key: const Key('replay-order-action'),
           width: double.infinity,
-          height: 54,
+          height: AppLayout.controlHeight,
           onPressed: () => showLessonAudioUnavailable(context),
-          leading: const Icon(LucideIcons.volume2, size: 18),
+          leading: const Icon(LucideIcons.volume2, size: 16),
           mainAxisAlignment: MainAxisAlignment.start,
           child: const Text('Replay the order'),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpacing.md),
         for (final itemId in step.optionItemIds) ...[
           _AnswerButton(
             item: package.knowledgeItem(itemId),
@@ -44,30 +46,35 @@ class ListenChoiceStep extends StatelessWidget {
             revealResult: selectedOptionId != null,
             onTap: () => onSelected(itemId),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.sm),
         ],
         if (selectedOptionId != null)
           ShadCard(
+            key: const Key('listen-result-banner'),
             width: double.infinity,
-            padding: const EdgeInsets.all(16),
+            padding: AppLayout.compactCardPadding,
             backgroundColor: selectedIsCorrect
                 ? theme.colorScheme.custom['success']
                 : theme.colorScheme.destructive.withValues(alpha: .10),
             border: ShadBorder.none,
-            leading: Icon(
-              selectedIsCorrect
-                  ? LucideIcons.badgeCheck
-                  : LucideIcons.circleAlert,
-              size: 20,
-              color: selectedIsCorrect
-                  ? theme.colorScheme.custom['successForeground']
-                  : theme.colorScheme.destructive,
-            ),
-            child: Text(
-              selectedIsCorrect
-                  ? 'That is the complete café order.'
-                  : 'Not quite — you heard a full order, not only “I want.”',
-              style: theme.textTheme.small,
+            child: AppLeadingRow(
+              leadingWidth: AppLayout.noticeIconSlot,
+              gap: AppSpacing.sm,
+              leading: Icon(
+                selectedIsCorrect
+                    ? LucideIcons.badgeCheck
+                    : LucideIcons.circleAlert,
+                size: 20,
+                color: selectedIsCorrect
+                    ? theme.colorScheme.custom['successForeground']
+                    : theme.colorScheme.destructive,
+              ),
+              child: Text(
+                selectedIsCorrect
+                    ? 'That is the complete café order.'
+                    : 'Not quite — you heard a full order, not only “I want.”',
+                style: theme.textTheme.small,
+              ),
             ),
           ),
       ],
@@ -98,7 +105,7 @@ class _AnswerButton extends StatelessWidget {
     return ShadButton.outline(
       key: Key('listen-option-${item.id}'),
       width: double.infinity,
-      height: 72,
+      height: AppLayout.answerControlHeight,
       onPressed: onTap,
       backgroundColor: selectedCorrect
           ? theme.colorScheme.custom['success']
@@ -113,7 +120,7 @@ class _AnswerButton extends StatelessWidget {
         hanzi: item.hanzi,
         pinyinSyllables: item.pinyinSyllables,
         hanziFontSize: 20,
-        pinyinFontSize: 11,
+        pinyinFontSize: 12,
         pinyinColor: theme.colorScheme.mutedForeground,
       ),
     );

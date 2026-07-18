@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import 'app_layout.dart';
+
 const missionPrimary = Color(0xFF176B52);
 const missionPrimaryForeground = Color(0xFFFFFFFF);
 const missionBackground = Color(0xFFF7F9F7);
@@ -46,7 +48,12 @@ ShadThemeData buildAppShadTheme() {
 
   return ShadThemeData(
     colorScheme: colorScheme,
-    radius: BorderRadius.circular(12),
+    radius: BorderRadius.circular(AppRadius.md),
+    cardTheme: const ShadCardTheme(
+      padding: AppLayout.cardPadding,
+      rowMainAxisAlignment: MainAxisAlignment.start,
+      rowCrossAxisAlignment: CrossAxisAlignment.center,
+    ),
   );
 }
 
@@ -86,7 +93,7 @@ ThemeData buildAppMaterialTheme(ThemeData baseTheme, ShadThemeData shadTheme) {
     ),
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
-        minimumSize: const Size.fromHeight(48),
+        minimumSize: const Size.fromHeight(AppLayout.controlHeight),
         shape: RoundedRectangleBorder(borderRadius: shadTheme.radius),
       ),
     ),

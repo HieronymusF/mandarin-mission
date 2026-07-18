@@ -4,7 +4,7 @@
 
 ## 1. 来源与优先级
 
-1. 可执行主题：`apps/mobile/lib/core/theme/app_theme.dart`。
+1. 可执行令牌：`apps/mobile/lib/core/theme/app_theme.dart` 与 `apps/mobile/lib/core/theme/app_layout.dart`。
 2. 本文档：组件选择、页面结构和使用边界。
 3. Flutter 组件实现：[shadcn_ui](https://pub.dev/packages/shadcn_ui)。
 4. 视觉原则与组件目录：[shadcn/ui](https://ui.shadcn.com/docs)。
@@ -24,7 +24,7 @@ Figma 不再是开始前端开发的必经门槛。品牌插画、商店素材�
 
 ## 3. 语义令牌
 
-令牌值以 `app_theme.dart` 为准。
+颜色与字体令牌以 `app_theme.dart` 为准，布局与尺寸令牌以 `app_layout.dart` 为准。
 
 | 令牌 | 当前值 | 用途 |
 |---|---|---|
@@ -41,7 +41,15 @@ Figma 不再是开始前端开发的必经门槛。品牌插画、商店素材�
 | `success` | `#DDF4E8` | 正确反馈 |
 | `warning` | `#FFF2CC` | 降级、提醒和待确认状态 |
 
-基础圆角为 `12`。间距优先使用 `4 / 8 / 12 / 16 / 20 / 24 / 32`，不要在单个页面引入新的随机间距阶梯。
+基础圆角为 `12`。间距统一使用 `4 / 8 / 12 / 16 / 20 / 24 / 32`，不要在单个页面引入新的随机间距阶梯。
+
+页面和卡片使用同一组布局基准：
+
+- 页面左右 padding 为 `20`，大屏内容最大宽度为 `640`，超出后水平居中；
+- 标准卡片 padding 为 `20`，紧凑型卡片 padding 为 `16`；
+- 卡片内图标与正文之间优先使用 `12`，内容组之间优先使用 `16` 或 `20`；
+- 标准图标容器为 `48 × 48`，最小触控目标为 `44 × 44`；
+- 按钮和常规控件高度为 `48`，选择项高度为 `72`，媒体练习区高度为 `80`。
 
 字体使用 `shadcn_ui` 随包提供的 Geist；汉字由系统中文字体回退。页面标题使用 `h2`，区块标题使用 `h3`/`h4`，正文使用 `p`/`small`，辅助文案使用 `muted`。
 
@@ -52,13 +60,15 @@ Figma 不再是开始前端开发的必经门槛。品牌插画、商店素材�
 | 主动作 | `ShadButton` | 一个视口原则上只有一个主按钮 |
 | 次动作 | `ShadButton.secondary` / `.outline` | 不与主动作争夺视觉权重 |
 | 弱动作 | `ShadButton.ghost` | 返回、关闭或低优先动作 |
-| 信息容器 | `ShadCard` | 通过 `title / description / child / footer` 组合 |
+| 信息容器 | `ShadCard` | 作为表面容器；复杂内容在 `child` 中显式布局 |
 | 状态标签 | `ShadBadge` | 短文本，不放句子 |
 | 连续进度 | `ShadProgress` | 必须提供语义标签和值 |
 | 反馈 | `ShadCard` + 语义状态色 | 正确、错误、降级分别使用 success/destructive/warning |
 | 图标 | `LucideIcons` | 同一动作保持同一图标 |
 
 Material 继续负责 `Scaffold`、`SafeArea`、滚动、布局、`MaterialApp.router` 和当前 SnackBar 兼容层。不要为了“纯 shadcn”重写 Flutter 平台能力。
+
+当前固定版本的 `ShadCard` 会用 `spaceBetween` 排列 `leading`、内容列和 `trailing`。全宽业务卡片不得使用这些槽位承载首行图标或操作，否则剩余空间会被分配成不稳定的空白，并使后续内容整体缩进。需要“图标 + 文案”的卡片统一在 `child` 中使用 `AppLeadingRow` 和 `AppIconTile`；需要右侧操作时使用显式 `Row`、`Expanded` 与固定操作区宽度。除浮层等真实叠放场景外，不使用绝对定位、位移或负 margin 修正对齐。
 
 ## 5. 页面与状态模板
 
@@ -85,6 +95,7 @@ Material 继续负责 `Scaffold`、`SafeArea`、滚动、布局、`MaterialApp.r
 - 颜色不能是正确/错误的唯一信号，必须配合图标或文字。
 - 进度条、图标按钮和录音动作必须提供语义说明。
 - 先验证常见 Android 尺寸，再验证小屏和 200% 字体。
+- 布局回归至少覆盖 `768 / 1024 / 1280 / 1440` 逻辑像素宽度，确认内容列仍保持 `640` 最大宽度、卡片同边界、正文可扩展。
 - 页面允许垂直滚动；主动作不能被系统底部区域遮挡。
 - 动画遵循系统“减少动态效果”，且不得阻断学习流程。
 

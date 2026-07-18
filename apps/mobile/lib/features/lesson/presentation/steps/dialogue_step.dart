@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../../../../core/theme/app_layout.dart';
 import '../../../../data/content/course_content_models.dart';
+import '../../../../shared/presentation/app_leading_row.dart';
 import '../hanzi_pinyin_text.dart';
 
 class DialogueStep extends StatelessWidget {
@@ -26,56 +28,70 @@ class DialogueStep extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ShadCard(
+          key: const Key('dialogue-prompt-card'),
           width: double.infinity,
-          leading: Container(
-            width: 42,
-            height: 42,
-            decoration: BoxDecoration(
-              color: theme.colorScheme.muted,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(LucideIcons.coffee, size: 21),
-          ),
-          title: const Text('Barista'),
-          description: const Text('Hello, what would you like to drink?'),
-          child: Padding(
-            padding: const EdgeInsets.only(top: 18),
-            child: HanziPinyinText(
-              hanzi: prompt.text!,
-              pinyinSyllables: prompt.pinyinSyllables,
-              hanziFontSize: 21,
-              pinyinFontSize: 10,
-              pinyinColor: theme.colorScheme.mutedForeground,
-            ),
+          padding: AppLayout.cardPadding,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              AppLeadingRow(
+                leading: AppIconTile(
+                  icon: LucideIcons.coffee,
+                  backgroundColor: theme.colorScheme.muted,
+                  foregroundColor: theme.colorScheme.foreground,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Barista', style: theme.textTheme.h3),
+                    const SizedBox(height: AppSpacing.xxs),
+                    Text(
+                      'Hello, what would you like to drink?',
+                      style: theme.textTheme.muted,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: AppSpacing.md),
+              HanziPinyinText(
+                hanzi: prompt.text!,
+                pinyinSyllables: prompt.pinyinSyllables,
+                hanziFontSize: 20,
+                pinyinFontSize: 12,
+                pinyinColor: theme.colorScheme.mutedForeground,
+              ),
+            ],
           ),
         ),
-        const SizedBox(height: 14),
+        const SizedBox(height: AppSpacing.md),
         ShadCard(
+          key: const Key('dialogue-answer-card'),
           width: double.infinity,
+          padding: AppLayout.cardPadding,
           backgroundColor: theme.colorScheme.accent,
           border: ShadBorder.none,
-          title: const Text('Your order'),
-          child: Padding(
-            padding: const EdgeInsets.only(top: 18),
-            child: Column(
-              children: [
-                HanziPinyinText(
-                  hanzi: answer.hanzi,
-                  pinyinSyllables: answer.pinyinSyllables,
-                  hanziFontSize: 27,
-                ),
-                const SizedBox(height: 16),
-                Icon(
-                  LucideIcons.mic,
-                  size: 24,
-                  color: theme.colorScheme.primary,
-                ),
-              ],
-            ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text('Your order', style: theme.textTheme.h3),
+              const SizedBox(height: AppSpacing.md),
+              HanziPinyinText(
+                hanzi: answer.hanzi,
+                pinyinSyllables: answer.pinyinSyllables,
+                hanziFontSize: 28,
+              ),
+              const SizedBox(height: AppSpacing.md),
+              Icon(
+                LucideIcons.mic,
+                size: AppLayout.noticeIconSlot,
+                color: theme.colorScheme.primary,
+              ),
+            ],
           ),
         ),
         if ((supportText ?? '').isNotEmpty) ...[
-          const SizedBox(height: 14),
+          const SizedBox(height: AppSpacing.md),
           Text(supportText!, style: theme.textTheme.muted),
         ],
       ],

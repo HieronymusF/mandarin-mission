@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../../../core/theme/app_layout.dart';
+import '../../../shared/presentation/app_leading_row.dart';
+
 class JourneyPage extends StatelessWidget {
   const JourneyPage({super.key});
 
@@ -13,9 +16,12 @@ class JourneyPage extends StatelessWidget {
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 640),
+            key: const Key('journey-content'),
+            constraints: const BoxConstraints(
+              maxWidth: AppLayout.contentMaxWidth,
+            ),
             child: ListView(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
+              padding: AppLayout.pagePadding,
               children: [
                 Row(
                   children: [
@@ -23,30 +29,30 @@ class JourneyPage extends StatelessWidget {
                     const Spacer(),
                     Icon(
                       LucideIcons.flame,
-                      size: 18,
+                      size: AppLayout.noticeIconSlot,
                       color: theme.colorScheme.mutedForeground,
                     ),
-                    const SizedBox(width: 6),
+                    const SizedBox(width: AppSpacing.xs),
                     Text('Start your streak', style: theme.textTheme.small),
                   ],
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: AppSpacing.xl),
                 Text('Your Mandarin journey', style: theme.textTheme.h2),
-                const SizedBox(height: 8),
+                const SizedBox(height: AppSpacing.xs),
                 Text(
                   'One useful mission at a time. Today starts at the café.',
                   style: theme.textTheme.muted,
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppSpacing.xl),
                 const _TodayCard(),
-                const SizedBox(height: 28),
+                const SizedBox(height: AppSpacing.xxl),
                 Text('City stops', style: theme.textTheme.h3),
-                const SizedBox(height: 6),
+                const SizedBox(height: AppSpacing.xs),
                 Text(
                   'Complete each real-world mission to unlock the next stop.',
                   style: theme.textTheme.muted,
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: AppSpacing.md),
                 const _CafeStopCard(),
               ],
             ),
@@ -65,64 +71,76 @@ class _TodayCard extends StatelessWidget {
     final theme = ShadTheme.of(context);
 
     return ShadCard(
+      key: const Key('journey-today-card'),
       width: double.infinity,
       backgroundColor: theme.colorScheme.primary,
       border: ShadBorder.none,
-      padding: const EdgeInsets.all(20),
-      leading: Container(
-        width: 48,
-        height: 48,
-        decoration: BoxDecoration(
-          color: theme.colorScheme.primaryForeground.withValues(alpha: .14),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Icon(
-          LucideIcons.route,
-          color: theme.colorScheme.primaryForeground,
-          size: 23,
-        ),
-      ),
-      title: Text(
-        "Today's mission",
-        style: theme.textTheme.large.copyWith(
-          color: theme.colorScheme.primaryForeground,
-        ),
-      ),
-      description: Text(
-        '1 short lesson · about 10 minutes',
-        style: theme.textTheme.small.copyWith(
-          color: theme.colorScheme.primaryForeground.withValues(alpha: .78),
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.only(top: 18),
-        child: Row(
-          children: [
-            Expanded(
-              child: _TaskStatus(
-                icon: LucideIcons.bookOpen,
-                label: 'Learn',
-                foreground: theme.colorScheme.primaryForeground,
+      padding: AppLayout.cardPadding,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          AppLeadingRow(
+            key: const Key('today-card-header'),
+            leading: AppIconTile(
+              icon: LucideIcons.route,
+              backgroundColor: theme.colorScheme.primaryForeground.withValues(
+                alpha: .14,
               ),
+              foregroundColor: theme.colorScheme.primaryForeground,
             ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: _TaskStatus(
-                icon: LucideIcons.rotateCcw,
-                label: 'Review',
-                foreground: theme.colorScheme.primaryForeground,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Today's mission",
+                  style: theme.textTheme.large.copyWith(
+                    color: theme.colorScheme.primaryForeground,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xxs),
+                Text(
+                  '1 short lesson · about 10 minutes',
+                  style: theme.textTheme.small.copyWith(
+                    color: theme.colorScheme.primaryForeground.withValues(
+                      alpha: .78,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          Row(
+            key: const Key('today-task-row'),
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: _TaskStatus(
+                  icon: LucideIcons.bookOpen,
+                  label: 'Learn',
+                  foreground: theme.colorScheme.primaryForeground,
+                ),
               ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: _TaskStatus(
-                icon: LucideIcons.mic,
-                label: 'Speak',
-                foreground: theme.colorScheme.primaryForeground,
+              const SizedBox(width: AppSpacing.xs),
+              Expanded(
+                child: _TaskStatus(
+                  icon: LucideIcons.rotateCcw,
+                  label: 'Review',
+                  foreground: theme.colorScheme.primaryForeground,
+                ),
               ),
-            ),
-          ],
-        ),
+              const SizedBox(width: AppSpacing.xs),
+              Expanded(
+                child: _TaskStatus(
+                  icon: LucideIcons.mic,
+                  label: 'Speak',
+                  foreground: theme.colorScheme.primaryForeground,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -143,9 +161,11 @@ class _TaskStatus extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Icon(icon, size: 15, color: foreground),
-        const SizedBox(width: 5),
+        Icon(icon, size: 16, color: foreground),
+        const SizedBox(width: AppSpacing.xxs),
         Flexible(
           child: Text(
             label,
@@ -169,66 +189,69 @@ class _CafeStopCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
     return ShadCard(
+      key: const Key('journey-cafe-card'),
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      leading: Container(
-        width: 52,
-        height: 52,
-        decoration: BoxDecoration(
-          color: theme.colorScheme.accent,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Icon(
-          LucideIcons.coffee,
-          color: theme.colorScheme.accentForeground,
-          size: 25,
-        ),
-      ),
-      title: const Text('Order one coffee'),
-      description: const Text('Stop 1 · Café'),
-      child: Padding(
-        padding: const EdgeInsets.only(top: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
+      padding: AppLayout.cardPadding,
+      child: Column(
+        key: const Key('cafe-card-body'),
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          AppLeadingRow(
+            key: const Key('cafe-card-header'),
+            leading: AppIconTile(
+              icon: LucideIcons.coffee,
+              backgroundColor: theme.colorScheme.accent,
+              foregroundColor: theme.colorScheme.accentForeground,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const ShadBadge.outline(child: Text('Meaning')),
-                const ShadBadge.outline(child: Text('Listening')),
-                const ShadBadge.outline(child: Text('Speaking')),
+                Text('Order one coffee', style: theme.textTheme.h3),
+                const SizedBox(height: AppSpacing.xxs),
+                Text('Stop 1 · Café', style: theme.textTheme.muted),
               ],
             ),
-            const SizedBox(height: 18),
-            Row(
-              children: [
-                Expanded(
-                  child: Text('7 short steps', style: theme.textTheme.small),
-                ),
-                Text('Ready to start', style: theme.textTheme.muted),
-              ],
-            ),
-            const SizedBox(height: 8),
-            const ShadProgress(
-              value: 0,
-              minHeight: 6,
-              semanticsLabel: 'Café lesson progress',
-              semanticsValue: 'Not started',
-            ),
-            const SizedBox(height: 20),
-            ShadButton(
-              key: const Key('open-cafe-lesson'),
-              onPressed: () => context.goNamed(
-                'lesson',
-                pathParameters: const {'lessonId': 'cafe-01'},
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          Wrap(
+            spacing: AppSpacing.xs,
+            runSpacing: AppSpacing.xs,
+            children: [
+              const ShadBadge.outline(child: Text('Meaning')),
+              const ShadBadge.outline(child: Text('Listening')),
+              const ShadBadge.outline(child: Text('Speaking')),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Row(
+            children: [
+              Expanded(
+                child: Text('7 short steps', style: theme.textTheme.small),
               ),
-              width: double.infinity,
-              leading: const Icon(LucideIcons.play, size: 17),
-              child: const Text('Start lesson'),
+              Text('Ready to start', style: theme.textTheme.muted),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          const ShadProgress(
+            value: 0,
+            minHeight: 6,
+            semanticsLabel: 'Café lesson progress',
+            semanticsValue: 'Not started',
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          ShadButton(
+            key: const Key('open-cafe-lesson'),
+            onPressed: () => context.goNamed(
+              'lesson',
+              pathParameters: const {'lessonId': 'cafe-01'},
             ),
-          ],
-        ),
+            width: double.infinity,
+            height: AppLayout.controlHeight,
+            leading: const Icon(LucideIcons.play, size: 16),
+            child: const Text('Start lesson'),
+          ),
+        ],
       ),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../../../core/theme/app_layout.dart';
 import '../../../data/content/course_content_models.dart';
 
 class LessonHeader extends StatelessWidget {
@@ -20,22 +21,28 @@ class LessonHeader extends StatelessWidget {
     final theme = ShadTheme.of(context);
     final currentStep = stepIndex + 1;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.sm,
+        AppSpacing.lg,
+        0,
+      ),
       child: Column(
         children: [
           SizedBox(
-            height: 44,
+            height: AppLayout.controlHeight,
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 ShadButton.outline(
                   key: const Key('lesson-back-action'),
-                  width: 40,
-                  height: 40,
+                  width: AppLayout.minimumTouchTarget,
+                  height: AppLayout.minimumTouchTarget,
                   padding: EdgeInsets.zero,
                   onPressed: onBack,
-                  child: const Icon(LucideIcons.chevronLeft, size: 19),
+                  child: const Icon(LucideIcons.chevronLeft, size: 20),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -49,7 +56,7 @@ class LessonHeader extends StatelessWidget {
                           letterSpacing: .6,
                         ),
                       ),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: AppSpacing.xxs),
                       Text(
                         'Step $currentStep of ${lesson.steps.length}',
                         style: theme.textTheme.muted,
@@ -64,7 +71,7 @@ class LessonHeader extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.sm),
           ShadProgress(
             value: currentStep / lesson.steps.length,
             minHeight: 6,

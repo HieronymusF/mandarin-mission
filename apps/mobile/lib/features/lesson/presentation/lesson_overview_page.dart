@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../../../core/theme/app_layout.dart';
 import '../../../data/content/course_content_models.dart';
+import '../../../shared/presentation/app_leading_row.dart';
 import '../application/lesson_providers.dart';
 import 'lesson_header.dart';
 import 'steps/dialogue_step.dart';
@@ -43,7 +45,9 @@ class _LessonLoadingPage extends StatelessWidget {
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 240),
+            constraints: const BoxConstraints(
+              maxWidth: AppLayout.loadingMaxWidth,
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -51,7 +55,7 @@ class _LessonLoadingPage extends StatelessWidget {
                   semanticsLabel: 'Preparing lesson',
                   minHeight: 6,
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: AppSpacing.md),
                 Text(
                   'Preparing your café mission…',
                   style: theme.textTheme.muted,
@@ -79,24 +83,49 @@ class _LessonErrorPage extends StatelessWidget {
       body: SafeArea(
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: ShadCard(
-              width: 440,
-              leading: Icon(
-                LucideIcons.cloudOff,
-                size: 28,
-                color: theme.colorScheme.destructive,
+            padding: const EdgeInsets.all(AppSpacing.xl),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                maxWidth: AppLayout.errorMaxWidth,
               ),
-              title: const Text('This lesson could not be opened.'),
-              description: const Text(
-                'Your journey is still safe. Try loading the bundled lesson again.',
-              ),
-              footer: Padding(
-                padding: const EdgeInsets.only(top: 20),
-                child: ShadButton(
-                  onPressed: onRetry,
-                  leading: const Icon(LucideIcons.rotateCcw, size: 17),
-                  child: const Text('Try again'),
+              child: ShadCard(
+                width: double.infinity,
+                padding: AppLayout.cardPadding,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    AppLeadingRow(
+                      leadingWidth: AppLayout.listIconSlot,
+                      gap: AppSpacing.sm,
+                      leading: Icon(
+                        LucideIcons.cloudOff,
+                        size: AppLayout.noticeIconSlot,
+                        color: theme.colorScheme.destructive,
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'This lesson could not be opened.',
+                            style: theme.textTheme.h3,
+                          ),
+                          const SizedBox(height: AppSpacing.xxs),
+                          Text(
+                            'Your journey is still safe. Try loading the bundled lesson again.',
+                            style: theme.textTheme.muted,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    ShadButton(
+                      height: AppLayout.controlHeight,
+                      onPressed: onRetry,
+                      leading: const Icon(LucideIcons.rotateCcw, size: 16),
+                      child: const Text('Try again'),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -137,7 +166,10 @@ class _LessonPlayerPage extends ConsumerWidget {
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 640),
+            key: const Key('lesson-content-frame'),
+            constraints: const BoxConstraints(
+              maxWidth: AppLayout.contentMaxWidth,
+            ),
             child: Column(
               children: [
                 LessonHeader(
@@ -153,34 +185,38 @@ class _LessonPlayerPage extends ConsumerWidget {
                 ),
                 Expanded(
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
+                    padding: AppLayout.lessonBodyPadding,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         ShadBadge.secondary(child: Text(presentation.eyebrow)),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: AppSpacing.sm),
                         Text(
                           presentation.title ?? step.title ?? lesson.title,
                           style: theme.textTheme.h2,
                         ),
-                        const SizedBox(height: 18),
+                        const SizedBox(height: AppSpacing.lg),
                         presentation.body,
                         if (state.errorMessage != null) ...[
-                          const SizedBox(height: 14),
+                          const SizedBox(height: AppSpacing.md),
                           ShadCard(
                             width: double.infinity,
-                            padding: const EdgeInsets.all(14),
+                            padding: AppLayout.compactCardPadding,
                             backgroundColor: theme.colorScheme.destructive
                                 .withValues(alpha: .10),
                             border: ShadBorder.none,
-                            leading: Icon(
-                              LucideIcons.circleAlert,
-                              color: theme.colorScheme.destructive,
-                              size: 19,
-                            ),
-                            child: Text(
-                              state.errorMessage!,
-                              style: theme.textTheme.small,
+                            child: AppLeadingRow(
+                              leadingWidth: AppLayout.noticeIconSlot,
+                              gap: AppSpacing.sm,
+                              leading: Icon(
+                                LucideIcons.circleAlert,
+                                color: theme.colorScheme.destructive,
+                                size: 20,
+                              ),
+                              child: Text(
+                                state.errorMessage!,
+                                style: theme.textTheme.small,
+                              ),
                             ),
                           ),
                         ],
@@ -189,7 +225,7 @@ class _LessonPlayerPage extends ConsumerWidget {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+                  padding: AppLayout.lessonActionPadding,
                   decoration: BoxDecoration(
                     color: theme.colorScheme.background,
                     border: Border(
@@ -199,7 +235,7 @@ class _LessonPlayerPage extends ConsumerWidget {
                   child: ShadButton(
                     key: const Key('lesson-primary-action'),
                     width: double.infinity,
-                    height: 50,
+                    height: AppLayout.controlHeight,
                     enabled: primaryEnabled,
                     onPressed: primaryEnabled
                         ? () async => presentation.onPrimary!()
