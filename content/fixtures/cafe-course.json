@@ -80,6 +80,14 @@
           "text": "Coffee completes your first order."
         },
         {
+          "id": "cafe-01-write-kafei",
+          "type": "hanzi_trace",
+          "title": "Write 咖啡",
+          "dimension": "hanzi",
+          "itemId": "noun-kafei",
+          "text": "Trace the characters, then write them once from memory."
+        },
+        {
           "id": "cafe-01-listen",
           "type": "listen_choice",
           "title": "Which phrase did you hear?",

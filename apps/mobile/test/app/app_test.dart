@@ -26,22 +26,46 @@ void main() {
 
     expect(find.byKey(const Key('lesson-overview-page')), findsOneWidget);
     expect(find.text('Order at the counter'), findsOneWidget);
-    expect(find.text('1 / 7'), findsOneWidget);
+    expect(find.text('1 / 8'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('lesson-primary-action')));
     await tester.pumpAndSettle();
     expect(find.text('Say what you want'), findsOneWidget);
-    expect(find.text('2 / 7'), findsOneWidget);
+    expect(find.text('2 / 8'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('lesson-primary-action')));
     await tester.pumpAndSettle();
     expect(find.text('Name the drink'), findsOneWidget);
-    expect(find.text('3 / 7'), findsOneWidget);
+    expect(find.text('3 / 8'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('lesson-primary-action')));
     await tester.pumpAndSettle();
+    expect(find.text('Write 咖啡'), findsOneWidget);
+    expect(find.text('4 / 8'), findsOneWidget);
+
+    await _drawOnWritingCanvas(tester);
+    await tester.ensureVisible(
+      find.byKey(const Key('hanzi-writing-start-recall')),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('hanzi-writing-start-recall')));
+    await tester.pumpAndSettle();
+    await _drawOnWritingCanvas(tester);
+    await tester.ensureVisible(find.byKey(const Key('hanzi-writing-compare')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('hanzi-writing-compare')));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(
+      find.byKey(const Key('hanzi-writing-looks-close')),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('hanzi-writing-looks-close')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('lesson-primary-action')));
+    await tester.pumpAndSettle();
+
     expect(find.text('Which phrase did you hear?'), findsOneWidget);
-    expect(find.text('4 / 7'), findsOneWidget);
+    expect(find.text('5 / 8'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('listen-option-phrase-wo-yao')));
     await tester.pumpAndSettle();
@@ -66,7 +90,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Make the tones land'), findsOneWidget);
-    expect(find.text('5 / 7'), findsOneWidget);
+    expect(find.text('6 / 8'), findsOneWidget);
     _expectCenteredIn(
       tester,
       child: find.byKey(const Key('hanzi-pinyin-line')),
@@ -90,7 +114,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Take your turn'), findsOneWidget);
-    expect(find.text('6 / 7'), findsOneWidget);
+    expect(find.text('7 / 8'), findsOneWidget);
     _expectCenteredIn(
       tester,
       child: find.descendant(
@@ -103,7 +127,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Coffee ordered!'), findsOneWidget);
-    expect(find.text('7 / 7'), findsOneWidget);
+    expect(find.text('8 / 8'), findsOneWidget);
     _expectLeadingContentAligned(
       tester,
       card: find.byKey(const Key('summary-star-understanding-card')),
@@ -143,7 +167,7 @@ void main() {
     expect(progress.status, 'completed');
     expect(progress.score, 80);
     expect(mastery, hasLength(12));
-    expect(attempts, hasLength(3));
+    expect(attempts, hasLength(4));
     final listeningAttempts = attempts
         .where((attempt) => attempt.dimension == 'listening')
         .toList();
@@ -152,8 +176,13 @@ void main() {
       listeningAttempts.map((attempt) => attempt.usedHint),
       containsAll([false, true]),
     );
+    final writingAttempt = attempts.singleWhere(
+      (attempt) => attempt.dimension == 'hanzi',
+    );
+    expect(writingAttempt.correct, isTrue);
+    expect(writingAttempt.usedHint, isFalse);
     expect(speaking, hasLength(1));
-    expect(outbox, hasLength(5));
+    expect(outbox, hasLength(6));
   });
 
   testWidgets('keeps a shared content grid across wide viewports', (
@@ -199,6 +228,18 @@ void main() {
       await database.close();
     }
   });
+}
+
+Future<void> _drawOnWritingCanvas(WidgetTester tester) async {
+  final canvas = find.byKey(const Key('hanzi-writing-canvas'));
+  await tester.ensureVisible(canvas);
+  await tester.pumpAndSettle();
+  final rect = tester.getRect(canvas);
+  await tester.dragFrom(
+    Offset(rect.left + rect.width * .2, rect.top + rect.height * .2),
+    Offset(rect.width * .2, rect.height * .45),
+  );
+  await tester.pump();
 }
 
 void _expectLeadingContentAligned(

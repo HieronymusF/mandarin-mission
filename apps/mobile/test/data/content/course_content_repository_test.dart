@@ -16,7 +16,7 @@ void main() {
       expect(package.status, 'draft');
       expect(package.version, '0.1.0');
       expect(package.lessonsById.keys, ['cafe-01']);
-      expect(package.lesson('cafe-01').steps, hasLength(7));
+      expect(package.lesson('cafe-01').steps, hasLength(8));
       expect(
         package.knowledgeItem('sentence-wo-yao-yi-bei-kafei').hanzi,
         '我要一杯咖啡。',

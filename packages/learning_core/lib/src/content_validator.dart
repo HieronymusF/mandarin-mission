@@ -275,6 +275,24 @@ final class ContentValidator {
         }
 
         final itemId = step['itemId'];
+        if (step['type'] == 'hanzi_trace') {
+          if (itemId == null) {
+            issues.add(
+              ContentValidationIssue(
+                '$stepPath.itemId',
+                'hanzi_trace requires itemId',
+              ),
+            );
+          }
+          if (step['dimension'] != 'hanzi') {
+            issues.add(
+              ContentValidationIssue(
+                '$stepPath.dimension',
+                'hanzi_trace requires hanzi dimension',
+              ),
+            );
+          }
+        }
         if (itemId != null && !itemIds.contains(itemId)) {
           issues.add(
             ContentValidationIssue('$stepPath.itemId', 'unknown item $itemId'),
