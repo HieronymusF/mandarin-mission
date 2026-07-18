@@ -4,6 +4,23 @@ import 'package:learning_core/learning_core.dart';
 import '../local/app_database.dart';
 import '../progress/lesson_progress_repository.dart';
 
+abstract interface class ReviewQueueDataSource {
+  Future<List<ReviewQueueItem>> dueItems({
+    required DateTime now,
+    int limit = 10,
+  });
+
+  Future<void> submitAttempt({
+    required ReviewQueueItem item,
+    required String contentVersion,
+    required ReviewRating rating,
+    required bool correct,
+    required bool usedHint,
+    required int latencyMs,
+    required DateTime answeredAt,
+  });
+}
+
 final class ReviewQueueItem {
   const ReviewQueueItem({
     required this.itemId,
@@ -22,14 +39,27 @@ final class ReviewQueueItem {
   final DateTime dueAt;
   final ReviewRating? lastResult;
   final int sameDayRetryCount;
+
+  ReviewQueueItem copyWith({int? sameDayRetryCount}) {
+    return ReviewQueueItem(
+      itemId: itemId,
+      dimension: dimension,
+      box: box,
+      confidence: confidence,
+      dueAt: dueAt,
+      lastResult: lastResult,
+      sameDayRetryCount: sameDayRetryCount ?? this.sameDayRetryCount,
+    );
+  }
 }
 
-final class ReviewQueueRepository {
+final class ReviewQueueRepository implements ReviewQueueDataSource {
   const ReviewQueueRepository(this._database, this._progressRepository);
 
   final AppDatabase _database;
   final LessonProgressRepository _progressRepository;
 
+  @override
   Future<List<ReviewQueueItem>> dueItems({
     required DateTime now,
     int limit = 10,
@@ -46,6 +76,7 @@ final class ReviewQueueRepository {
     return List.unmodifiable(items.take(limit));
   }
 
+  @override
   Future<void> submitAttempt({
     required ReviewQueueItem item,
     required String contentVersion,

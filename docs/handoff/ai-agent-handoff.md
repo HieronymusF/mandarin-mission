@@ -234,48 +234,35 @@ M1 “点咖啡”端到端垂直切片：未完成。
 
 M1 剩余放行条件：
 
-1. 到期复习 UI 与 Journey 入口；
-2. 真人课程音频；
-3. 本地录音、回放与明确权限流程；
-4. 音频/语音服务不可用时不阻断课程；
-5. 缺失步骤类型和正式资产；
-6. 真实 Android 设备完成课程 → 杀进程 → 进度保留 → 正确时间出现复习；
-7. 飞行模式完成已下载课程。
+1. 真人课程音频；
+2. 本地录音、回放与明确权限流程；
+3. 音频/语音服务不可用时不阻断课程；
+4. 缺失步骤类型和正式资产；
+5. 真实 Android 设备完成课程 → 杀进程 → 进度保留 → 正确时间出现复习；
+6. 飞行模式完成已下载课程。
 
 不要因为代码容易写而提前扩展地图、社交、付费或 AI 对话。
 
-## 10. 当前最高优先级：到期复习 UI
+## 10. 当前最高优先级：音频与录音基础能力
 
-这是一个 M 级、纯本地功能，不需要后端。
+到期复习 UI 已完成。下一模块继续以本地优先为边界，不让课程或复习因媒体服务不可用而阻断。
 
-必须交付：
+复习模块现状：
 
-- 建立 `docs/requirements/review-ui.md`；
-- Journey 显示真实到期复习入口；
-- 新增 `/review` 路由和 presentation；
-- 覆盖 `meaning/listening/tone/hanzi` 四维题型；
-- 用户可以选择忘记/模糊/记得；
-- 覆盖加载、无到期项、保存中、保存失败、重试和音频不可用；
-- 复习中断或失败不丢已保存结果；
-- 补 ViewModel/Controller、Widget 和端到端测试；
-- 保存关键状态截图并在 Android 验证。
+- 需求契约：`docs/requirements/review-ui.md`；
+- Journey 已显示真实到期摘要，并将超过 8 项的内容标为额外巩固；
+- `/review` 与 presentation 已覆盖 `meaning/listening/tone/hanzi` 四维题型；
+- 忘记/模糊/记得、同轮补救、空/错误/重试和音频不可用均有明确状态；
+- 每项结果立即写入 `ReviewAttempts`、`MasteryStates` 和 Outbox；
+- Flutter 27 项测试、debug APK 构建和 Android 模拟设备 8 项完整会话已通过。
 
-已经就绪：
+下一模块必须交付：
 
-- 算法：`packages/learning_core/lib/src/review_scheduler.dart`；
-- 队列：`apps/mobile/lib/data/review/review_queue_repository.dart`；
-- Provider：`apps/mobile/lib/features/review/application/review_providers.dart`；
-- Drift：`MasteryStates` / `ReviewAttempts`；
-- UI：主题、布局令牌、共享 leading row 和课程播放器状态模式。
-
-产品约束：
-
-- 单次复习控制在 3—5 分钟；
-- 到期过多拆成“今日必做 + 额外巩固”；
-- 忘记项在本次尾部补救，同日同项最多两次；
-- meaning/listening 使用客观选择 + 记忆自评；
-- tone/hanzi 一期可翻卡自评；
-- 首次课程不能授予记忆星，至少跨学习日成功回忆一次。
+- 真人课程音频播放；
+- 本地录音、回放、重试和明确权限流程；
+- 录音时长与基础音量检查；
+- 音频/录音不可用时保留可完成的降级路径；
+- 在真实 Android 设备验证媒体权限、来电/切后台中断和恢复。
 
 ## 11. 可并行的 Agent 工作与冲突边界
 
@@ -303,7 +290,6 @@ M1 剩余放行条件：
 
 ### P0
 
-- 到期复习没有 presentation 和路由；
 - 音频/录音仍是占位或降级路径，未实现真实媒体能力。
 
 ### P1

@@ -12,4 +12,12 @@ void main() {
       const Duration(days: 1),
     );
   });
+
+  test('splits must-do and extra due review counts', () {
+    const summary = ReviewQueueSummary(dueCount: 11);
+
+    expect(summary.requiredCount, reviewSessionLimit);
+    expect(summary.extraCount, 3);
+    expect(summary.hasDueItems, isTrue);
+  });
 }

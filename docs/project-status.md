@@ -14,7 +14,7 @@
 | 课程内容工程 `content/` | ✅ 已实现 | schema + validator + 1 套 fixture，校验严谨 |
 | 移动端 `apps/mobile` 数据层 | ✅ 已实现 | Drift 6 表约束扎实，Repository 全事务化 |
 | 移动端 UI/课程播放器 | ✅ 基线已实现 | shadcn 主题、Journey 和数据驱动 7 步走通；步骤组件与提交逻辑已分层 |
-| 移动端复习功能 | ⚠️ 仅数据层 | 算法+队列就绪，**UI 完全没开始** |
+| 移动端复习功能 | ✅ 本地闭环已实现 | Journey 真实入口、四维题型、自评、补救和失败重试均已接入本地队列 |
 | 移动端音频/录音 | ❌ 仅占位 | 按钮全弹 SnackBar，无真实音频 |
 | Go 后端 `services/api` | ❌ 仅骨架 | 只有 healthz/readyz/meta，无 DB/认证/业务 |
 | CI | ✅ 已实现 | 三 job 覆盖 mobile/learning-core/api，有生成文件门禁 |
@@ -89,11 +89,12 @@
 
 `journey_page.dart` 已迁移代码优先 UI，但仍是静态单地点外壳，`cafe-01` 和今日任务未接入真实进度/连胜/解锁。在出现这些动态状态时再引入 ViewModel，当前不为了形式提前建立空状态层。
 
-#### 3.4 复习功能 ⚠️（仅数据层）
+#### 3.4 复习功能 ✅（本地闭环）
 
-- `features/review/application/review_providers.dart`（15 行）— 只有 2 个 Provider。
-- **没有 presentation 层、没有 review_page、没有 `/review` 路由**。
-- 这是 `AGENTS.md` 第 1 节"当前下一小模块"，是当前最高优先级缺口。
+- `features/review/application/review_providers.dart` 提供到期摘要、8 项必做会话上限、异步加载、逐项保存和保存失败重试状态。
+- `features/review/presentation/` 与 `/review` 路由覆盖 `meaning/listening/tone/hanzi` 四维题型、忘记/模糊/记得反馈、同轮补救、空队列和完成态。
+- Journey 直接查询真实到期队列，并把超出必做上限的项目显示为额外巩固。
+- 当前内容包无真人音频；listening 明确显示书面降级并记录 `usedHint`，不伪装为音频已完成。
 
 #### 3.5 测试覆盖
 
@@ -102,7 +103,7 @@
 | `app_test.dart`（端到端跑完整节课、校验落库与提示透传） | ⭐ 优秀 |
 | `learning_core_test.dart` | ⭐ 扎实 |
 | Repository 各测试 | ✅ 良好 |
-| `review_provider_test.dart`（15 行） | ⚠️ 过弱，只验接线 |
+| `review_provider_test.dart` + `review_flow_test.dart` | ⭐ 扎实；真实内存 DB 覆盖四维写入、Outbox、失败重试、补救、空/错误态与响应式布局 |
 | `LessonPlayerController` 状态机 | ❌ 零单元测试 |
 | 各 step presentation 组件 | ⚠️ 只有端到端覆盖，缺独立状态测试 |
 
@@ -156,11 +157,11 @@
 | 5 | Journey 外壳 | ✅ | shadcn 视觉基线完成；动态进度待后续接线 |
 | 6 | 数据驱动课程步骤 | ⚠️ 部分 | MVVM 泄漏已修；仍只实现 6/9 step 类型 |
 | 7 | 持久化练习和掌握度 | ✅ | `lesson_progress_repository.dart` + 集成测试 |
-| 8 | 复习分箱算法 | ⚠️ 核心 done | `review_scheduler.dart` + 数据层；**UI 未开始** |
+| 8 | 复习分箱算法与本地 UI | ✅ | `review_scheduler.dart`、队列、Journey 入口和四维会话闭环 |
 | 9 | 音频/录音/回放/降级 | ❌ 仅占位 | 全是 SnackBar |
-| 10 | 点咖啡端到端 | ⚠️ 部分 | 播放器走通，缺音频/语音/复习闭环 |
+| 10 | 点咖啡端到端 | ⚠️ 部分 | 播放器与本地复习走通，缺真人音频/录音和完整设备持久化验收 |
 
-**里程碑判定**：自动集成测试已完成课程和持久化，但真实设备上的音频/录音与到期复习 UI 尚未完成，M1 **未达成**。
+**里程碑判定**：自动集成测试已完成课程、持久化和本地到期复习；Android 模拟设备已走完 8 项真实队列。真人音频/录音与完整“课程 → 杀进程 → 到期复习”设备验收仍未完成，M1 **未达成**。
 
 ---
 
@@ -179,8 +180,7 @@
 ## 五、需要改进的（按优先级）
 
 ### P0 — 阻塞里程碑
-1. **复习 UI 完全没开始**（当前下一小模块）。数据层和算法已就绪，缺 presentation + `/review` 路由。
-2. **音频/录音是纯占位**——不解决无法达成"说得出"承诺。
+1. **音频/录音是纯占位**——不解决无法达成"说得出"承诺；也是当前下一小模块。
 
 ### P1 — 架构债（扩大规模前必须纠正）
 3. **纯规则散落在非 domain 层**——`_confidenceFor`、`_compareQueueItems`、`score` 应迁移到 `learning_core` 并补单元测试。

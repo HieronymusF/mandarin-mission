@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/theme/app_layout.dart';
+import '../../core/theme/app_layout.dart';
 
 class HanziPinyinText extends StatelessWidget {
   const HanziPinyinText({
