@@ -8,8 +8,11 @@
 2. 本文档：组件选择、页面结构和使用边界。
 3. Flutter 组件实现：[shadcn_ui](https://pub.dev/packages/shadcn_ui)。
 4. 视觉原则与组件目录：[shadcn/ui](https://ui.shadcn.com/docs)。
+5. 扩展模式与素材发现目录：[awesome-shadcn-ui](https://github.com/birobirobiro/awesome-shadcn-ui)。
 
 `ui.shadcn.com` 的官方代码面向 React，不能直接放入 Flutter App。项目实际依赖 Flutter 移植版 `shadcn_ui: 0.55.0`，版本固定在 `apps/mobile/pubspec.yaml` 和 lockfile 中；官方站点用于选择组件、命名状态和理解组合方式。
+
+`awesome-shadcn-ui` 是收录组件、Registry、主题、动画、模板和跨框架移植的导航目录，不是可整体安装到 App 的 Flutter 素材包。优先查看其中的 `Libs and Components`、`Registries`、`Colors and Customizations`、`Animations`、`Design System` 和 `Ports`；Web/SaaS 模板只在当前移动端需求确实匹配时参考。目录仓库自身的 MIT 许可证不覆盖其外链项目，采用候选前必须打开原始来源单独核验许可证。
 
 Figma 不再是开始前端开发的必经门槛。品牌插画、商店素材、全新复杂交互或需要多人评审的高风险视觉方向，才按任务需要使用 Figma 或静态视觉稿。
 
@@ -101,10 +104,23 @@ Material 继续负责 `Scaffold`、`SafeArea`、滚动、布局、`MaterialApp.r
 
 ## 7. 新增组件流程
 
-1. 在 shadcn 官方组件目录和 Flutter 移植版中搜索现有组件。
-2. 能通过现有原语组合完成时，直接组合。
-3. 同一组合在两个功能中重复后，再放入 `lib/shared`。
-4. 只有组件缺失且确有产品需要时才新增依赖；记录许可证、包体积影响、维护状态和回滚方式。
-5. UI PR 附关键状态截图和测试结果，不再要求 Figma 节点链接。
+1. 在 shadcn 官方组件目录和当前 Flutter 移植版中搜索现有组件。
+2. 官方组件没有合适组合时，再从 `awesome-shadcn-ui` 搜索候选模式；先判断它是视觉参考、代码参考还是需要分发的真实资产。
+3. 对候选原始来源记录 URL、许可证、核验日期、维护状态和 Flutter 映射方式。聚合目录的许可证不能代替原始来源许可证。
+4. 能通过现有原语组合完成时，使用 `shadcn_ui`、Lucide、`AppLayout` 和语义主题重新实现；不复制 React/Tailwind/Radix/Framer Motion 代码。
+5. 同一组合在两个功能中重复后，再放入 `lib/shared`。
+6. 只有组件缺失且确有产品需要时才新增依赖；不得混入 Forui 等第二套完整 Flutter UI 框架。新增依赖要记录包体积影响、维护状态和回滚方式。
+7. UI PR 附采用来源、组件映射、关键状态截图、测试结果和已知差异，不再要求 Figma 节点链接。
+
+第三方 UI 来源记录至少包含：
+
+| 字段 | 说明 |
+|---|---|
+| 原始来源 | 具体组件或资产页面，不只填 `awesome-shadcn-ui` 目录 |
+| 用途 | 视觉参考、交互参考、代码参考或正式分发资产 |
+| 许可证 | 原项目许可证与必要署名；无法确认时不得进入正式 App |
+| Flutter 映射 | 使用的 `shadcn_ui` 原语、Lucide 图标、项目组合组件或原生动画 |
+| 核验日期 | 防止维护状态和许可信息长期失真 |
+| 已知差异 | Web 到移动端的交互、响应式、无障碍和性能差异 |
 
 `shadcn_ui` 仍是 `0.x` 版本。升级时只允许单独 PR：阅读 changelog，更新锁文件，运行移动端全量测试和 APK 构建，并对 Journey、课程步骤和复习页做截图回归；不得把版本升级混入业务功能。

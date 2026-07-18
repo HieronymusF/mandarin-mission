@@ -10,7 +10,7 @@
 - 核心承诺：用户每天用约 10 分钟，在真实场景中做到“看得懂、听得出、说得出”。
 - 开发者情况：一人独立开发。所有方案必须优先控制开发量、内容量、服务成本和长期维护成本。
 - 开发协作分工：前端采用代码优先流程，任何能修改 Flutter 代码的 AI 代理都可直接使用仓库内主题和 shadcn 组件完成 UI；不再按是否具有 Figma 插件能力分工。Figma、静态视觉稿或代码实验只用于品牌素材、复杂交互和高风险视觉方向，不是开始编码的通用门槛。
-- 当前阶段：一期工程基础已建立；包含纯 Dart 学习核心、课程 Schema/Fixture、Go API 容器、Flutter Android/iOS App 外壳、Drift v1 本地 schema、安装包内课程 Repository、由内容数据驱动的七步“点咖啡”课程播放器、课程练习与四维掌握度持久化、按到期时间和薄弱维度生成的本地复习队列数据层，以及基于 `shadcn_ui` 的代码优先 UI 基线。
+- 当前阶段：一期工程基础已建立；包含纯 Dart 学习核心、课程 Schema/Fixture、Go API 容器、Flutter Android/iOS App 外壳、Drift v1 本地 schema、安装包内课程 Repository、由内容数据驱动的七步“点咖啡”课程播放器、课程练习与四维掌握度持久化、按到期时间和薄弱维度生成的本地复习队列数据层，以及基于 `shadcn_ui`、共享布局令牌和稳定对齐规则的代码优先 UI 基线。
 - 当前下一里程碑：完成“点咖啡”一节课的 Android 端到端垂直切片。
 - 当前下一小模块：直接按 `docs/design-system.md` 实现本地到期复习 UI，覆盖复习入口、四维题型、忘记/模糊/记得反馈、空/错误/音频不可用状态。
 
@@ -22,10 +22,11 @@
 2. 运行 `git log -5 --oneline`，确认最近完成的工作。
 3. 阅读本文件。
 4. 阅读 `README.md`。
-5. 阅读 `docs/开发方案.md` 中与当前任务相关的章节。
-6. 产品范围或教学机制相关任务，还要阅读 `new-chat/outputs/英语使用者学中文App一期方案.md`。
-7. 使用 `rg --files` 确认当前实际目录；不要根据本文假定尚未创建的文件已经存在。
-8. 如果任务涉及第三方 SDK、商店规范、价格或云服务能力，使用官方文档核验当前状态，不依赖旧版本记忆。
+5. 新对话或接手未完成工作时，阅读 `docs/handoff/ai-agent-handoff.md` 和 `docs/project-status.md`。
+6. 阅读 `docs/开发方案.md` 中与当前任务相关的章节。
+7. 产品范围或教学机制相关任务，还要阅读 `new-chat/outputs/英语使用者学中文App一期方案.md`。
+8. 使用 `rg --files` 确认当前实际目录；不要根据本文假定尚未创建的文件已经存在。
+9. 如果任务涉及第三方 SDK、商店规范、价格或云服务能力，使用官方文档核验当前状态，不依赖旧版本记忆。
 
 如果文档与现有代码不一致，先用测试、提交历史和实际运行结果判断当前事实，再修正文档；不要静默猜测。
 
@@ -38,8 +39,9 @@
 
 ### 前端任务的代码优先流程
 
-- UI 单一基线是 `docs/design-system.md` 和 `apps/mobile/lib/core/theme/app_theme.dart`。
-- 视觉原则与组件目录参考 [shadcn/ui](https://ui.shadcn.com/docs)；Flutter 实现使用固定版本的 `shadcn_ui`，不要把 React 组件代码放进 App。
+- UI 单一基线是 `docs/design-system.md`、`apps/mobile/lib/core/theme/app_theme.dart` 和 `apps/mobile/lib/core/theme/app_layout.dart`。
+- 视觉原则和基础组件先参考 [shadcn/ui](https://ui.shadcn.com/docs)；需要更多组合模式时，可从 [awesome-shadcn-ui](https://github.com/birobirobiro/awesome-shadcn-ui) 发现候选。该仓库是资源目录，不是 Flutter 依赖；实际实现继续使用固定版本的 `shadcn_ui`，不要把 React/Tailwind 代码放进 App。
+- 从 `awesome-shadcn-ui` 采用任何外部组件、图标、插画或代码前，必须单独核验来源项目的许可证、维护状态和移动端适用性；目录仓库的 MIT 许可证不替代被收录项目的许可证。
 - 标准按钮、卡片、徽章、进度、表单和反馈直接组合代码，不先画 Figma。
 - 新增页面必须覆盖适用的正常、加载、空、错误、不可用和提交中状态，并保存关键状态截图用于评审。
 - View 只渲染和转发意图；异步提交、判分、Repository 调用与错误处理放在 Controller/ViewModel。

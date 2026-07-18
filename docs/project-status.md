@@ -2,7 +2,7 @@
 
 > 本文档是对**已落地代码**的盘点和质量审视，作为后续开发的对照基线。以代码和测试为唯一事实来源，不轻信文档描述。证据格式为 `文件:行号`。
 > 维护原则：发现代码与本文档不符时，以代码为准并更新本文档（参考 `AGENTS.md` 第 2 节）。
-> 最近核对基线：`feat/code-first-ui` 工作树（2026-07-18）；合并后以对应提交替换。
+> 最近核对基线：`feat/code-first-ui`，UI 对齐验证提交 `293e9dd`（2026-07-18）；合并后以主分支对应提交替换。
 
 ---
 
@@ -69,12 +69,14 @@
 
 #### 3.2 代码优先 UI 与课程播放器 ✅（基线完成）
 
-- `core/theme/app_theme.dart` 定义 shadcn/Material 共用的语义色、圆角和反馈状态；`app/app.dart` 通过 `ShadApp.custom` 保留 Material/go_router 兼容。
+- `core/theme/app_theme.dart` 定义 shadcn/Material 共用的语义色、圆角和反馈状态；`core/theme/app_layout.dart` 定义统一 spacing、最大内容宽度、卡片 padding、图标槽和控件高度；`app/app.dart` 通过 `ShadApp.custom` 保留 Material/go_router 兼容。
 - Journey 与课程播放器已经使用 `ShadButton`、`ShadCard`、`ShadBadge`、`ShadProgress` 和 Lucide 图标。
+- 全宽卡片不再使用会分配不稳定空白的 `ShadCard.leading/trailing`，图标与正文统一通过 `AppLeadingRow`/`AppIconTile` 显式布局；汉字拼音行按父容器居中。
 - `features/lesson/presentation/steps/` 按 scene/teach/listen/repeat/dialogue/summary 拆分，不再把全部 Widget 塞进一个 1100 行文件。
 - `LessonPlayerController` 负责听力尝试、口语自评、课程完成、提交中和保存失败；View 只组合展示和转发意图。
 - `LessonPlayerState.copyWith` 代替每个动作手工重建全部字段。
 - `usedListeningHint` 正确透传到 Repository，`app_test.dart` 增加回归断言。
+- Widget 回归覆盖 Journey 共用内容网格及 `768/1024/1280/1440` 逻辑像素宽度；Android 模拟器已复核 Journey、听力反馈、口语重复、降级自评、对话和总结页面。
 
 **剩余审视点**：
 
@@ -133,10 +135,11 @@
 
 ### 6. 文档
 
-- `docs/开发方案.md`（628 行，24 节）— 长期参考价值高，但与代码差距扩大（如第 13.1 节 cloud tables 完全未实现）。
+- `docs/开发方案.md` — 长期参考价值高，但与代码差距扩大（如第 13.1 节 cloud tables 完全未实现）。
 - `docs/decisions/0001-managed-container-backend.md` — **质量最高的文档**，真实成本估算 + 护栏。
 - `docs/development-workflow.md` — 代码优先、按 S/M/L 分级的六阶段开发流程。
 - `docs/design-system.md` — shadcn 语义令牌、组件白名单、页面状态与升级规则。
+- `docs/handoff/ai-agent-handoff.md` — 当前环境、架构、里程碑、协作边界和新 agent 开工入口。
 - `docs/decisions/0002-code-first-shadcn-ui.md` — UI 流程和依赖决策。
 - `docs/content-authoring.md` — 内容制作指南。
 

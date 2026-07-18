@@ -13,7 +13,7 @@
 ## 决策
 
 1. 前端改为代码优先：需求和状态明确后，直接从组件库组合 Flutter 页面。
-2. 视觉原则与组件目录参考官方 [shadcn/ui](https://ui.shadcn.com/docs)。
+2. 视觉原则与基础组件参考官方 [shadcn/ui](https://ui.shadcn.com/docs)；需要更多组合、主题和交互模式时，以 [awesome-shadcn-ui](https://github.com/birobirobiro/awesome-shadcn-ui) 作为二级发现目录。
 3. 实际运行依赖固定为 MIT 许可的 `shadcn_ui: 0.55.0`，通过 `ShadApp.custom` 与现有 Material、Riverpod 和 go_router 共存。
 4. 项目主题令牌、组件白名单和页面状态写入 `docs/design-system.md`，可执行值放在 `app_theme.dart`。
 5. Figma 改为按需工具，不再作为前端开始编码、提交 PR 或交付的强制门槛。
@@ -34,12 +34,14 @@
 - 引入额外传递依赖和包体积；
 - 没有逐页原型时，必须依靠严格令牌、组件白名单和截图回归避免视觉漂移；
 - React 官方组件与 Flutter 移植版并非一一对应，缺失组件需要组合或本地实现。
+- `awesome-shadcn-ui` 是聚合目录，其 MIT 许可证不覆盖被收录项目；错误继承目录许可证会带来素材或代码授权风险。
 
 缓解措施：
 
 - 固定精确版本，升级单独成 PR；
 - Material 只作为平台外壳和兼容层，业务 UI 优先使用已确认的 shadcn 原语；
 - 不为缺失组件立即引入第二套 UI 库；
+- 从扩展目录采用候选前回到原始来源核验许可证、维护状态和移动端适用性，并记录 Flutter 映射；
 - 关键页面保留 Widget/集成测试，并逐步增加 Golden 与真实设备截图。
 
 ## 备选方案

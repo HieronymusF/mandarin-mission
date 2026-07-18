@@ -52,6 +52,7 @@
 
 - 组件和主题基线见 [代码优先 UI 系统](docs/design-system.md)。
 - 标准 UI 直接从 shadcn 组件组合 Flutter 页面，不再强制先画 Figma 原型。
+- [shadcn/ui](https://ui.shadcn.com/docs) 是基础组件与语义来源；[awesome-shadcn-ui](https://github.com/birobirobiro/awesome-shadcn-ui) 作为扩展模式和素材的发现目录。外部候选必须单独核验许可证，并用现有 Flutter `shadcn_ui`、Lucide 和项目令牌重新实现，不能直接复制 React/Tailwind 代码或混入第二套 UI 框架。
 - Figma、静态视觉稿或代码实验只用于品牌素材、复杂交互或高风险方向比较。
 - UI PR 附关键状态截图、测试结果和已知限制；完整流程见 [功能开发流程](docs/development-workflow.md)。
 
@@ -80,6 +81,7 @@
 - [功能开发流程](docs/development-workflow.md)
 - [代码优先 UI 系统](docs/design-system.md)
 - [项目现状与代码审视](docs/project-status.md)
+- [AI agents 项目交接](docs/handoff/ai-agent-handoff.md)
 - [自研托管容器后端 ADR](docs/decisions/0001-managed-container-backend.md)
 - [代码优先 shadcn UI ADR](docs/decisions/0002-code-first-shadcn-ui.md)
 - [课程内容制作指南](docs/content-authoring.md)
@@ -100,6 +102,7 @@
 │  ├─ 开发方案.md
 │  ├─ development-workflow.md
 │  ├─ design-system.md
+│  ├─ handoff/                         # AI agents 当前交接入口
 │  ├─ decisions/                       # 架构决策记录
 │  └─ content-authoring.md
 ├─ packages/
