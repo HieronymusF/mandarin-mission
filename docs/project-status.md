@@ -13,7 +13,7 @@
 | 纯 Dart 核心 `packages/learning_core` | ✅ 已实现 | 项目最扎实的部分，纯函数 + 完整测试 |
 | 课程内容工程 `content/` | ✅ 已实现 | schema + validator + 1 套 fixture，校验严谨 |
 | 移动端 `apps/mobile` 数据层 | ✅ 已实现 | Drift 6 表约束扎实，Repository 全事务化 |
-| 移动端 UI/课程播放器 | ✅ 基线已实现 | shadcn 主题、Journey 和数据驱动 7 步走通；步骤组件与提交逻辑已分层 |
+| 移动端 UI/课程播放器 | ✅ 基线已实现 | shadcn 主题、Journey 和数据驱动 8 步走通；含简单汉字书写，步骤组件与提交逻辑已分层 |
 | 移动端复习功能 | ✅ 本地闭环已实现 | Journey 真实入口、四维题型、自评、补救和失败重试均已接入本地队列 |
 | 移动端音频/录音 | ❌ 仅占位 | 按钮全弹 SnackBar，无真实音频 |
 | Go 后端 `services/api` | ❌ 仅骨架 | 只有 healthz/readyz/meta，无 DB/认证/业务 |
@@ -41,12 +41,12 @@
 
 ### 2. 内容工程 `content/` ✅
 
-- `schema/course-package.schema.json` — JSON Schema Draft 2020-12，`additionalProperties:false` 全开，定义 9 种 step 类型。
-- `fixtures/cafe-course.json` — 1 location / 3 知识点 / 1 lesson（7 步）/ 1 dialogue / 4 assets。所有 asset `status:"planned"`（无 path/sha256，是合法 draft，不能 release）。
+- `schema/course-package.schema.json` — JSON Schema Draft 2020-12，`additionalProperties:false` 全开，定义 10 种 step 类型。
+- `fixtures/cafe-course.json` — 1 location / 3 知识点 / 1 lesson（8 步）/ 1 dialogue / 4 assets。所有 asset `status:"planned"`（无 path/sha256，是合法 draft，不能 release）。
 - `lib/mandarin_mission_content.dart` — 5 行，暴露 asset 路径常量。
 
 **审视点**：
-- **schema 定义 9 种 step 类型，但播放器只实现 6 种**（scene_intro/teach_card/listen_choice/repeat/dialogue_turn/summary）。`image_choice / tone_contrast / order_tokens` 未实现，落入 `lesson_overview_page.dart:339-345` 的 default 分支显示 "Unsupported lesson step"。文档未说明这个缺口。
+- **schema 定义 10 种 step 类型，播放器实现 7 种**（scene_intro/teach_card/hanzi_trace/listen_choice/repeat/dialogue_turn/summary）。`image_choice / tone_contrast / order_tokens` 未实现，仍会落入默认的 Unsupported 分支。
 
 ---
 
@@ -72,16 +72,16 @@
 - `core/theme/app_theme.dart` 定义 shadcn/Material 共用的语义色、圆角和反馈状态；`core/theme/app_layout.dart` 定义统一 spacing、最大内容宽度、卡片 padding、图标槽和控件高度；`app/app.dart` 通过 `ShadApp.custom` 保留 Material/go_router 兼容。
 - Journey 与课程播放器已经使用 `ShadButton`、`ShadCard`、`ShadBadge`、`ShadProgress` 和 Lucide 图标。
 - 全宽卡片不再使用会分配不稳定空白的 `ShadCard.leading/trailing`，图标与正文统一通过 `AppLeadingRow`/`AppIconTile` 显式布局；汉字拼音行按父容器居中。
-- `features/lesson/presentation/steps/` 按 scene/teach/listen/repeat/dialogue/summary 拆分，不再把全部 Widget 塞进一个 1100 行文件。
-- `LessonPlayerController` 负责听力尝试、口语自评、课程完成、提交中和保存失败；View 只组合展示和转发意图。
+- `features/lesson/presentation/steps/` 按 scene/teach/hanzi writing/listen/repeat/dialogue/summary 拆分，不再把全部 Widget 塞进一个 1100 行文件。
+- `LessonPlayerController` 负责听力尝试、汉字书写自评、口语自评、课程完成、提交中和保存失败；View 只组合展示和转发意图。
 - `LessonPlayerState.copyWith` 代替每个动作手工重建全部字段。
 - `usedListeningHint` 正确透传到 Repository，`app_test.dart` 增加回归断言。
-- Widget 回归覆盖 Journey 共用内容网格及 `768/1024/1280/1440` 逻辑像素宽度；Android 模拟器已复核 Journey、听力反馈、口语重复、降级自评、对话和总结页面。
+- Widget 回归覆盖 Journey 共用内容网格及 `768/1024/1280/1440` 逻辑像素宽度；Android 模拟器已复核 Journey、汉字临摹/默写/对照自评、听力反馈、口语重复、降级自评、对话和总结页面。
 
 **剩余审视点**：
 
 - `LessonPlayerState.score` 仍缺独立单元测试；
-- schema 定义 9 种步骤，播放器仍只实现 6 种；
+- schema 定义 10 种步骤，播放器仍只实现 7 种；
 - 课程通用文案尚未接入 i18n，但内容标题与教学数据继续来自 Fixture；
 - `shadcn_ui` 为 `0.x` 依赖，必须按 ADR 0002 单独升级并做截图回归。
 
@@ -104,8 +104,8 @@
 | `learning_core_test.dart` | ⭐ 扎实 |
 | Repository 各测试 | ✅ 良好 |
 | `review_provider_test.dart` + `review_flow_test.dart` | ⭐ 扎实；真实内存 DB 覆盖四维写入、Outbox、失败重试、补救、空/错误态与响应式布局 |
-| `LessonPlayerController` 状态机 | ❌ 零单元测试 |
-| 各 step presentation 组件 | ⚠️ 只有端到端覆盖，缺独立状态测试 |
+| `LessonPlayerController` 状态机 | ⚠️ 仅覆盖汉字书写保存失败，其余动作缺独立单元测试 |
+| 各 step presentation 组件 | ⚠️ 汉字书写有独立状态/无障碍/200% 字号测试，其余多依赖端到端覆盖 |
 
 #### 3.6 音频/录音 ❌
 
@@ -155,7 +155,7 @@
 | 3 | Schema + Fixture + validator | ✅ | `content/schema`、`content_validator.dart` |
 | 4 | Drift 表 + migration 测试 | ⚠️ 部分 | 6 表完整；migration 测试只验 v1 自洽，无真实迁移 |
 | 5 | Journey 外壳 | ✅ | shadcn 视觉基线完成；动态进度待后续接线 |
-| 6 | 数据驱动课程步骤 | ⚠️ 部分 | MVVM 泄漏已修；仍只实现 6/9 step 类型 |
+| 6 | 数据驱动课程步骤 | ⚠️ 部分 | MVVM 泄漏已修；已实现 7/10 step 类型，含 `hanzi_trace` |
 | 7 | 持久化练习和掌握度 | ✅ | `lesson_progress_repository.dart` + 集成测试 |
 | 8 | 复习分箱算法与本地 UI | ✅ | `review_scheduler.dart`、队列、Journey 入口和四维会话闭环 |
 | 9 | 音频/录音/回放/降级 | ❌ 仅占位 | 全是 SnackBar |
@@ -188,9 +188,9 @@
 
 ### P2 — 一致性与健壮性
 5. **schema 与 validator 不一致**——补 sha256 校验，或在 schema 去掉。
-6. **schema 定义 9 种 step 但只实现 6 种**——按点咖啡切片补 `image_choice/tone_contrast/order_tokens`。
+6. **schema 定义 10 种 step 但只实现 7 种**——按点咖啡切片补 `image_choice/tone_contrast/order_tokens`。
 7. **Go handler `panic`**，`/readyz` 仍缺测试。
-8. **测试盲点**：`LessonPlayerController` 状态机、各 step 独立状态和 Golden 回归仍不足。
+8. **测试盲点**：除汉字书写外，`LessonPlayerController` 状态机、各 step 独立状态和 Golden 回归仍不足。
 
 ---
 
@@ -200,7 +200,7 @@
 |---|---|
 | `AGENTS.md` 第 12 节：纯规则放 `lib/domain` | `lib/domain` 目录不存在，规则散在 data/presentation |
 | `course-package.schema.json`：ready 资产必须有 sha256 | validator 只检查 path，不检查 sha256 |
-| schema 定义 9 种 step 类型 | 播放器只实现 6 种 |
+| schema 定义 10 种 step 类型 | 播放器只实现 7 种 |
 | `docs/开发方案.md` 第 13.1 节：cloud tables | `services/api` 无 DB |
 
 这些偏差不一定是 bug——有些是"计划 vs 现状"的正常差距。但应在此文档或 ADR 里明确标注，避免后续 agent 误判。

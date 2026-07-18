@@ -1,7 +1,7 @@
 # Mandarin Mission：AI Agents 项目交接
 
 > 本文件适用于 Codex、Claude Code 和其他能修改仓库的 AI agents。
-> 最近核验：2026-07-18，分支 `feat/code-first-ui`，已验证 UI 提交 `293e9dd`，草稿 PR [#9](https://github.com/HieronymusF/mandarin-mission/pull/9)。
+> 最近核验：2026-07-18，分支 `feat/hanzi-writing`，基于本地到期复习分支 `feat/local-review-ui`；已验证书写实现提交 `8789860`。
 
 ## 1. 接手顺序
 
@@ -33,10 +33,10 @@ Mandarin Mission 是面向英语使用者的零基础简体普通话学习 App�
 ## 3. 当前 Git 状态
 
 - 仓库：`https://github.com/HieronymusF/mandarin-mission`
-- 当前功能分支：`feat/code-first-ui`
-- 草稿 PR：`https://github.com/HieronymusF/mandarin-mission/pull/9`
-- 最近已验证实现提交：`293e9dd fix(ui): unify page alignment and spacing`
-- 该提交的 GitHub Actions：`mobile`、`learning-core`、`api` 全部通过；
+- 当前功能分支：`feat/hanzi-writing`
+- 上游草稿 PR：`https://github.com/HieronymusF/mandarin-mission/pull/10`（`feat/local-review-ui` → `main`）
+- 最近已验证实现提交：`8789860 feat(lesson): add Hanzi writing practice`
+- 本地验证：Flutter format/analyze/31 tests/debug APK、learning_core format/analyze/19 tests/content validate 全部通过；
 - 当前分支不要直接合并到 `main`，除非用户明确要求；
 - 新工作应按模块独立提交；不要 amend 他人提交，不强制推送。
 
@@ -168,8 +168,8 @@ docs/                              流程、设计系统、ADR、项目状态和
 
 ### 课程播放器
 
-- Journey 到七步“点咖啡”流程可以完整跑通；
-- scene、teach、listen、repeat、dialogue、summary 已拆成独立步骤组件；
+- Journey 到八步“点咖啡”流程可以完整跑通；
+- scene、teach、hanzi writing、listen、repeat、dialogue、summary 已拆成独立步骤组件；
 - `LessonPlayerController` 管理提交中、保存失败、重试和完成；
 - 听力提示 `usedListeningHint` 已正确写入持久化；
 - 语音服务不可用时已有本地自评降级路径。
@@ -183,7 +183,7 @@ docs/                              流程、设计系统、ADR、项目状态和
 - 全宽卡片不使用会导致漂移的 `ShadCard.leading/trailing`；
 - 汉字拼音组按父容器居中；
 - Widget 测试覆盖 `768/1024/1280/1440` 逻辑像素宽度；
-- Android 模拟器已复核 Journey、听力反馈、口语重复、语音降级、对话和总结页。
+- Android 模拟器已复核 Journey、汉字临摹/默写/对照自评、听力反馈、口语重复、语音降级、对话和总结页。
 
 ### 后端与 CI
 
@@ -254,7 +254,8 @@ M1 剩余放行条件：
 - `/review` 与 presentation 已覆盖 `meaning/listening/tone/hanzi` 四维题型；
 - 忘记/模糊/记得、同轮补救、空/错误/重试和音频不可用均有明确状态；
 - 每项结果立即写入 `ReviewAttempts`、`MasteryStates` 和 Outbox；
-- Flutter 27 项测试、debug APK 构建和 Android 模拟设备 8 项完整会话已通过。
+- Flutter 31 项测试、debug APK 构建和 Android 模拟设备 8 项完整复习会话已通过。
+- 汉字书写需求位于 `docs/requirements/hanzi-writing.md`；“咖啡”已覆盖临摹、脱稿书写、对照自评、无障碍跳过和 `hanzi` 维度本地保存。
 
 下一模块必须交付：
 
@@ -296,12 +297,12 @@ M1 剩余放行条件：
 
 - `_confidenceFor`、复习队列排序和部分 score 规则仍散落在 Repository/presentation，应迁移到纯 Dart 并补测试；
 - Journey 动态进度、连胜和解锁尚未接真实状态；
-- schema 定义 9 种步骤，播放器只实现其中 6 种。
+- schema 定义 10 种步骤，播放器只实现其中 7 种。
 
 ### P2
 
 - validator 与 schema 的 ready 资产 `sha256` 规则需要统一；
-- `LessonPlayerController` 状态机缺独立单元测试；
+- `LessonPlayerController` 仅有汉字书写保存失败状态测试，其他动作仍缺独立单元测试；
 - 通用文案尚未进入 i18n；
 - Go API 只有骨架，`/readyz` 尚未连接真实依赖；
 - `shadcn_ui` 为 `0.x`，升级必须单独 PR 并做截图回归。
