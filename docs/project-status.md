@@ -2,7 +2,7 @@
 
 > 本文档是对**已落地代码**的盘点和质量审视，作为后续开发的对照基线。以代码和测试为唯一事实来源，不轻信文档描述。证据格式为 `文件:行号`。
 > 维护原则：发现代码与本文档不符时，以代码为准并更新本文档（参考 `AGENTS.md` 第 2 节）。
-> 最近核对提交：`0eddd31`（2026-07-17）。
+> 最近核对基线：`feat/code-first-ui` 工作树（2026-07-18）；合并后以对应提交替换。
 
 ---
 
@@ -13,12 +13,12 @@
 | 纯 Dart 核心 `packages/learning_core` | ✅ 已实现 | 项目最扎实的部分，纯函数 + 完整测试 |
 | 课程内容工程 `content/` | ✅ 已实现 | schema + validator + 1 套 fixture，校验严谨 |
 | 移动端 `apps/mobile` 数据层 | ✅ 已实现 | Drift 6 表约束扎实，Repository 全事务化 |
-| 移动端课程播放器 | ⚠️ 已实现（有架构债） | 数据驱动 7 步走通，但业务逻辑泄漏到 Widget |
+| 移动端 UI/课程播放器 | ✅ 基线已实现 | shadcn 主题、Journey 和数据驱动 7 步走通；步骤组件与提交逻辑已分层 |
 | 移动端复习功能 | ⚠️ 仅数据层 | 算法+队列就绪，**UI 完全没开始** |
 | 移动端音频/录音 | ❌ 仅占位 | 按钮全弹 SnackBar，无真实音频 |
 | Go 后端 `services/api` | ❌ 仅骨架 | 只有 healthz/readyz/meta，无 DB/认证/业务 |
 | CI | ✅ 已实现 | 三 job 覆盖 mobile/learning-core/api，有生成文件门禁 |
-| 文档 | ✅ 较全 | 开发方案 + ADR + 流程文档齐全 |
+| 文档 | ✅ 较全 | 开发方案 + 代码优先 UI 系统 + ADR + 分级流程齐全 |
 
 ---
 
@@ -67,29 +67,25 @@
   - `_compareQueueItems`（`review_queue_repository.dart:84-109`）— 复杂排序规则，同样只间接覆盖。
   - 应迁移到 `learning_core` 并补单元测试。
 
-#### 3.2 课程播放器 ⚠️（功能完成，架构债重）
+#### 3.2 代码优先 UI 与课程播放器 ✅（基线完成）
 
-**`features/lesson/application/lesson_providers.dart`**（148 行）— 有 `LessonPlayerController`（Notifier）+ `LessonPlayerState`。
+- `core/theme/app_theme.dart` 定义 shadcn/Material 共用的语义色、圆角和反馈状态；`app/app.dart` 通过 `ShadApp.custom` 保留 Material/go_router 兼容。
+- Journey 与课程播放器已经使用 `ShadButton`、`ShadCard`、`ShadBadge`、`ShadProgress` 和 Lucide 图标。
+- `features/lesson/presentation/steps/` 按 scene/teach/listen/repeat/dialogue/summary 拆分，不再把全部 Widget 塞进一个 1100 行文件。
+- `LessonPlayerController` 负责听力尝试、口语自评、课程完成、提交中和保存失败；View 只组合展示和转发意图。
+- `LessonPlayerState.copyWith` 代替每个动作手工重建全部字段。
+- `usedListeningHint` 正确透传到 Repository，`app_test.dart` 增加回归断言。
 
-**`features/lesson/presentation/lesson_overview_page.dart`（1103 行）** — 数据驱动 7 步播放器走通，端到端集成测试 `app_test.dart` 验证落库。
+**剩余审视点**：
 
-**审视点（这是最大的架构债）**：
-1. **单一文件 1103 行塞了 14 个 Widget 类**（`LessonOverviewPage`、`_SceneIntro`、`_TeachCard`、`_ListenChoice`、`_AnswerCard`、`_RepeatStep`、`_SpeakingFallback`、`_DialogueStep`、`_SummaryStep` 等）。应按 step 类型拆成独立文件 + 工厂。
-2. **业务逻辑泄漏到 Widget 按钮回调**，违反 `AGENTS.md` 第 6 节 MVVM 不变量：
-   - `lesson_overview_page.dart:235-265` — listen_choice 的对错分支**直接在 `onPrimary` 里调用** `progressRepository.recordExerciseAttempt`，硬编码 rating、latency 计算。
-   - `lesson_overview_page.dart:283-301` — repeat 的 self-check 直接调 `recordSpeakingAttempt`。
-   - `lesson_overview_page.dart:326-338` — summary 的 `completeLesson` 写在按钮里。
-   - 这些应移到 Controller。
-3. **`LessonPlayerController` 每个方法手动重建整个 state**（`lesson_providers.dart:82-143`），不用 copyWith/freezed，易漏字段。
-4. **`LessonPlayerState.score` 打分逻辑（`lesson_providers.dart:72-75`）零单元测试**。
-5. **UI 文案全是字面量**（`lesson_overview_page.dart:659` 等），没走 i18n，也没从 fixture 读——违反内容工程规则。
-6. 三处音频占位 SnackBar 文案重复（`:549,608,826`）。
+- `LessonPlayerState.score` 仍缺独立单元测试；
+- schema 定义 9 种步骤，播放器仍只实现 6 种；
+- 课程通用文案尚未接入 i18n，但内容标题与教学数据继续来自 Fixture；
+- `shadcn_ui` 为 `0.x` 依赖，必须按 ADR 0002 单独升级并做截图回归。
 
-**潜在 bug**：`recordExerciseAttempt` 答错时硬编码 `usedHint: false`（`lesson_overview_page.dart:262`），但 state 里 `usedListeningHint` 可能为 true——**会影响 confidence 计算**。
+#### 3.3 Journey 页 ⚠️（视觉基线完成，数据接线待做）
 
-#### 3.3 Journey 页 ⚠️
-
-`features/journey/presentation/journey_page.dart`（161 行）是**纯 StatelessWidget，无 ViewModel/Riverpod**。`'cafe-01'` 硬编码（`:151`），所有文案字面量。**无法接入进度、连胜、解锁**。应改为 ConsumerWidget + ViewModel。
+`journey_page.dart` 已迁移代码优先 UI，但仍是静态单地点外壳，`cafe-01` 和今日任务未接入真实进度/连胜/解锁。在出现这些动态状态时再引入 ViewModel，当前不为了形式提前建立空状态层。
 
 #### 3.4 复习功能 ⚠️（仅数据层）
 
@@ -101,12 +97,12 @@
 
 | 测试 | 质量 |
 |---|---|
-| `app_test.dart`（98 行，端到端跑完整节课校验落库） | ⭐ 优秀 |
+| `app_test.dart`（端到端跑完整节课、校验落库与提示透传） | ⭐ 优秀 |
 | `learning_core_test.dart` | ⭐ 扎实 |
 | Repository 各测试 | ✅ 良好 |
 | `review_provider_test.dart`（15 行） | ⚠️ 过弱，只验接线 |
 | `LessonPlayerController` 状态机 | ❌ 零单元测试 |
-| `_presentationFor` 各 step 分支 | ❌ 无独立 widget 测试 |
+| 各 step presentation 组件 | ⚠️ 只有端到端覆盖，缺独立状态测试 |
 
 #### 3.6 音频/录音 ❌
 
@@ -139,7 +135,9 @@
 
 - `docs/开发方案.md`（628 行，24 节）— 长期参考价值高，但与代码差距扩大（如第 13.1 节 cloud tables 完全未实现）。
 - `docs/decisions/0001-managed-container-backend.md` — **质量最高的文档**，真实成本估算 + 护栏。
-- `docs/development-workflow.md` — 七阶段开发流程（本次新增）。
+- `docs/development-workflow.md` — 代码优先、按 S/M/L 分级的六阶段开发流程。
+- `docs/design-system.md` — shadcn 语义令牌、组件白名单、页面状态与升级规则。
+- `docs/decisions/0002-code-first-shadcn-ui.md` — UI 流程和依赖决策。
 - `docs/content-authoring.md` — 内容制作指南。
 
 ---
@@ -152,14 +150,14 @@
 | 2 | CI | ✅ | `core-ci.yml` 三 job |
 | 3 | Schema + Fixture + validator | ✅ | `content/schema`、`content_validator.dart` |
 | 4 | Drift 表 + migration 测试 | ⚠️ 部分 | 6 表完整；migration 测试只验 v1 自洽，无真实迁移 |
-| 5 | Journey 外壳 | ✅ | `journey_page.dart`（但纯静态无 ViewModel） |
-| 6 | 数据驱动课程步骤 | ⚠️ 有泄漏 | `lesson_overview_page.dart`，只实现 6/9 step 类型 |
+| 5 | Journey 外壳 | ✅ | shadcn 视觉基线完成；动态进度待后续接线 |
+| 6 | 数据驱动课程步骤 | ⚠️ 部分 | MVVM 泄漏已修；仍只实现 6/9 step 类型 |
 | 7 | 持久化练习和掌握度 | ✅ | `lesson_progress_repository.dart` + 集成测试 |
 | 8 | 复习分箱算法 | ⚠️ 核心 done | `review_scheduler.dart` + 数据层；**UI 未开始** |
 | 9 | 音频/录音/回放/降级 | ❌ 仅占位 | 全是 SnackBar |
 | 10 | 点咖啡端到端 | ⚠️ 部分 | 播放器走通，缺音频/语音/复习闭环 |
 
-**里程碑判定**（`AGENTS.md` 第 14 节末段）：真实设备完成课程 ✅、重启保留进度 ✅、**正确时间出现复习 ❌**（无 UI）→ 里程碑**未达成**。
+**里程碑判定**：自动集成测试已完成课程和持久化，但真实设备上的音频/录音与到期复习 UI 尚未完成，M1 **未达成**。
 
 ---
 
@@ -171,6 +169,7 @@
 4. **content_validator 对话可达性、ID 全局唯一、pinyin/汉字对齐**——比同类项目严谨。
 5. **CI 把"生成文件必须提交"作为门禁**——防止生成代码漂移。
 6. **ADR 0001 是真实可执行的成本决策**，不是模板填空。
+7. **UI 已形成可执行单一来源**——主题令牌在代码中，组件边界与升级规则在设计系统和 ADR 中。
 
 ---
 
@@ -181,16 +180,14 @@
 2. **音频/录音是纯占位**——不解决无法达成"说得出"承诺。
 
 ### P1 — 架构债（扩大规模前必须纠正）
-3. **`lesson_overview_page.dart` 1103 行 + 业务逻辑泄漏到 Widget**——拆成 step 工厂 + 独立 widget，把 attempt 记录移到 Controller。违反自定 MVVM 不变量（`AGENTS.md` 第 6 节）。
-4. **纯规则散落在非 domain 层**——`_confidenceFor`、`_compareQueueItems`、`score` 应迁移到 `learning_core` 并补单元测试（`AGENTS.md` 第 12 节要求 `lib/domain`，但该目录不存在）。
-5. **`journey_page.dart` 无 ViewModel**——无法接入进度/解锁。
+3. **纯规则散落在非 domain 层**——`_confidenceFor`、`_compareQueueItems`、`score` 应迁移到 `learning_core` 并补单元测试。
+4. **Journey 动态状态未接线**——接入进度、解锁和每日任务时建立 ViewModel，不预建空层。
 
 ### P2 — 一致性与健壮性
-6. **schema 与 validator 不一致**——补 sha256 校验，或在 schema 去掉。
-7. **schema 定义 9 种 step 但只实现 6 种**——文档需说明 `image_choice/tone_contrast/order_tokens` 的实现计划。
-8. **Go handler `panic`**、**fire-and-forget Future 吞异常**、**State 手动重建易漏字段**。
-9. **潜在 bug**：`recordExerciseAttempt` 答错时 `usedHint` 硬编码 false（`lesson_overview_page.dart:262`）。
-10. **测试盲点**：`LessonPlayerController` 状态机、`_presentationFor` 各分支、`/readyz` 无测试。
+5. **schema 与 validator 不一致**——补 sha256 校验，或在 schema 去掉。
+6. **schema 定义 9 种 step 但只实现 6 种**——按点咖啡切片补 `image_choice/tone_contrast/order_tokens`。
+7. **Go handler `panic`**，`/readyz` 仍缺测试。
+8. **测试盲点**：`LessonPlayerController` 状态机、各 step 独立状态和 Golden 回归仍不足。
 
 ---
 
