@@ -1,6 +1,6 @@
 # Mandarin Mission Mobile
 
-Flutter Android/iOS 客户端。当前模块提供 Riverpod 依赖容器、go_router 路由、统一主题、Journey、Drift v1 本地数据库、安装包内课程 Repository、数据驱动的七步“点咖啡”课程播放器，以及课程进度与四维掌握状态持久化。
+Flutter Android/iOS 客户端。当前模块提供 Riverpod 依赖容器、go_router 路由、`shadcn_ui` 代码优先主题、Journey、Drift v1 本地数据库、安装包内课程 Repository、数据驱动的七步“点咖啡”课程播放器，以及课程进度与四维掌握状态持久化。
 
 ## 开发
 
@@ -15,6 +15,7 @@ flutter run
 ```
 
 - Flutter：3.44.6 stable；Dart：3.12.2。
+- UI：`shadcn_ui` 0.55.0（精确锁定）+ Lucide 图标；规范见 `../../docs/design-system.md`。
 - Android/iOS 标识：`com.hieronymusf.mandarinmission`。
 - 学习规则通过 `../../packages/learning_core` 路径依赖接入。
 - Android 构建需要 JDK 17、Android API 36、Build Tools 36.0.0 和 NDK 28.2.13676358。
@@ -62,9 +63,9 @@ Repository 当前只读取随 App 发布的 Draft Fixture。后续增量内容�
 ## 目录边界
 
 - `lib/app`：App 启动与路由；
-- `lib/core`：主题等通用基础能力；
+- `lib/core`：shadcn/Material 互操作主题等通用基础能力；
 - `lib/data`：Drift 数据库、远端服务和 Repository 实现；
 - `lib/features/<feature>`：按功能组织的页面和应用逻辑；
 - `test`：Widget 与依赖边界测试。
 
-“点咖啡”课程播放器按 Fixture 中的步骤顺序渲染场景、教学卡、听力选择、口语降级、对话和完成页。逐字拼音来自 `pinyinSyllables`，标点作为独立布局单元，不参与汉字—拼音中心线计算。下一阶段先在 Figma 确认复习入口和四维答题流程，再实现到期复习 UI。
+“点咖啡”课程播放器按 Fixture 中的步骤顺序渲染场景、教学卡、听力选择、口语降级、对话和完成页；每种步骤在 `lib/features/lesson/presentation/steps/` 独立维护。逐字拼音来自 `pinyinSyllables`，标点作为独立布局单元，不参与汉字—拼音中心线计算。异步持久化、提交状态和错误处理位于 `LessonPlayerController`，Widget 只渲染与转发意图。下一阶段直接按设计系统实现到期复习 UI。

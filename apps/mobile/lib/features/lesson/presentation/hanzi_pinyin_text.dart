@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/theme/app_layout.dart';
+
 class HanziPinyinText extends StatelessWidget {
   const HanziPinyinText({
     required this.hanzi,
@@ -44,7 +46,7 @@ class HanziPinyinText extends StatelessWidget {
       final pinyin = pinyinSyllables[syllableIndex++];
       cells.add(
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xxs),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -79,14 +81,24 @@ class HanziPinyinText extends StatelessWidget {
       throw FlutterError('Unused pinyin syllables for $hanzi.');
     }
 
-    return Semantics(
+    final line = Semantics(
       label: '$hanzi, ${pinyinSyllables.join(' ')}',
       excludeSemantics: true,
       child: Row(
+        key: const Key('hanzi-pinyin-line'),
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: cells,
       ),
+    );
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (!constraints.hasBoundedWidth) {
+          return line;
+        }
+        return Align(alignment: Alignment.topCenter, child: line);
+      },
     );
   }
 

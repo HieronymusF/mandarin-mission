@@ -2,7 +2,7 @@
 
 一款面向英语使用者的零基础中文学习 App：用城市地图串联真实生活任务，通过视觉记忆、分维度复习和受控口语练习，帮助用户每天用约 10 分钟学会当天能使用的中文。
 
-> 当前状态：一期工程基础已启动。仓库包含竞品调研、产品与开发方案、纯 Dart 学习核心、课程 Schema、首个“点咖啡”Draft Fixture、Go API 容器、可运行的 Flutter Android/iOS App、Drift v1 本地数据库、安装包内课程 Repository、数据驱动的七步课程播放器，以及练习结果、四维掌握度、课程进度与同步 Outbox 的本地持久化。
+> 当前状态：一期工程基础已启动。仓库包含竞品调研、产品与开发方案、纯 Dart 学习核心、课程 Schema、首个“点咖啡”Draft Fixture、Go API 容器、可运行的 Flutter Android/iOS App、Drift v1 本地数据库、安装包内课程 Repository、数据驱动的七步课程播放器、练习结果与四维掌握度持久化，以及基于 `shadcn_ui` 的代码优先 UI 基线。
 
 ## 产品定位
 
@@ -38,6 +38,7 @@
 ## 技术方向
 
 - 客户端：Flutter，先 Android 后 iOS。
+- UI：代码优先，使用 `shadcn_ui`、语义主题令牌和 Lucide 图标；Material 保留为平台外壳。
 - 架构：按功能拆分的 MVVM；UI、状态、仓储和外部服务分层。
 - 本地数据：SQLite/Drift，本地优先保存课程、进度、复习队列和待同步事件。
 - 业务后端：单个自研 Go 服务部署到 Google Cloud Run，空闲缩到 0；不使用自管虚拟机或 Kubernetes。
@@ -49,9 +50,11 @@
 
 ## 设计与前端开发流程
 
-- 统一 Figma 文件：[Learn Chinese](https://www.figma.com/design/Nr644jmfVZIxlNL3KiJaMk/Learn-Chinese?node-id=0-1&t=KvAwsP1PlR813pns-1)。
-- 所有用户可见的前端页面、主要组件和交互流程，先在 `Page 1` 完成原型并取得确认，再进入 Flutter 开发。
-- 每个前端模块的草稿 PR 需要附上对应的节点级 Figma 链接，并记录实现与原型的差异。
+- 组件和主题基线见 [代码优先 UI 系统](docs/design-system.md)。
+- 标准 UI 直接从 shadcn 组件组合 Flutter 页面，不再强制先画 Figma 原型。
+- [shadcn/ui](https://ui.shadcn.com/docs) 是基础组件与语义来源；[awesome-shadcn-ui](https://github.com/birobirobiro/awesome-shadcn-ui) 作为扩展模式和素材的发现目录。外部候选必须单独核验许可证，并用现有 Flutter `shadcn_ui`、Lucide 和项目令牌重新实现，不能直接复制 React/Tailwind 代码或混入第二套 UI 框架。
+- Figma、静态视觉稿或代码实验只用于品牌素材、复杂交互或高风险方向比较。
+- UI PR 附关键状态截图、测试结果和已知限制；完整流程见 [功能开发流程](docs/development-workflow.md)。
 
 ## 已实现的开发基础
 
@@ -62,6 +65,8 @@
 - “点咖啡”第一课 Draft 内容包；
 - 可部署的 Go API、健康/就绪/版本接口和多阶段 Dockerfile；
 - Riverpod + go_router App 外壳、Journey 到点咖啡课程概览的最小导航；
+- `shadcn_ui` 语义主题、Journey 和七步课程播放器的代码优先 UI；
+- 课程步骤按独立组件拆分，持久化和错误处理收敛到 Controller；
 - Flutter Widget 测试和 `learning_core` 路径依赖接入；
 - Drift v1 本地表、schema snapshot、数据库约束和迁移验证测试；
 - 从安装包加载、校验并按稳定 ID 查询版本化课程内容的 Repository；
@@ -73,7 +78,12 @@
 
 - [跨电脑开发记忆准则](AGENTS.md)
 - [开发方案](docs/开发方案.md)
+- [功能开发流程](docs/development-workflow.md)
+- [代码优先 UI 系统](docs/design-system.md)
+- [项目现状与代码审视](docs/project-status.md)
+- [AI agents 项目交接](docs/handoff/ai-agent-handoff.md)
 - [自研托管容器后端 ADR](docs/decisions/0001-managed-container-backend.md)
+- [代码优先 shadcn UI ADR](docs/decisions/0002-code-first-shadcn-ui.md)
 - [课程内容制作指南](docs/content-authoring.md)
 - [独立开发者一期产品方案](new-chat/outputs/英语使用者学中文App一期方案.md)
 - [竞品机制摘要](new-chat/work/中英语言学习竞品-资料/summary/00-产品机制摘要.md)
@@ -90,6 +100,9 @@
 ├─ content/                           # 课程 Schema 与开发 Fixture
 ├─ docs/
 │  ├─ 开发方案.md
+│  ├─ development-workflow.md
+│  ├─ design-system.md
+│  ├─ handoff/                         # AI agents 当前交接入口
 │  ├─ decisions/                       # 架构决策记录
 │  └─ content-authoring.md
 ├─ packages/
@@ -153,10 +166,11 @@ go run ./cmd/api
 - [x] 建立 Flutter 移动端工程并接入学习核心。
 - [x] 建立 Drift 本地表与 migration 测试。
 - [x] 建立课程内容 Repository/加载层。
-- [x] 在 Figma 中确认并实现数据驱动的课程步骤。
+- [x] 实现数据驱动的课程步骤。
 - [x] 持久化课程练习结果和四维掌握状态。
 - [x] 建立本地到期复习队列数据层并接入 v1 分箱调度。
-- [ ] 在 Figma 确认并实现本地到期复习 UI。
+- [x] 建立代码优先的 shadcn UI 基线并迁移现有页面。
+- [ ] 实现本地到期复习 UI。
 - [ ] 完成“点咖啡”端到端垂直切片。
 - [ ] 扩展到 3 个地点、12 节课并开展封闭测试。
 - [ ] 根据激活、D1/D7 留存和 7 日回忆率决定是否扩展公开 MVP。
