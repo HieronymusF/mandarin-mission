@@ -19,6 +19,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Your Mandarin journey'), findsOneWidget);
+    await tester.ensureVisible(find.byKey(const Key('open-cafe-lesson')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('open-cafe-lesson')));
     await tester.pumpAndSettle();
 
@@ -92,6 +94,14 @@ void main() {
     expect(progress.score, 80);
     expect(mastery, hasLength(12));
     expect(attempts, hasLength(3));
+    final listeningAttempts = attempts
+        .where((attempt) => attempt.dimension == 'listening')
+        .toList();
+    expect(listeningAttempts, hasLength(2));
+    expect(
+      listeningAttempts.map((attempt) => attempt.usedHint),
+      containsAll([false, true]),
+    );
     expect(speaking, hasLength(1));
     expect(outbox, hasLength(5));
   });

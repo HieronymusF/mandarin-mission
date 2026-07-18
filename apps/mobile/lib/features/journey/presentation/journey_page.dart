@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 class JourneyPage extends StatelessWidget {
   const JourneyPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    final theme = ShadTheme.of(context);
 
     return Scaffold(
       body: SafeArea(
@@ -14,31 +15,38 @@ class JourneyPage extends StatelessWidget {
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 640),
             child: ListView(
-              padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
               children: [
-                Text(
-                  'Your Mandarin journey',
-                  style: textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
+                Row(
+                  children: [
+                    const ShadBadge.secondary(child: Text('DAY 1')),
+                    const Spacer(),
+                    Icon(
+                      LucideIcons.flame,
+                      size: 18,
+                      color: theme.colorScheme.mutedForeground,
+                    ),
+                    const SizedBox(width: 6),
+                    Text('Start your streak', style: theme.textTheme.small),
+                  ],
                 ),
+                const SizedBox(height: 20),
+                Text('Your Mandarin journey', style: theme.textTheme.h2),
                 const SizedBox(height: 8),
                 Text(
-                  'One useful mission at a time.',
-                  style: textTheme.bodyLarge?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+                  'One useful mission at a time. Today starts at the café.',
+                  style: theme.textTheme.muted,
                 ),
-                const SizedBox(height: 28),
+                const SizedBox(height: 24),
                 const _TodayCard(),
                 const SizedBox(height: 28),
+                Text('City stops', style: theme.textTheme.h3),
+                const SizedBox(height: 6),
                 Text(
-                  'City stops',
-                  style: textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
+                  'Complete each real-world mission to unlock the next stop.',
+                  style: theme.textTheme.muted,
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 14),
                 const _CafeStopCard(),
               ],
             ),
@@ -54,35 +62,63 @@ class _TodayCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = ShadTheme.of(context);
 
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colorScheme.primaryContainer,
-        borderRadius: BorderRadius.circular(24),
+    return ShadCard(
+      width: double.infinity,
+      backgroundColor: theme.colorScheme.primary,
+      border: ShadBorder.none,
+      padding: const EdgeInsets.all(20),
+      leading: Container(
+        width: 48,
+        height: 48,
+        decoration: BoxDecoration(
+          color: theme.colorScheme.primaryForeground.withValues(alpha: .14),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Icon(
+          LucideIcons.route,
+          color: theme.colorScheme.primaryForeground,
+          size: 23,
+        ),
+      ),
+      title: Text(
+        "Today's mission",
+        style: theme.textTheme.large.copyWith(
+          color: theme.colorScheme.primaryForeground,
+        ),
+      ),
+      description: Text(
+        '1 short lesson · about 10 minutes',
+        style: theme.textTheme.small.copyWith(
+          color: theme.colorScheme.primaryForeground.withValues(alpha: .78),
+        ),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.only(top: 18),
         child: Row(
           children: [
-            CircleAvatar(
-              radius: 26,
-              backgroundColor: colorScheme.primary,
-              foregroundColor: colorScheme.onPrimary,
-              child: const Icon(Icons.route_rounded),
+            Expanded(
+              child: _TaskStatus(
+                icon: LucideIcons.bookOpen,
+                label: 'Learn',
+                foreground: theme.colorScheme.primaryForeground,
+              ),
             ),
-            const SizedBox(width: 16),
-            const Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Today's mission",
-                    style: TextStyle(fontWeight: FontWeight.w700),
-                  ),
-                  SizedBox(height: 4),
-                  Text('About 10 minutes'),
-                ],
+            const SizedBox(width: 8),
+            Expanded(
+              child: _TaskStatus(
+                icon: LucideIcons.rotateCcw,
+                label: 'Review',
+                foreground: theme.colorScheme.primaryForeground,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _TaskStatus(
+                icon: LucideIcons.mic,
+                label: 'Speak',
+                foreground: theme.colorScheme.primaryForeground,
               ),
             ),
           ],
@@ -92,66 +128,104 @@ class _TodayCard extends StatelessWidget {
   }
 }
 
+class _TaskStatus extends StatelessWidget {
+  const _TaskStatus({
+    required this.icon,
+    required this.label,
+    required this.foreground,
+  });
+
+  final IconData icon;
+  final String label;
+  final Color foreground;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 15, color: foreground),
+        const SizedBox(width: 5),
+        Flexible(
+          child: Text(
+            label,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: foreground,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class _CafeStopCard extends StatelessWidget {
   const _CafeStopCard();
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    final theme = ShadTheme.of(context);
+    return ShadCard(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      leading: Container(
+        width: 52,
+        height: 52,
+        decoration: BoxDecoration(
+          color: theme.colorScheme.accent,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Icon(
+          LucideIcons.coffee,
+          color: theme.colorScheme.accentForeground,
+          size: 25,
+        ),
+      ),
+      title: const Text('Order one coffee'),
+      description: const Text('Stop 1 · Café'),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.only(top: 20),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Row(
-              children: [
-                Container(
-                  width: 64,
-                  height: 64,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFE7C2),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Icon(Icons.local_cafe_rounded, size: 32),
-                ),
-                const SizedBox(width: 16),
-                const Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Stop 1 · Café'),
-                      SizedBox(height: 4),
-                      Text(
-                        'Order one coffee',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            const Wrap(
+            Wrap(
               spacing: 8,
               runSpacing: 8,
               children: [
-                Chip(label: Text('Meaning')),
-                Chip(label: Text('Listening')),
-                Chip(label: Text('Speaking')),
+                const ShadBadge.outline(child: Text('Meaning')),
+                const ShadBadge.outline(child: Text('Listening')),
+                const ShadBadge.outline(child: Text('Speaking')),
               ],
             ),
+            const SizedBox(height: 18),
+            Row(
+              children: [
+                Expanded(
+                  child: Text('7 short steps', style: theme.textTheme.small),
+                ),
+                Text('Ready to start', style: theme.textTheme.muted),
+              ],
+            ),
+            const SizedBox(height: 8),
+            const ShadProgress(
+              value: 0,
+              minHeight: 6,
+              semanticsLabel: 'Café lesson progress',
+              semanticsValue: 'Not started',
+            ),
             const SizedBox(height: 20),
-            FilledButton.icon(
+            ShadButton(
               key: const Key('open-cafe-lesson'),
               onPressed: () => context.goNamed(
                 'lesson',
                 pathParameters: const {'lessonId': 'cafe-01'},
               ),
-              icon: const Icon(Icons.play_arrow_rounded),
-              label: const Text('Start lesson'),
+              width: double.infinity,
+              leading: const Icon(LucideIcons.play, size: 17),
+              child: const Text('Start lesson'),
             ),
           ],
         ),
