@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mandarin_mission/features/lesson/presentation/hanzi_pinyin_text.dart';
+import 'package:mandarin_mission/shared/presentation/hanzi_pinyin_text.dart';
 
 void main() {
   testWidgets('aligns each syllable and keeps punctuation separate', (

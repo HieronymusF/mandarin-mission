@@ -4,7 +4,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../../../../core/theme/app_layout.dart';
 import '../../../../data/content/course_content_models.dart';
 import '../../../../shared/presentation/app_leading_row.dart';
-import '../hanzi_pinyin_text.dart';
+import '../../../../shared/presentation/hanzi_pinyin_text.dart';
 
 class DialogueStep extends StatelessWidget {
   const DialogueStep({

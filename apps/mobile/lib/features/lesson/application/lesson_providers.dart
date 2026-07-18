@@ -4,13 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:learning_core/learning_core.dart';
 
 import '../../../data/content/course_content_models.dart';
-import '../../../data/content/course_content_repository.dart';
+import '../../../data/content/course_content_provider.dart';
 import '../../../data/local/app_database_provider.dart';
 import '../../../data/progress/lesson_progress_repository.dart';
-
-final courseContentRepositoryProvider = Provider<CourseContentRepository>(
-  (ref) => CourseContentRepository(),
-);
 
 final lessonProgressRepositoryProvider = Provider<LessonProgressRepository>(
   (ref) => LessonProgressRepository(ref.watch(appDatabaseProvider)),

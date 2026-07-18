@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../../core/theme/app_layout.dart';
+import '../../review/application/review_providers.dart';
 import '../../../shared/presentation/app_leading_row.dart';
 
-class JourneyPage extends StatelessWidget {
+class JourneyPage extends ConsumerWidget {
   const JourneyPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = ShadTheme.of(context);
+    final reviewSummary = ref.watch(dueReviewSummaryProvider);
 
     return Scaffold(
       body: SafeArea(
@@ -26,14 +29,27 @@ class JourneyPage extends StatelessWidget {
                 Row(
                   children: [
                     const ShadBadge.secondary(child: Text('DAY 1')),
-                    const Spacer(),
-                    Icon(
-                      LucideIcons.flame,
-                      size: AppLayout.noticeIconSlot,
-                      color: theme.colorScheme.mutedForeground,
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Icon(
+                            LucideIcons.flame,
+                            size: AppLayout.noticeIconSlot,
+                            color: theme.colorScheme.mutedForeground,
+                          ),
+                          const SizedBox(width: AppSpacing.xs),
+                          Flexible(
+                            child: Text(
+                              'Start your streak',
+                              textAlign: TextAlign.end,
+                              style: theme.textTheme.small,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    const SizedBox(width: AppSpacing.xs),
-                    Text('Start your streak', style: theme.textTheme.small),
                   ],
                 ),
                 const SizedBox(height: AppSpacing.xl),
@@ -44,7 +60,11 @@ class JourneyPage extends StatelessWidget {
                   style: theme.textTheme.muted,
                 ),
                 const SizedBox(height: AppSpacing.xl),
-                const _TodayCard(),
+                _TodayCard(
+                  reviewSummary: reviewSummary,
+                  onOpenReview: () => context.goNamed('review'),
+                  onRetryReview: () => ref.invalidate(dueReviewSummaryProvider),
+                ),
                 const SizedBox(height: AppSpacing.xxl),
                 Text('City stops', style: theme.textTheme.h3),
                 const SizedBox(height: AppSpacing.xs),
@@ -64,7 +84,15 @@ class JourneyPage extends StatelessWidget {
 }
 
 class _TodayCard extends StatelessWidget {
-  const _TodayCard();
+  const _TodayCard({
+    required this.reviewSummary,
+    required this.onOpenReview,
+    required this.onRetryReview,
+  });
+
+  final AsyncValue<ReviewQueueSummary> reviewSummary;
+  final VoidCallback onOpenReview;
+  final VoidCallback onRetryReview;
 
   @override
   Widget build(BuildContext context) {
@@ -126,7 +154,12 @@ class _TodayCard extends StatelessWidget {
               Expanded(
                 child: _TaskStatus(
                   icon: LucideIcons.rotateCcw,
-                  label: 'Review',
+                  label: reviewSummary.maybeWhen(
+                    data: (summary) => summary.hasDueItems
+                        ? 'Review ${summary.requiredCount}'
+                        : 'Review done',
+                    orElse: () => 'Review',
+                  ),
                   foreground: theme.colorScheme.primaryForeground,
                 ),
               ),
@@ -140,8 +173,120 @@ class _TodayCard extends StatelessWidget {
               ),
             ],
           ),
+          const SizedBox(height: AppSpacing.lg),
+          Divider(
+            height: 1,
+            color: theme.colorScheme.primaryForeground.withValues(alpha: .24),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          reviewSummary.when(
+            loading: () => _ReviewStatus(
+              icon: LucideIcons.loaderCircle,
+              title: 'Checking your review queue…',
+              message: 'Your saved progress stays on this device.',
+              foreground: theme.colorScheme.primaryForeground,
+            ),
+            error: (error, stackTrace) => _ReviewStatus(
+              key: const Key('journey-review-error'),
+              icon: LucideIcons.circleAlert,
+              title: 'Review status unavailable',
+              message: 'Your progress is safe. Try the local check again.',
+              foreground: theme.colorScheme.primaryForeground,
+              actionLabel: 'Retry',
+              onAction: onRetryReview,
+            ),
+            data: (summary) {
+              if (!summary.hasDueItems) {
+                return _ReviewStatus(
+                  key: const Key('journey-review-empty'),
+                  icon: LucideIcons.circleCheckBig,
+                  title: 'Review is up to date',
+                  message: 'New memory anchors appear here when they are due.',
+                  foreground: theme.colorScheme.primaryForeground,
+                );
+              }
+              final extraMessage = summary.extraCount > 0
+                  ? 'Start with ${summary.requiredCount} must-do items; ${summary.extraCount} more stay optional.'
+                  : '${summary.requiredCount} memory ${summary.requiredCount == 1 ? 'anchor is' : 'anchors are'} ready.';
+              return _ReviewStatus(
+                key: const Key('journey-review-due'),
+                icon: LucideIcons.rotateCcw,
+                title:
+                    '${summary.requiredCount} due ${summary.requiredCount == 1 ? 'review' : 'reviews'}',
+                message: extraMessage,
+                foreground: theme.colorScheme.primaryForeground,
+                actionLabel: 'Start',
+                onAction: onOpenReview,
+              );
+            },
+          ),
         ],
       ),
+    );
+  }
+}
+
+class _ReviewStatus extends StatelessWidget {
+  const _ReviewStatus({
+    required this.icon,
+    required this.title,
+    required this.message,
+    required this.foreground,
+    this.actionLabel,
+    this.onAction,
+    super.key,
+  });
+
+  final IconData icon;
+  final String title;
+  final String message;
+  final Color foreground;
+  final String? actionLabel;
+  final VoidCallback? onAction;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        AppLeadingRow(
+          leadingWidth: AppLayout.noticeIconSlot,
+          gap: AppSpacing.sm,
+          leading: Icon(icon, size: 20, color: foreground),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  color: foreground,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.xxs),
+              Text(
+                message,
+                style: TextStyle(
+                  color: foreground.withValues(alpha: .78),
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (actionLabel != null && onAction != null) ...[
+          const SizedBox(height: AppSpacing.md),
+          ShadButton.secondary(
+            key: actionLabel == 'Start'
+                ? const Key('open-review')
+                : const Key('retry-review-summary'),
+            width: double.infinity,
+            height: AppLayout.controlHeight,
+            onPressed: onAction,
+            child: Text(actionLabel!),
+          ),
+        ],
+      ],
     );
   }
 }
@@ -159,22 +304,22 @@ class _TaskStatus extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Icon(icon, size: 16, color: foreground),
-        const SizedBox(width: AppSpacing.xxs),
-        Flexible(
-          child: Text(
-            label,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              color: foreground,
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-            ),
+        const SizedBox(height: AppSpacing.xxs),
+        Text(
+          label,
+          maxLines: 2,
+          textAlign: TextAlign.center,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            color: foreground,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ],
@@ -224,11 +369,12 @@ class _CafeStopCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: AppSpacing.md),
-          Row(
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            spacing: AppSpacing.md,
+            runSpacing: AppSpacing.xxs,
             children: [
-              Expanded(
-                child: Text('7 short steps', style: theme.textTheme.small),
-              ),
+              Text('7 short steps', style: theme.textTheme.small),
               Text('Ready to start', style: theme.textTheme.muted),
             ],
           ),
@@ -249,7 +395,7 @@ class _CafeStopCard extends StatelessWidget {
             width: double.infinity,
             height: AppLayout.controlHeight,
             leading: const Icon(LucideIcons.play, size: 16),
-            child: const Text('Start lesson'),
+            child: const Text('Start'),
           ),
         ],
       ),

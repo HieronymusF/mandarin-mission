@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../features/journey/presentation/journey_page.dart';
 import '../features/lesson/presentation/lesson_overview_page.dart';
+import '../features/review/presentation/review_page.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final router = GoRouter(
@@ -13,6 +14,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/lessons/:lessonId',
         builder: (context, state) =>
             LessonOverviewPage(lessonId: state.pathParameters['lessonId']!),
+      ),
+      GoRoute(
+        name: 'review',
+        path: '/review',
+        builder: (context, state) => const ReviewPage(),
       ),
     ],
   );
