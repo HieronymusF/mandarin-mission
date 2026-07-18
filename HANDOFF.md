@@ -1,14 +1,14 @@
 # Mandarin Mission 项目交接
 
-> 最后更新：2026-07-18 19:32（Asia/Hong_Kong）
+> 最后更新：2026-07-18 19:35（Asia/Hong_Kong）
 > 项目：`D:\mandarin-mission\mandarin-mission`
-> 分支/工作树：`docs/new-conversation-handoff`，基于已与 `origin/main` 同步的 `8ebcb77`
+> 分支/工作树：`docs/new-conversation-handoff`，跟踪 `origin/docs/new-conversation-handoff`
 
 本文件是本项目唯一的实时交接入口。每次新对话或新任务必须先按根目录 `AGENTS.md` 的顺序读取全局协议、本文件、`AGENT_LESSONS.md` 和 `docs/handoff/ai-agent-handoff.md`，再核验仓库与 GitHub 当前状态。`AGENT_LESSONS.md` 保存去重后的项目特定复用经验；详细且相对稳定的项目基线在 `docs/handoff/ai-agent-handoff.md`。
 
 ## 当前正在做什么
 
-- 正在准备新对话交接三件套：刷新本文件、建立反思闭环、创建并接入根目录 `AGENT_LESSONS.md`。
+- 新对话交接三件套已经准备完成：本文件已刷新，反思已归因，根目录 `AGENT_LESSONS.md` 已创建并接入启动协议。
 - 本次只修改连续性文档与启动协议，不修改产品代码；完成后下一模块仍是 M1 的真人音频播放、本地录音、回放、权限和媒体不可用降级。
 
 ## 已经完成了什么
@@ -23,17 +23,18 @@
 - PR [#12](https://github.com/HieronymusF/mandarin-mission/pull/12) 已在三项 CI 全部通过后合并，merge commit 为 `5b20cd5`。
 - `main` 最后一次交接刷新提交为 `8ebcb77`，当时本地与 `origin/main` 同步，main push CI 三项 job 全部通过。
 - 已按 `maintain-project-continuity` 建立根目录 `AGENT_LESSONS.md`，并把它接入 `AGENTS.md` 与详细交接基线的强制启动顺序。
+- 交接三件套首个提交为 `7e91ace docs: prepare cross-session handoff`；草稿 PR [#13](https://github.com/HieronymusF/mandarin-mission/pull/13) 以 `main` 为基线。
 
 ## 卡在了哪里
 
 - 无功能阻塞。
-- 当前交接文档分支尚待提交、推送并建立草稿 PR。
+- PR #13 尚待 CI 和用户确认后合并。
 - M1 仍未达成：真人音频、录音/回放、权限流程、正式资产和真实设备持久化/飞行模式验收尚未完成。
 
 ## 下一步要做什么
 
-1. 完成交接文档分支的验证、提交、推送和草稿 PR。
-2. 经用户确认后合并交接 PR，并从最新 `main` 建立音频功能分支。
+1. 新对话先按强制启动顺序核验 PR #13、CI、分支与工作树。
+2. 经用户确认后合并 PR #13，并从最新 `main` 建立音频功能分支。
 3. 按 `docs/development-workflow.md` 定义音频与录音模块的需求、状态和平台契约，再实现真人课程音频播放、本地录音、回放、权限和媒体不可用降级。
 4. 在真实 Android 设备验证媒体权限、来电/切后台中断和恢复。
 5. 完成课程 → 杀进程 → 进度保留 → 到期复习及飞行模式验收。
