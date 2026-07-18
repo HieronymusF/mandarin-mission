@@ -1,20 +1,22 @@
-# Mandarin Mission：AI Agents 项目交接
+# Mandarin Mission：AI Agents 详细项目基线
 
 > 本文件适用于 Codex、Claude Code 和其他能修改仓库的 AI agents。
-> 最近核验：2026-07-18，分支 `feat/hanzi-writing`，基于本地到期复习分支 `feat/local-review-ui`；已验证书写实现提交 `8789860`。
+> 根目录 `HANDOFF.md` 是唯一实时交接入口；本文件保存详细且相对稳定的项目基线。每次新对话仍必须读取本文件，但分支、PR、下一步和阻塞以核验后的根目录 `HANDOFF.md` 为准。
 
 ## 1. 接手顺序
 
-开始修改前依次完成：
+每次新对话、新任务、接手或上下文恢复都必须在分析、规划或修改前依次完成：
 
-1. `git status -sb`，保留用户和其他 agents 的已有改动；
-2. `git log -5 --oneline`，确认本文件之后是否已有新提交；
+1. 阅读全局 `C:\Users\Jerome\.codex\HANDOFF.md`；
+2. 进入 `D:\mandarin-mission\mandarin-mission`；
 3. 阅读根目录 `AGENTS.md`；
-4. 阅读 `README.md`、`docs/project-status.md`；
-5. UI 任务阅读 `docs/design-system.md` 和 `docs/development-workflow.md`；
-6. 产品或教学机制任务阅读 `docs/开发方案.md` 和 `new-chat/outputs/英语使用者学中文App一期方案.md`；
-7. 用 `rg --files` 检查真实目录，不根据本文臆测文件存在；
-8. 文档与代码冲突时，以测试、实际运行和最新提交为准，再修正文档。
+4. 阅读根目录 `HANDOFF.md`；
+5. 阅读本文件和 `docs/project-status.md`；
+6. 运行 `git status -sb` 和 `git log -5 --oneline --decorate`；
+7. 核验会变化的 GitHub PR、CI、分支与外部状态；
+8. 按 `AGENTS.md` 第 2 节继续读取当前任务需要的 README、需求、设计、开发方案或产品文档；
+9. 用 `rg --files` 检查真实目录，不根据文档臆测文件存在；
+10. 文档与代码冲突时，以测试、实际运行和最新提交为准，再修正文档与根目录 `HANDOFF.md`。
 
 不要把聊天记录当成项目事实来源。本文件只保存可复现、可验证的当前上下文。
 
@@ -30,17 +32,13 @@ Mandarin Mission 是面向英语使用者的零基础简体普通话学习 App�
 - 一人独立开发，控制代码量、内容量、云成本和长期维护成本；
 - 不做排行榜、好友、公会、实时 PK、抽卡、复杂商城或无限制 AI 对话。
 
-## 3. 当前 Git 状态
+## 3. Git 状态入口
 
 - 仓库：`https://github.com/HieronymusF/mandarin-mission`
-- 当前功能分支：`feat/hanzi-writing`
-- 上游草稿 PR：`https://github.com/HieronymusF/mandarin-mission/pull/10`（`feat/local-review-ui` → `main`）
-- 最近已验证实现提交：`8789860 feat(lesson): add Hanzi writing practice`
-- 本地验证：Flutter format/analyze/31 tests/debug APK、learning_core format/analyze/19 tests/content validate 全部通过；
-- 当前分支不要直接合并到 `main`，除非用户明确要求；
-- 新工作应按模块独立提交；不要 amend 他人提交，不强制推送。
-
-接手后若分支、PR 或提交已变化，以 `git status`、`git log` 和 GitHub 当前状态更新本节。
+- 当前分支、工作树、PR、CI、已验证提交、阻塞和下一步统一记录在根目录 `HANDOFF.md`。
+- 每次接手都要用 `git status`、`git log` 和 GitHub 当前状态核验，再更新根目录 `HANDOFF.md`。
+- 当前功能分支不要直接合并到 `main`，除非用户明确要求。
+- 新工作按模块独立提交；不要 amend 他人提交，不强制推送。
 
 ## 4. 当前电脑开发环境
 
@@ -337,15 +335,19 @@ M1 剩余放行条件：
 ## 15. 新 Agent 的前 20 分钟
 
 ```powershell
+Get-Content -Raw -Encoding utf8 'C:\Users\Jerome\.codex\HANDOFF.md'
 Set-Location 'D:\mandarin-mission\mandarin-mission'
+Get-Content -Raw -Encoding utf8 'AGENTS.md'
+Get-Content -Raw -Encoding utf8 'HANDOFF.md'
+Get-Content -Raw -Encoding utf8 'docs/handoff/ai-agent-handoff.md'
 git status -sb
-git log -5 --oneline
+git log -5 --oneline --decorate
 rg --files
 ```
 
 然后：
 
-1. 读 `AGENTS.md`、本文件和 `docs/project-status.md`；
+1. 读 `docs/project-status.md`，并核验根目录 `HANDOFF.md` 中会变化的 GitHub 与运行状态；
 2. 根据任务读取对应 requirements、ADR、设计系统或内容文档；
 3. 运行最接近任务的现有测试，先建立绿色基线；
 4. 明确文件所有权和不做范围；
