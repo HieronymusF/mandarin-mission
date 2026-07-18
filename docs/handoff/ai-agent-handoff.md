@@ -1,7 +1,7 @@
 # Mandarin Mission：AI Agents 详细项目基线
 
 > 本文件适用于 Codex、Claude Code 和其他能修改仓库的 AI agents。
-> 根目录 `HANDOFF.md` 是唯一实时交接入口；本文件保存详细且相对稳定的项目基线。每次新对话仍必须读取本文件，但分支、PR、下一步和阻塞以核验后的根目录 `HANDOFF.md` 为准。
+> 根目录 `HANDOFF.md` 是唯一实时交接入口，`AGENT_LESSONS.md` 保存去重后的项目特定复用经验；本文件保存详细且相对稳定的项目基线。每次新对话仍必须读取本文件，但分支、PR、下一步和阻塞以核验后的根目录 `HANDOFF.md` 为准。
 
 ## 1. 接手顺序
 
@@ -11,12 +11,13 @@
 2. 进入 `D:\mandarin-mission\mandarin-mission`；
 3. 阅读根目录 `AGENTS.md`；
 4. 阅读根目录 `HANDOFF.md`；
-5. 阅读本文件和 `docs/project-status.md`；
-6. 运行 `git status -sb` 和 `git log -5 --oneline --decorate`；
-7. 核验会变化的 GitHub PR、CI、分支与外部状态；
-8. 按 `AGENTS.md` 第 2 节继续读取当前任务需要的 README、需求、设计、开发方案或产品文档；
-9. 用 `rg --files` 检查真实目录，不根据文档臆测文件存在；
-10. 文档与代码冲突时，以测试、实际运行和最新提交为准，再修正文档与根目录 `HANDOFF.md`。
+5. 阅读根目录 `AGENT_LESSONS.md`；
+6. 阅读本文件和 `docs/project-status.md`；
+7. 运行 `git status -sb` 和 `git log -5 --oneline --decorate`；
+8. 核验会变化的 GitHub PR、CI、分支与外部状态；
+9. 按 `AGENTS.md` 第 2 节继续读取当前任务需要的 README、需求、设计、开发方案或产品文档；
+10. 用 `rg --files` 检查真实目录，不根据文档臆测文件存在；
+11. 文档与代码冲突时，以测试、实际运行和最新提交为准，再修正文档与根目录 `HANDOFF.md`。
 
 不要把聊天记录当成项目事实来源。本文件只保存可复现、可验证的当前上下文。
 
@@ -339,6 +340,7 @@ Get-Content -Raw -Encoding utf8 'C:\Users\Jerome\.codex\HANDOFF.md'
 Set-Location 'D:\mandarin-mission\mandarin-mission'
 Get-Content -Raw -Encoding utf8 'AGENTS.md'
 Get-Content -Raw -Encoding utf8 'HANDOFF.md'
+Get-Content -Raw -Encoding utf8 'AGENT_LESSONS.md'
 Get-Content -Raw -Encoding utf8 'docs/handoff/ai-agent-handoff.md'
 git status -sb
 git log -5 --oneline --decorate

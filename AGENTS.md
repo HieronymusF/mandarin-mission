@@ -21,16 +21,17 @@
 1. 阅读全局 `C:\Users\Jerome\.codex\HANDOFF.md`。
 2. 进入 `D:\mandarin-mission\mandarin-mission`，阅读根目录 `AGENTS.md`。
 3. 阅读根目录 `HANDOFF.md`；它是本项目唯一的实时交接状态。
-4. 阅读 `docs/handoff/ai-agent-handoff.md` 和 `docs/project-status.md`，获得详细项目基线。
-5. 运行 `git status -sb`，保护用户已有改动。
-6. 运行 `git log -5 --oneline --decorate`，确认最近完成的工作。
-7. 核验交接中会变化的 GitHub PR、CI、分支或其他外部状态；不得把旧记录直接当作当前事实。
-8. 阅读 `README.md`。
-9. 阅读 `docs/开发方案.md` 中与当前任务相关的章节。
-10. UI 任务还要阅读 `docs/design-system.md` 和 `docs/development-workflow.md`。
-11. 产品范围或教学机制相关任务，还要阅读 `new-chat/outputs/英语使用者学中文App一期方案.md`。
-12. 使用 `rg --files` 确认当前实际目录；不要根据文档假定尚未创建的文件已经存在。
-13. 如果任务涉及第三方 SDK、商店规范、价格或云服务能力，使用官方文档核验当前状态，不依赖旧版本记忆。
+4. 阅读根目录 `AGENT_LESSONS.md`；它只保存去重后的项目特定复用经验。
+5. 阅读 `docs/handoff/ai-agent-handoff.md` 和 `docs/project-status.md`，获得详细项目基线。
+6. 运行 `git status -sb`，保护用户已有改动。
+7. 运行 `git log -5 --oneline --decorate`，确认最近完成的工作。
+8. 核验交接中会变化的 GitHub PR、CI、分支或其他外部状态；不得把旧记录直接当作当前事实。
+9. 阅读 `README.md`。
+10. 阅读 `docs/开发方案.md` 中与当前任务相关的章节。
+11. UI 任务还要阅读 `docs/design-system.md` 和 `docs/development-workflow.md`。
+12. 产品范围或教学机制相关任务，还要阅读 `new-chat/outputs/英语使用者学中文App一期方案.md`。
+13. 使用 `rg --files` 确认当前实际目录；不要根据文档假定尚未创建的文件已经存在。
+14. 如果任务涉及第三方 SDK、商店规范、价格或云服务能力，使用官方文档核验当前状态，不依赖旧版本记忆。
 
 如果文档与现有代码不一致，先用测试、提交历史和实际运行结果判断当前事实，再修正文档；不要静默猜测。
 
@@ -274,9 +275,10 @@
 不要把聊天记录当作唯一项目记忆。出现以下变化时更新仓库文件：
 
 - 长对话结束、任务切换、暂停、阻塞、交接，或当前状态/下一步/风险发生实质变化：先读取并更新根目录 `HANDOFF.md`；
+- 出现有复用价值的纠正：先做反思，区分信息缺口、推理错误、执行缺口或状态过期；把去重后的项目特定预防规则合并到 `AGENT_LESSONS.md`；
 - 产品边界、技术栈或关键规则改变：更新 `AGENTS.md` 和 `docs/开发方案.md`。
 - 新增不可轻易逆转的架构决定：在 `docs/decisions/` 增加简短 ADR。
 - 当前阶段、运行方式或目录改变：更新 `README.md`。
 - 内容 Schema 或课程制作流程改变：更新相应内容文档和示例。
 
-根目录 `HANDOFF.md` 是唯一实时交接；`docs/handoff/ai-agent-handoff.md` 只维护详细且相对稳定的架构、环境、验证和风险基线。更新必须基于已完成和已验证的事实，不得把计划写成已实现，也不要为了显得完整加入无实际价值的历史流水账。
+根目录 `HANDOFF.md` 是唯一实时交接；`AGENT_LESSONS.md` 保存去重后的项目特定复用经验；`docs/handoff/ai-agent-handoff.md` 只维护详细且相对稳定的架构、环境、验证和风险基线。不要创建竞争性的实时交接或流水账式反思文件。更新必须基于已完成和已验证的事实，不得把计划写成已实现。

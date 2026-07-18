@@ -1,15 +1,15 @@
 # Mandarin Mission 项目交接
 
-> 最后更新：2026-07-18 19:07（Asia/Hong_Kong）
+> 最后更新：2026-07-18 19:32（Asia/Hong_Kong）
 > 项目：`D:\mandarin-mission\mandarin-mission`
-> 分支/工作树：`main`，与 `origin/main` 同步
+> 分支/工作树：`docs/new-conversation-handoff`，基于已与 `origin/main` 同步的 `8ebcb77`
 
-本文件是本项目唯一的实时交接入口。每次新对话或新任务必须先按根目录 `AGENTS.md` 的顺序读取全局协议、本文件和 `docs/handoff/ai-agent-handoff.md`，再核验仓库与 GitHub 当前状态。`docs/handoff/ai-agent-handoff.md` 保存详细且相对稳定的项目基线，不与本文件竞争实时状态。
+本文件是本项目唯一的实时交接入口。每次新对话或新任务必须先按根目录 `AGENTS.md` 的顺序读取全局协议、本文件、`AGENT_LESSONS.md` 和 `docs/handoff/ai-agent-handoff.md`，再核验仓库与 GitHub 当前状态。`AGENT_LESSONS.md` 保存去重后的项目特定复用经验；详细且相对稳定的项目基线在 `docs/handoff/ai-agent-handoff.md`。
 
 ## 当前正在做什么
 
-- M1“本地到期复习 UI”、汉字书写模块和跨对话交接协议已经全部合并到 `main`。
-- 当前下一模块是 M1 的真人音频播放、本地录音、回放、权限和媒体不可用降级。
+- 正在准备新对话交接三件套：刷新本文件、建立反思闭环、创建并接入根目录 `AGENT_LESSONS.md`。
+- 本次只修改连续性文档与启动协议，不修改产品代码；完成后下一模块仍是 M1 的真人音频播放、本地录音、回放、权限和媒体不可用降级。
 
 ## 已经完成了什么
 
@@ -21,22 +21,28 @@
 - PR [#10](https://github.com/HieronymusF/mandarin-mission/pull/10) 已合并，merge commit 为 `a7db316`。
 - PR [#11](https://github.com/HieronymusF/mandarin-mission/pull/11) 已在 `mobile`、`learning-core`、`api` 全部通过后合并，merge commit 为 `a5cdc29`。
 - PR [#12](https://github.com/HieronymusF/mandarin-mission/pull/12) 已在三项 CI 全部通过后合并，merge commit 为 `5b20cd5`。
+- `main` 最后一次交接刷新提交为 `8ebcb77`，当时本地与 `origin/main` 同步，main push CI 三项 job 全部通过。
+- 已按 `maintain-project-continuity` 建立根目录 `AGENT_LESSONS.md`，并把它接入 `AGENTS.md` 与详细交接基线的强制启动顺序。
 
 ## 卡在了哪里
 
 - 无功能阻塞。
+- 当前交接文档分支尚待提交、推送并建立草稿 PR。
 - M1 仍未达成：真人音频、录音/回放、权限流程、正式资产和真实设备持久化/飞行模式验收尚未完成。
 
 ## 下一步要做什么
 
-1. 从最新 `main` 建立独立功能分支，按 `docs/development-workflow.md` 定义音频与录音模块的需求、状态和平台契约。
-2. 实现真人课程音频播放、本地录音、回放、权限和媒体不可用降级。
-3. 在真实 Android 设备验证媒体权限、来电/切后台中断和恢复。
-4. 完成课程 → 杀进程 → 进度保留 → 到期复习及飞行模式验收。
+1. 完成交接文档分支的验证、提交、推送和草稿 PR。
+2. 经用户确认后合并交接 PR，并从最新 `main` 建立音频功能分支。
+3. 按 `docs/development-workflow.md` 定义音频与录音模块的需求、状态和平台契约，再实现真人课程音频播放、本地录音、回放、权限和媒体不可用降级。
+4. 在真实 Android 设备验证媒体权限、来电/切后台中断和恢复。
+5. 完成课程 → 杀进程 → 进度保留 → 到期复习及飞行模式验收。
 
 ## 哪些坑不要再踩
 
-- 每次新对话都必须完整执行：全局 `C:\Users\Jerome\.codex\HANDOFF.md` → 项目 `AGENTS.md` → 本文件 → `docs/handoff/ai-agent-handoff.md` → Git/外部状态核验；不能因为“已经熟悉”跳过。
+- 每次新对话都必须完整执行：全局 `C:\Users\Jerome\.codex\HANDOFF.md` → 项目 `AGENTS.md` → 本文件 → `AGENT_LESSONS.md` → `docs/handoff/ai-agent-handoff.md` → Git/外部状态核验；不能因为“已经熟悉”跳过。
 - 不把聊天记录或旧交接中的分支、PR、测试结果直接当作当前事实；先用仓库和 GitHub 核验。
-- 实时状态只更新本文件；详细架构和长期基线更新 `docs/handoff/ai-agent-handoff.md`，不要创建第二份实时交接。
+- 实时状态只更新本文件；复用经验去重后更新 `AGENT_LESSONS.md`；详细架构和长期基线更新 `docs/handoff/ai-agent-handoff.md`，不要创建第二份实时交接或流水账式反思文件。
+- 堆叠 PR 改 base 后不能假定 CI 自动运行；必须核验最新 head SHA 的 job，必要时关闭并重新打开 PR 触发。
+- PowerShell 读取中文 Markdown 时显式使用 `-Encoding utf8`。
 - 不覆盖用户改动，不批量删除，不使用破坏性 Git 命令，不强制推送。
