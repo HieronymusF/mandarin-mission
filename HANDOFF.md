@@ -1,37 +1,38 @@
 # Mandarin Mission 项目交接
 
-> 最后更新：2026-07-18 18:46（Asia/Hong_Kong）
+> 最后更新：2026-07-18 19:07（Asia/Hong_Kong）
 > 项目：`D:\mandarin-mission\mandarin-mission`
-> 分支/工作树：`chore/handoff-protocol`（基于 `feat/hanzi-writing`）
+> 分支/工作树：`main`，与 `origin/main` 同步
 
 本文件是本项目唯一的实时交接入口。每次新对话或新任务必须先按根目录 `AGENTS.md` 的顺序读取全局协议、本文件和 `docs/handoff/ai-agent-handoff.md`，再核验仓库与 GitHub 当前状态。`docs/handoff/ai-agent-handoff.md` 保存详细且相对稳定的项目基线，不与本文件竞争实时状态。
 
 ## 当前正在做什么
 
-- M1“本地到期复习 UI”已经完成，草稿 PR [#10](https://github.com/HieronymusF/mandarin-mission/pull/10) 以 `feat/local-review-ui` 指向 `main`，三个 CI job 均通过。
-- 汉字书写模块已经完成，草稿 PR [#11](https://github.com/HieronymusF/mandarin-mission/pull/11) 以 `feat/hanzi-writing` 指向 `feat/local-review-ui`。
-- 跨对话交接协议已经补齐并进入草稿 PR [#12](https://github.com/HieronymusF/mandarin-mission/pull/12)，该 PR 以 `chore/handoff-protocol` 指向 `feat/hanzi-writing`。
+- M1“本地到期复习 UI”、汉字书写模块和跨对话交接协议已经全部合并到 `main`。
+- 当前下一模块是 M1 的真人音频播放、本地录音、回放、权限和媒体不可用降级。
 
 ## 已经完成了什么
 
 - 工程基线、代码优先 UI 基线、八步“点咖啡”课程、四维本地复习和汉字临摹/默写/对照自评已经实现。
 - 汉字书写实现提交为 `8789860`，文档同步提交为 `8bb8090`。
 - 汉字书写本地验证已通过：Flutter format/analyze/31 tests/debug APK；learning_core format/analyze/19 tests/content validate；Android 模拟器完整交互与 200% 字号验收。
-- PR #10 的 `mobile`、`learning-core`、`api` GitHub Actions 均为成功。
 - 已新增本文件作为唯一实时交接入口，并在 `AGENTS.md` 与 `docs/handoff/ai-agent-handoff.md` 固化每次对话的强制启动和收尾流程。
 - 交接协议实现提交为 `d66cc9a docs: enforce project handoff protocol`。
+- PR [#10](https://github.com/HieronymusF/mandarin-mission/pull/10) 已合并，merge commit 为 `a7db316`。
+- PR [#11](https://github.com/HieronymusF/mandarin-mission/pull/11) 已在 `mobile`、`learning-core`、`api` 全部通过后合并，merge commit 为 `a5cdc29`。
+- PR [#12](https://github.com/HieronymusF/mandarin-mission/pull/12) 已在三项 CI 全部通过后合并，merge commit 为 `5b20cd5`。
 
 ## 卡在了哪里
 
 - 无功能阻塞。
-- PR #11 是堆叠 PR；现有 workflow 只监听目标为 `main` 的 pull request，因此在指向 `feat/local-review-ui` 时不会自动运行 CI。PR #10 合并后将 #11 改为指向 `main`，再等待 CI。
+- M1 仍未达成：真人音频、录音/回放、权限流程、正式资产和真实设备持久化/飞行模式验收尚未完成。
 
 ## 下一步要做什么
 
-1. 按堆叠顺序审查 PR #10、#11、#12；上游合并后逐一把下游 PR 改为指向 `main` 并确认 CI。
-2. 审查并合并 PR #10；随后把 PR #11 的 base 改为 `main`，运行并确认全部 CI。
-3. 按 `docs/development-workflow.md` 进入 M1 的真人音频播放、本地录音、回放、权限和不可用降级模块。
-4. 在真实 Android 设备验证课程 → 杀进程 → 进度保留 → 到期复习，以及媒体中断恢复和飞行模式。
+1. 从最新 `main` 建立独立功能分支，按 `docs/development-workflow.md` 定义音频与录音模块的需求、状态和平台契约。
+2. 实现真人课程音频播放、本地录音、回放、权限和媒体不可用降级。
+3. 在真实 Android 设备验证媒体权限、来电/切后台中断和恢复。
+4. 完成课程 → 杀进程 → 进度保留 → 到期复习及飞行模式验收。
 
 ## 哪些坑不要再踩
 
