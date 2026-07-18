@@ -374,7 +374,7 @@ class _CafeStopCard extends StatelessWidget {
             spacing: AppSpacing.md,
             runSpacing: AppSpacing.xxs,
             children: [
-              Text('7 short steps', style: theme.textTheme.small),
+              Text('8 short steps', style: theme.textTheme.small),
               Text('Ready to start', style: theme.textTheme.muted),
             ],
           ),

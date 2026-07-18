@@ -98,6 +98,38 @@ void main() {
     );
   });
 
+  test('accepts a Hanzi tracing step with a known item', () {
+    final package = validPackage();
+    final lesson = (package['lessons'] as List).single as Map<String, Object?>;
+    final steps = lesson['steps'] as List<Map<String, Object?>>;
+    steps.insert(1, {
+      'id': 'cafe-write',
+      'type': 'hanzi_trace',
+      'dimension': 'hanzi',
+      'itemId': 'phrase-wo-yao',
+    });
+
+    expect(validator.validate(package), isEmpty);
+  });
+
+  test('requires an item and Hanzi dimension for tracing', () {
+    final package = validPackage();
+    final lesson = (package['lessons'] as List).single as Map<String, Object?>;
+    final steps = lesson['steps'] as List<Map<String, Object?>>;
+    steps.insert(1, {
+      'id': 'cafe-write',
+      'type': 'hanzi_trace',
+      'dimension': 'meaning',
+    });
+
+    final messages = validator
+        .validate(package)
+        .map((issue) => issue.message)
+        .toList();
+    expect(messages, contains('hanzi_trace requires itemId'));
+    expect(messages, contains('hanzi_trace requires hanzi dimension'));
+  });
+
   test('rejects pinyin syllables that do not match the Hanzi count', () {
     final package = validPackage();
     final item =

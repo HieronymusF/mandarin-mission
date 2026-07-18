@@ -49,6 +49,9 @@ final class LessonPlayerState {
     this.incorrectAttempts = 0,
     this.usedListeningHint = false,
     this.speakingNeedsPractice = false,
+    this.writingSelfCheck,
+    this.usedWritingHint = false,
+    this.writingNeedsPractice = false,
     this.isSubmitting = false,
     this.errorMessage,
     DateTime? stepEnteredAt,
@@ -61,6 +64,9 @@ final class LessonPlayerState {
   final int incorrectAttempts;
   final bool usedListeningHint;
   final bool speakingNeedsPractice;
+  final String? writingSelfCheck;
+  final bool usedWritingHint;
+  final bool writingNeedsPractice;
   final bool isSubmitting;
   final String? errorMessage;
   final DateTime stepEnteredAt;
@@ -75,6 +81,9 @@ final class LessonPlayerState {
     int? incorrectAttempts,
     bool? usedListeningHint,
     bool? speakingNeedsPractice,
+    Object? writingSelfCheck = _unset,
+    bool? usedWritingHint,
+    bool? writingNeedsPractice,
     bool? isSubmitting,
     Object? errorMessage = _unset,
     DateTime? stepEnteredAt,
@@ -92,6 +101,11 @@ final class LessonPlayerState {
       usedListeningHint: usedListeningHint ?? this.usedListeningHint,
       speakingNeedsPractice:
           speakingNeedsPractice ?? this.speakingNeedsPractice,
+      writingSelfCheck: identical(writingSelfCheck, _unset)
+          ? this.writingSelfCheck
+          : writingSelfCheck as String?,
+      usedWritingHint: usedWritingHint ?? this.usedWritingHint,
+      writingNeedsPractice: writingNeedsPractice ?? this.writingNeedsPractice,
       isSubmitting: isSubmitting ?? this.isSubmitting,
       errorMessage: identical(errorMessage, _unset)
           ? this.errorMessage
@@ -106,7 +120,9 @@ final class LessonPlayerState {
 
   int get score {
     final speakingPenalty = speakingNeedsPractice ? 20 : 0;
-    return (100 - (incorrectAttempts * 20) - speakingPenalty).clamp(0, 100);
+    final writingPenalty = writingNeedsPractice ? 20 : 0;
+    return (100 - (incorrectAttempts * 20) - speakingPenalty - writingPenalty)
+        .clamp(0, 100);
   }
 }
 
@@ -124,6 +140,9 @@ final class LessonPlayerController extends Notifier<LessonPlayerState> {
       incorrectAttempts: state.incorrectAttempts,
       speakingNeedsPractice:
           state.speakingNeedsPractice || state.selfCheck == 'needs-practice',
+      writingNeedsPractice:
+          state.writingNeedsPractice ||
+          state.writingSelfCheck == 'needs-practice',
     );
   }
 
@@ -132,6 +151,7 @@ final class LessonPlayerController extends Notifier<LessonPlayerState> {
       stepIndex: math.max(state.stepIndex - 1, 0),
       incorrectAttempts: state.incorrectAttempts,
       speakingNeedsPractice: state.speakingNeedsPractice,
+      writingNeedsPractice: state.writingNeedsPractice,
     );
   }
 
@@ -160,6 +180,15 @@ final class LessonPlayerController extends Notifier<LessonPlayerState> {
     state = state.copyWith(
       showSpeakingFallback: true,
       selfCheck: value,
+      errorMessage: null,
+    );
+  }
+
+  void selectWritingSelfCheck(String? value, {required bool usedHint}) {
+    if (state.isSubmitting) return;
+    state = state.copyWith(
+      writingSelfCheck: value,
+      usedWritingHint: usedHint,
       errorMessage: null,
     );
   }
@@ -238,6 +267,45 @@ final class LessonPlayerController extends Notifier<LessonPlayerState> {
       state = state.copyWith(
         isSubmitting: false,
         errorMessage: 'Your self-check was not saved. Try again.',
+      );
+      return false;
+    }
+  }
+
+  Future<bool> submitWritingSelfCheck({
+    required CoursePackage package,
+    required CourseLesson lesson,
+    required CourseLessonStep step,
+  }) async {
+    final writingSelfCheck = state.writingSelfCheck;
+    if (writingSelfCheck == null || state.isSubmitting) return false;
+
+    final answeredAt = DateTime.now().toUtc();
+    final looksClose = writingSelfCheck == 'looks-close';
+    state = state.copyWith(isSubmitting: true, errorMessage: null);
+    try {
+      await ref
+          .read(lessonProgressRepositoryProvider)
+          .recordExerciseAttempt(
+            lessonId: lesson.id,
+            stepId: step.id,
+            contentVersion: package.version,
+            itemId: step.itemId!,
+            dimension: LearningDimension.hanzi,
+            rating: looksClose
+                ? ReviewRating.remembered
+                : ReviewRating.forgotten,
+            correct: looksClose,
+            usedHint: state.usedWritingHint,
+            latencyMs: state.latencyMs(answeredAt),
+            answeredAt: answeredAt,
+          );
+      next(lesson.steps.length);
+      return true;
+    } catch (_) {
+      state = state.copyWith(
+        isSubmitting: false,
+        errorMessage: 'Your writing check was not saved. Try again.',
       );
       return false;
     }

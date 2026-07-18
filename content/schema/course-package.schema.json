@@ -146,6 +146,7 @@
             "listen_choice",
             "tone_contrast",
             "order_tokens",
+            "hanzi_trace",
             "repeat",
             "dialogue_turn",
             "summary"
@@ -162,7 +163,19 @@
           "items": { "$ref": "#/$defs/stableId" },
           "uniqueItems": true
         }
-      }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "type": { "const": "hanzi_trace" } },
+            "required": ["type"]
+          },
+          "then": {
+            "required": ["itemId", "dimension"],
+            "properties": { "dimension": { "const": "hanzi" } }
+          }
+        }
+      ]
     },
     "dialogue": {
       "type": "object",

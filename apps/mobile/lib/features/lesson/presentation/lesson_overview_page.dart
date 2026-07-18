@@ -9,6 +9,7 @@ import '../../../shared/presentation/app_leading_row.dart';
 import '../application/lesson_providers.dart';
 import 'lesson_header.dart';
 import 'steps/dialogue_step.dart';
+import 'steps/hanzi_writing_step.dart';
 import 'steps/listen_choice_step.dart';
 import 'steps/repeat_step.dart';
 import 'steps/scene_intro_step.dart';
@@ -295,6 +296,30 @@ class _LessonPlayerPage extends ConsumerWidget {
           ),
           primaryLabel: 'Got it',
           onPrimary: () async => next(),
+        );
+      case 'hanzi_trace':
+        final item = package.knowledgeItem(step.itemId!);
+        final selected = state.writingSelfCheck;
+        return _StepPresentation(
+          eyebrow: 'HANZI · WRITING',
+          body: HanziWritingStep(
+            key: ValueKey(step.id),
+            item: item,
+            supportText: step.text,
+            selectedSelfCheck: selected,
+            onSelfCheckChanged: (value, {required usedHint}) =>
+                controller.selectWritingSelfCheck(value, usedHint: usedHint),
+          ),
+          primaryLabel: selected == null ? 'Write first' : 'Save',
+          onPrimary: selected == null
+              ? null
+              : () async {
+                  await controller.submitWritingSelfCheck(
+                    package: package,
+                    lesson: lesson,
+                    step: step,
+                  );
+                },
         );
       case 'listen_choice':
         final selected = state.selectedOptionId;
