@@ -1,7 +1,7 @@
 # Mandarin Mission：AI Agents 详细项目基线
 
 > 本文件适用于 Codex、Claude Code 和其他能修改仓库的 AI agents。
-> 根目录 `HANDOFF.md` 是唯一实时交接入口；本文件保存详细且相对稳定的项目基线。每次新对话仍必须读取本文件，但分支、PR、下一步和阻塞以核验后的根目录 `HANDOFF.md` 为准。
+> 根目录 `HANDOFF.md` 是唯一实时交接入口，`AGENT_LESSONS.md` 保存去重后的项目特定复用经验；本文件保存详细且相对稳定的项目基线。每次新对话仍必须读取本文件，但分支、PR、下一步和阻塞以核验后的根目录 `HANDOFF.md` 为准。
 
 ## 1. 接手顺序
 
@@ -11,12 +11,13 @@
 2. 进入 `D:\mandarin-mission\mandarin-mission`；
 3. 阅读根目录 `AGENTS.md`；
 4. 阅读根目录 `HANDOFF.md`；
-5. 阅读本文件和 `docs/project-status.md`；
-6. 运行 `git status -sb` 和 `git log -5 --oneline --decorate`；
-7. 核验会变化的 GitHub PR、CI、分支与外部状态；
-8. 按 `AGENTS.md` 第 2 节继续读取当前任务需要的 README、需求、设计、开发方案或产品文档；
-9. 用 `rg --files` 检查真实目录，不根据文档臆测文件存在；
-10. 文档与代码冲突时，以测试、实际运行和最新提交为准，再修正文档与根目录 `HANDOFF.md`。
+5. 阅读根目录 `AGENT_LESSONS.md`；
+6. 阅读本文件和 `docs/project-status.md`；
+7. 运行 `git status -sb` 和 `git log -5 --oneline --decorate`；
+8. 核验会变化的 GitHub PR、CI、分支与外部状态；
+9. 按 `AGENTS.md` 第 2 节继续读取当前任务需要的 README、需求、设计、开发方案或产品文档；
+10. 用 `rg --files` 检查真实目录，不根据文档臆测文件存在；
+11. 文档与代码冲突时，以测试、实际运行和最新提交为准，再修正文档与根目录 `HANDOFF.md`。
 
 不要把聊天记录当成项目事实来源。本文件只保存可复现、可验证的当前上下文。
 
@@ -175,9 +176,13 @@ docs/                              流程、设计系统、ADR、项目状态和
 ### UI 基线
 
 - 运行依赖固定为 `shadcn_ui: 0.55.0`；
-- `app_theme.dart`：语义颜色、字体、圆角和反馈状态；
+- 根目录 `WIDGET_LIBRARY.md`：AI 调用入口、令牌规则、系统性对齐检查、响应式和视觉 QA 清单；
+- `app_theme.dart`：语义颜色、项目字体体系、圆角和反馈状态；
 - `app_layout.dart`：`4/8/12/16/20/24/32` spacing、640 最大内容宽度、卡片 padding、图标槽和控件高度；
-- `AppLeadingRow` / `AppIconTile`：固定图标区域和稳定文本列；
+- `app_text_styles.dart`：统一字体尺寸、字重、line-height 和中文字体回退；
+- `app_widgets.dart`：统一导出项目级布局组件；
+- `AppContentFrame` / `AppPageScrollView` / `AppSection`：候选的内容宽度、页面 padding 和 Section 对齐组件；当前仅有测试/文档引用，生产页面采用前必须确认两个真实调用点；
+- `AppLeadingRow` / `AppIconTile`：已用于生产页面的固定图标与文字列；`AppListRow` 是尚待真实调用验证的右侧操作区候选；
 - 全宽卡片不使用会导致漂移的 `ShadCard.leading/trailing`；
 - 汉字拼音组按父容器居中；
 - Widget 测试覆盖 `768/1024/1280/1440` 逻辑像素宽度；
@@ -243,7 +248,7 @@ M1 剩余放行条件：
 
 ## 10. 当前最高优先级：音频与录音基础能力
 
-到期复习 UI 已完成。下一模块继续以本地优先为边界，不让课程或复习因媒体服务不可用而阻断。
+到期复习 UI 已完成。音频/录音核心架构已进入本地未提交实现阶段，继续以本地优先为边界，不让课程或复习因媒体服务不可用而阻断。
 
 复习模块现状：
 
@@ -255,13 +260,21 @@ M1 剩余放行条件：
 - Flutter 31 项测试、debug APK 构建和 Android 模拟设备 8 项完整复习会话已通过。
 - 汉字书写需求位于 `docs/requirements/hanzi-writing.md`；“咖啡”已覆盖临摹、脱稿书写、对照自评、无障碍跳过和 `hanzi` 维度本地保存。
 
-下一模块必须交付：
+当前已验证：
+
+- 音频与录音 Service、Riverpod Controller、权限状态、回放、音量归一化和不可用降级已接线；
+- `record 7.1.1` 依赖组合可通过 Flutter analyze、46 tests 和 debug APK；
+- 课程音频路径从内容包 `audioAssetId → ready asset.path` 解析，planned/缺失资源不伪装为可播放。
+- 媒体 Widget 测试已覆盖播放 loading/playing/paused/error、无资产降级、权限请求/拒绝/永久拒绝/服务不可用，以及录音、音量、回放和确认。
+- 课程页在非 `resumed` 生命周期状态和页面离开时结束媒体会话；Controller 会停止播放、取消录音或回放并清理当前临时文件，重录前也会删除旧文件。对应 Controller 与 Widget 测试已覆盖停止/清理竞态、切后台和页面离开。
+
+剩余必须交付：
 
 - 真人课程音频播放；
-- 本地录音、回放、重试和明确权限流程；
-- 录音时长与基础音量检查；
+- 真实设备上的本地录音、回放、重试和明确权限流程；
+- 真实设备上的录音时长与基础音量检查；
 - 音频/录音不可用时保留可完成的降级路径；
-- 在真实 Android 设备验证媒体权限、来电/切后台中断和恢复。
+- 在真实 Android 设备验证媒体权限、来电/切后台中断和恢复；自动停止/清理已有测试，真实平台恢复状态仍未确认。
 
 ## 11. 可并行的 Agent 工作与冲突边界
 
@@ -289,7 +302,7 @@ M1 剩余放行条件：
 
 ### P0
 
-- 音频/录音仍是占位或降级路径，未实现真实媒体能力。
+- 音频/录音核心架构与组件级 Widget 测试已实现，但缺真人资产和真实 Android 设备媒体/生命周期验收。
 
 ### P1
 
@@ -339,6 +352,7 @@ Get-Content -Raw -Encoding utf8 'C:\Users\Jerome\.codex\HANDOFF.md'
 Set-Location 'D:\mandarin-mission\mandarin-mission'
 Get-Content -Raw -Encoding utf8 'AGENTS.md'
 Get-Content -Raw -Encoding utf8 'HANDOFF.md'
+Get-Content -Raw -Encoding utf8 'AGENT_LESSONS.md'
 Get-Content -Raw -Encoding utf8 'docs/handoff/ai-agent-handoff.md'
 git status -sb
 git log -5 --oneline --decorate

@@ -14,6 +14,20 @@
 - 当前下一里程碑：完成“点咖啡”一节课的 Android 端到端垂直切片。
 - 当前下一小模块：实现真人音频播放、本地录音、回放和明确权限流程；媒体能力不可用时必须保留可完成的本地降级路径。
 
+## Repo docs
+
+The living project guide is in `repo-docs/`. Start with `repo-docs/README.md`; when `repo-docs/walkthroughs/one-real-run.md` exists, use it as the main behavior trace.
+
+This repo's `repo-docs/` guide is reader-facing Chinese documentation. When updating reader-facing guide pages, use `repo-docs-zh` when available; keep Chinese reader handles in the prose and preserve exact source identifiers for lookup.
+
+Repo-docs sync triggers before the final response: repo questions; architecture, onboarding, or "how does this work" answers; behavior-bearing code/config/data/script/test edits; user uncertainty or correction about stable project behavior; stable project knowledge discovered or clarified in conversation; and knowledge about to be written to memory.
+
+When a trigger happens, run a foreground repo-docs sync gate before answering: use the `repo-docs` skill in Sync mode when available, or manually read the relevant guide pages, inspect current source, and decide `none`, `answer-only`, `foreground patch`, or `background sync`. Ordinary repo questions may be `answer-only` when the guide is current enough and the answer can cite inspected guide/source evidence. Patch the smallest owning guide page before the final response only when the current answer or edit would otherwise mislead, the guide says the opposite, or the missing stable knowledge is a small local patch.
+
+If the needed guide work is broader and not required for the current answer to be correct, delegate it to a background `repo-docs` sync agent when the platform supports a real tracked handoff. The handoff must name the trigger, durable facts or changed source areas, candidate guide pages, verification to run, and the expected `repo-docs/change-log.md` update. If no background agent is available, answer from inspected source and mention the pending docs gap when it matters.
+
+When behavior-bearing code, config, data, scripts, or tests change, compare the change with the guide before finishing unless the user asked not to touch docs. Record meaningful guide updates in `repo-docs/change-log.md` with verification and `Synced through <sha>` when git is available.
+
 ## 2. 开始任何任务前
 
 每次新对话、新任务、接手或上下文恢复都必须按顺序完成，即使代理认为自己已经熟悉项目也不得跳过：
@@ -21,16 +35,17 @@
 1. 阅读全局 `C:\Users\Jerome\.codex\HANDOFF.md`。
 2. 进入 `D:\mandarin-mission\mandarin-mission`，阅读根目录 `AGENTS.md`。
 3. 阅读根目录 `HANDOFF.md`；它是本项目唯一的实时交接状态。
-4. 阅读 `docs/handoff/ai-agent-handoff.md` 和 `docs/project-status.md`，获得详细项目基线。
-5. 运行 `git status -sb`，保护用户已有改动。
-6. 运行 `git log -5 --oneline --decorate`，确认最近完成的工作。
-7. 核验交接中会变化的 GitHub PR、CI、分支或其他外部状态；不得把旧记录直接当作当前事实。
-8. 阅读 `README.md`。
-9. 阅读 `docs/开发方案.md` 中与当前任务相关的章节。
-10. UI 任务还要阅读 `docs/design-system.md` 和 `docs/development-workflow.md`。
-11. 产品范围或教学机制相关任务，还要阅读 `new-chat/outputs/英语使用者学中文App一期方案.md`。
-12. 使用 `rg --files` 确认当前实际目录；不要根据文档假定尚未创建的文件已经存在。
-13. 如果任务涉及第三方 SDK、商店规范、价格或云服务能力，使用官方文档核验当前状态，不依赖旧版本记忆。
+4. 阅读根目录 `AGENT_LESSONS.md`；它只保存去重后的项目特定复用经验。
+5. 阅读 `docs/handoff/ai-agent-handoff.md` 和 `docs/project-status.md`，获得详细项目基线。
+6. 运行 `git status -sb`，保护用户已有改动。
+7. 运行 `git log -5 --oneline --decorate`，确认最近完成的工作。
+8. 核验交接中会变化的 GitHub PR、CI、分支或其他外部状态；不得把旧记录直接当作当前事实。
+9. 阅读 `README.md`。
+10. 阅读 `docs/开发方案.md` 中与当前任务相关的章节。
+11. UI 任务还要先阅读根目录 `WIDGET_LIBRARY.md`，再阅读 `docs/design-system.md` 和 `docs/development-workflow.md`。
+12. 产品范围或教学机制相关任务，还要阅读 `new-chat/outputs/英语使用者学中文App一期方案.md`。
+13. 使用 `rg --files` 确认当前实际目录；不要根据文档假定尚未创建的文件已经存在。
+14. 如果任务涉及第三方 SDK、商店规范、价格或云服务能力，使用官方文档核验当前状态，不依赖旧版本记忆。
 
 如果文档与现有代码不一致，先用测试、提交历史和实际运行结果判断当前事实，再修正文档；不要静默猜测。
 
@@ -41,9 +56,25 @@
 - 纯本地、无 UI 的特性可跳过组件选择，但需求边界和测试仍然适用。
 - 接口先定义，使数据层/后端与 UI 可以并行；不要让 UI 因后端尚未完成而直接依赖散落的 mock。
 
+### AI 开发行为约束
+
+本项目采用 [andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills) 的四项原则，并结合本项目验证门禁执行：
+
+1. **编码前思考**：非琐碎任务先写清假设、歧义、取舍和成功标准；不确定且会改变结果时先停下来确认，不静默猜测。
+2. **简洁优先**：先复用现有代码、Flutter/Dart 原生能力和已安装依赖；不为单次使用建立抽象，不添加未要求的灵活性、配置或未来脚手架。
+3. **精准修改**：每一行改动都必须能追溯到当前需求；不顺手重构、格式化或清理无关代码，只清理由本次改动产生的孤儿代码。
+4. **目标驱动**：Bug 先建立可重复的失败证据，再修根因并跑回归；功能先定义可观察的用户结果和验证命令，循环到成功标准成立。
+
+补充门禁：
+
+- “更少代码”不能省略输入校验、隐私、安全、数据持久化、错误恢复和无障碍。
+- 编译、静态分析和测试通过只证明相应工程属性，不自动证明用户需求完成。
+- UI Bug 必须在相同页面、状态、viewport、文字缩放下先复现并保存修复前证据，再做最小父级布局修复并保存修复后证据；没有视觉证据不得宣称视觉问题已修复。
+- 新共享组件必须至少对应两个真实生产调用点；只有测试或文档引用不算复用证据。
+
 ### 前端任务的代码优先流程
 
-- UI 单一基线是 `docs/design-system.md`、`apps/mobile/lib/core/theme/app_theme.dart` 和 `apps/mobile/lib/core/theme/app_layout.dart`。
+- UI 单一基线是根目录 `WIDGET_LIBRARY.md`、`docs/design-system.md`、`apps/mobile/lib/core/theme/app_theme.dart`、`apps/mobile/lib/core/theme/app_layout.dart`、`apps/mobile/lib/core/theme/app_text_styles.dart` 和 `apps/mobile/lib/shared/presentation/app_widgets.dart`。
 - 视觉原则和基础组件先参考 [shadcn/ui](https://ui.shadcn.com/docs)；需要更多组合模式时，可从 [awesome-shadcn-ui](https://github.com/birobirobiro/awesome-shadcn-ui) 发现候选。该仓库是资源目录，不是 Flutter 依赖；实际实现继续使用固定版本的 `shadcn_ui`，不要把 React/Tailwind 代码放进 App。
 - 从 `awesome-shadcn-ui` 采用任何外部组件、图标、插画或代码前，必须单独核验来源项目的许可证、维护状态和移动端适用性；目录仓库的 MIT 许可证不替代被收录项目的许可证。
 - 标准按钮、卡片、徽章、进度、表单和反馈直接组合代码，不先画 Figma。
@@ -256,7 +287,7 @@
 4. 文档、内容 Schema 或数据库迁移在需要时已同步；
 5. `git status -sb` 中没有本任务遗漏文件；
 6. 交付说明包含变更、验证、提交和已知限制。
-7. UI 任务遵守 `docs/design-system.md`，关键状态已有截图或 Golden/真实设备验证；实际使用视觉稿时说明实现差异。
+7. UI 任务遵守根目录 `WIDGET_LIBRARY.md` 和 `docs/design-system.md`，关键状态已有截图或 Golden/真实设备验证；实际使用视觉稿时说明实现差异。
 
 ## 14. 当前开工顺序
 
@@ -274,9 +305,11 @@
 不要把聊天记录当作唯一项目记忆。出现以下变化时更新仓库文件：
 
 - 长对话结束、任务切换、暂停、阻塞、交接，或当前状态/下一步/风险发生实质变化：先读取并更新根目录 `HANDOFF.md`；
+- 出现有复用价值的纠正：先做反思，区分信息缺口、推理错误、执行缺口或状态过期；把去重后的项目特定预防规则合并到 `AGENT_LESSONS.md`；
+- 准备交接材料默认只产生本地未提交改动；除非用户明确要求，不得据此建分支、提交、推送、创建 PR 或合并。
 - 产品边界、技术栈或关键规则改变：更新 `AGENTS.md` 和 `docs/开发方案.md`。
 - 新增不可轻易逆转的架构决定：在 `docs/decisions/` 增加简短 ADR。
 - 当前阶段、运行方式或目录改变：更新 `README.md`。
 - 内容 Schema 或课程制作流程改变：更新相应内容文档和示例。
 
-根目录 `HANDOFF.md` 是唯一实时交接；`docs/handoff/ai-agent-handoff.md` 只维护详细且相对稳定的架构、环境、验证和风险基线。更新必须基于已完成和已验证的事实，不得把计划写成已实现，也不要为了显得完整加入无实际价值的历史流水账。
+根目录 `HANDOFF.md` 是唯一实时交接；`AGENT_LESSONS.md` 保存去重后的项目特定复用经验；`docs/handoff/ai-agent-handoff.md` 只维护详细且相对稳定的架构、环境、验证和风险基线。不要创建竞争性的实时交接或流水账式反思文件。更新必须基于已完成和已验证的事实，不得把计划写成已实现。

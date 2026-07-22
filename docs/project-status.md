@@ -15,7 +15,7 @@
 | 移动端 `apps/mobile` 数据层 | ✅ 已实现 | Drift 6 表约束扎实，Repository 全事务化 |
 | 移动端 UI/课程播放器 | ✅ 基线已实现 | shadcn 主题、Journey 和数据驱动 8 步走通；含简单汉字书写，步骤组件与提交逻辑已分层 |
 | 移动端复习功能 | ✅ 本地闭环已实现 | Journey 真实入口、四维题型、自评、补救和失败重试均已接入本地队列 |
-| 移动端音频/录音 | ❌ 仅占位 | 按钮全弹 SnackBar，无真实音频 |
+| 移动端音频/录音 | ⚠️ 核心架构已实现 | 播放、录音、权限、回放和降级已接线；缺真人资产与真实设备验收 |
 | Go 后端 `services/api` | ❌ 仅骨架 | 只有 healthz/readyz/meta，无 DB/认证/业务 |
 | CI | ✅ 已实现 | 三 job 覆盖 mobile/learning-core/api，有生成文件门禁 |
 | 文档 | ✅ 较全 | 开发方案 + 代码优先 UI 系统 + ADR + 分级流程齐全 |
@@ -69,9 +69,10 @@
 
 #### 3.2 代码优先 UI 与课程播放器 ✅（基线完成）
 
-- `core/theme/app_theme.dart` 定义 shadcn/Material 共用的语义色、圆角和反馈状态；`core/theme/app_layout.dart` 定义统一 spacing、最大内容宽度、卡片 padding、图标槽和控件高度；`app/app.dart` 通过 `ShadApp.custom` 保留 Material/go_router 兼容。
+- `core/theme/app_theme.dart` 定义 shadcn/Material 共用的语义色、圆角和反馈状态；`core/theme/app_layout.dart` 定义统一 spacing、最大内容宽度、卡片 padding、图标槽和控件高度；`core/theme/app_text_styles.dart` 固定字体尺寸、字重、行高和中文回退；`app/app.dart` 通过 `ShadApp.custom` 保留 Material/go_router 兼容。
 - Journey 与课程播放器已经使用 `ShadButton`、`ShadCard`、`ShadBadge`、`ShadProgress` 和 Lucide 图标。
-- 全宽卡片不再使用会分配不稳定空白的 `ShadCard.leading/trailing`，图标与正文统一通过 `AppLeadingRow`/`AppIconTile` 显式布局；汉字拼音行按父容器居中。
+- 根目录 `WIDGET_LIBRARY.md` 是 AI 可直接执行的 UI 对齐与视觉 QA 准则；`app_widgets.dart` 统一导出项目组件。`AppContentFrame`、`AppPageScrollView`、`AppSection`、`AppListRow` 当前仅由测试/文档引用，尚未通过真实生产页面调用验证，不能作为已完成抽象继续扩展。
+- 全宽卡片不再使用会分配不稳定空白的 `ShadCard.leading/trailing`，图标与正文统一通过固定槽布局；汉字拼音行按父容器居中。
 - `features/lesson/presentation/steps/` 按 scene/teach/hanzi writing/listen/repeat/dialogue/summary 拆分，不再把全部 Widget 塞进一个 1100 行文件。
 - `LessonPlayerController` 负责听力尝试、汉字书写自评、口语自评、课程完成、提交中和保存失败；View 只组合展示和转发意图。
 - `LessonPlayerState.copyWith` 代替每个动作手工重建全部字段。
@@ -107,9 +108,14 @@
 | `LessonPlayerController` 状态机 | ⚠️ 仅覆盖汉字书写保存失败，其余动作缺独立单元测试 |
 | 各 step presentation 组件 | ⚠️ 汉字书写有独立状态/无障碍/200% 字号测试，其余多依赖端到端覆盖 |
 
-#### 3.6 音频/录音 ❌
+#### 3.6 音频/录音 ⚠️（核心架构已实现）
 
-音频按钮全是占位 SnackBar（"Course audio will be added in the audio module."）。repeat 步骤的录音按钮直接跳 self-check fallback（`lesson_overview_page.dart:307`），**无真实录音**。`AGENTS.md` 第 14 节第 9 步几乎未动。
+- `data/audio/` 已提供音频与录音 Service、Riverpod Provider 和 Controller；UI 已接入播放进度、权限说明、录音时长、dBFS 音量归一化、回放、重录和不可用降级。
+- `record` 固定为与 Flutter 3.44 / Dart 3.12 匹配的 `7.1.1`；`record_linux 2.1.1` 与 `record_platform_interface 2.1.0` 已消除旧版传递依赖冲突。
+- 课程播放器从 `knowledgeItems[].audioAssetId` 解析 `assets[].path`；资源不是 `ready` 时明确显示不可用，不硬编码或伪造音频存在。
+- 课程页在 App 进入非 `resumed` 状态或页面离开时结束媒体会话，停止播放器、取消录音或回放并清理当前临时文件；重录前也会删除旧文件。
+- 自动验证：Flutter format、analyze、46 tests、debug APK 通过；包含 4 项媒体组件 Widget 测试、5 项录音 Controller 测试、1 项课程媒体生命周期 Widget 测试和 ready 音频路径解析测试。
+- 尚未完成：真人普通话资产、真实 Android 麦克风权限/录音/回放，以及来电、切后台和恢复的真实平台验证。
 
 ---
 
@@ -139,6 +145,7 @@
 - `docs/开发方案.md` — 长期参考价值高，但与代码差距扩大（如第 13.1 节 cloud tables 完全未实现）。
 - `docs/decisions/0001-managed-container-backend.md` — **质量最高的文档**，真实成本估算 + 护栏。
 - `docs/development-workflow.md` — 代码优先、按 S/M/L 分级的六阶段开发流程。
+- 根目录 `WIDGET_LIBRARY.md` — AI 调用 Widget 库、令牌、系统性对齐修复和响应式视觉 QA 的执行准则。
 - `docs/design-system.md` — shadcn 语义令牌、组件白名单、页面状态与升级规则。
 - `docs/handoff/ai-agent-handoff.md` — 当前环境、架构、里程碑、协作边界和新 agent 开工入口。
 - `docs/decisions/0002-code-first-shadcn-ui.md` — UI 流程和依赖决策。
@@ -158,10 +165,10 @@
 | 6 | 数据驱动课程步骤 | ⚠️ 部分 | MVVM 泄漏已修；已实现 7/10 step 类型，含 `hanzi_trace` |
 | 7 | 持久化练习和掌握度 | ✅ | `lesson_progress_repository.dart` + 集成测试 |
 | 8 | 复习分箱算法与本地 UI | ✅ | `review_scheduler.dart`、队列、Journey 入口和四维会话闭环 |
-| 9 | 音频/录音/回放/降级 | ❌ 仅占位 | 全是 SnackBar |
+| 9 | 音频/录音/回放/降级 | ⚠️ 部分 | 核心架构和构建通过；缺真人资产与真实设备验收 |
 | 10 | 点咖啡端到端 | ⚠️ 部分 | 播放器与本地复习走通，缺真人音频/录音和完整设备持久化验收 |
 
-**里程碑判定**：自动集成测试已完成课程、持久化和本地到期复习；Android 模拟设备已走完 8 项真实队列。真人音频/录音与完整“课程 → 杀进程 → 到期复习”设备验收仍未完成，M1 **未达成**。
+**里程碑判定**：自动集成测试已完成课程、持久化、本地到期复习和媒体状态架构；Android 模拟设备已走完 8 项真实队列。真人音频资产、真实录音/回放与完整“课程 → 杀进程 → 到期复习”设备验收仍未完成，M1 **未达成**。
 
 ---
 
@@ -180,7 +187,7 @@
 ## 五、需要改进的（按优先级）
 
 ### P0 — 阻塞里程碑
-1. **音频/录音是纯占位**——不解决无法达成"说得出"承诺；也是当前下一小模块。
+1. **音频/录音缺真人资产和真实设备验收**——代码与构建已就绪，但尚未证明真实播放、权限、录音、回放和生命周期行为。
 
 ### P1 — 架构债（扩大规模前必须纠正）
 3. **纯规则散落在非 domain 层**——`_confidenceFor`、`_compareQueueItems`、`score` 应迁移到 `learning_core` 并补单元测试。
