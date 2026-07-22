@@ -7,6 +7,7 @@ environment:
   sdk: ^3.12.2
 
 dependencies:
+  audioplayers: ^6.1.3
   drift: 2.34.0
   drift_flutter: ^0.3.1
   flutter:
@@ -18,6 +19,8 @@ dependencies:
   mandarin_mission_content:
     path: ../../content
   path_provider: ^2.1.6
+  permission_handler: ^11.3.1
+  record: 7.1.1
   shadcn_ui: 0.55.0
   uuid: ^4.5.3
 

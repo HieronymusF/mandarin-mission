@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../../core/theme/app_layout.dart';
+import '../../../data/audio/audio_providers.dart';
 import '../../../data/content/course_content_models.dart';
 import '../../../shared/presentation/app_leading_row.dart';
 import '../application/lesson_providers.dart';
@@ -137,23 +140,69 @@ class _LessonErrorPage extends StatelessWidget {
   }
 }
 
-class _LessonPlayerPage extends ConsumerWidget {
+class _LessonPlayerPage extends ConsumerStatefulWidget {
   const _LessonPlayerPage({required this.lessonId, required this.content});
 
   final String lessonId;
   final LessonContent content;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_LessonPlayerPage> createState() => _LessonPlayerPageState();
+}
+
+class _LessonPlayerPageState extends ConsumerState<_LessonPlayerPage>
+    with WidgetsBindingObserver {
+  Future<void>? _mediaCleanup;
+  late final Future<void> Function() _endMediaSessionAction;
+
+  @override
+  void initState() {
+    super.initState();
+    _endMediaSessionAction = ref
+        .read(recordingControllerProvider.notifier)
+        .endSession;
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed) {
+      _endMediaSession();
+    }
+  }
+
+  void _endMediaSession() {
+    if (_mediaCleanup != null) return;
+
+    final cleanup = _endMediaSessionAction();
+    _mediaCleanup = cleanup;
+    unawaited(
+      cleanup.whenComplete(() {
+        if (identical(_mediaCleanup, cleanup)) {
+          _mediaCleanup = null;
+        }
+      }),
+    );
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _endMediaSession();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
-    final provider = lessonPlayerControllerProvider(lessonId);
+    final provider = lessonPlayerControllerProvider(widget.lessonId);
     final state = ref.watch(provider);
     final controller = ref.read(provider.notifier);
-    final lesson = content.lesson;
+    final lesson = widget.content.lesson;
     final step = lesson.steps[state.stepIndex];
     final presentation = _presentationFor(
       context,
-      content.package,
+      widget.content.package,
       lesson,
       step,
       state,
@@ -288,6 +337,7 @@ class _LessonPlayerPage extends ConsumerWidget {
           eyebrow: (step.dimension ?? 'meaning').toUpperCase(),
           body: TeachCardStep(
             item: item,
+            audioAssetPath: package.audioAssetPathForItem(item.id),
             lessonItems: lesson.itemIds
                 .take(2)
                 .map(package.knowledgeItem)
@@ -355,6 +405,7 @@ class _LessonPlayerPage extends ConsumerWidget {
             title: 'Speech check is unavailable',
             body: SpeakingFallback(
               item: item,
+              audioAssetPath: package.audioAssetPathForItem(item.id),
               selected: state.selfCheck,
               onSelected: controller.selectSelfCheck,
             ),
@@ -372,8 +423,13 @@ class _LessonPlayerPage extends ConsumerWidget {
         }
         return _StepPresentation(
           eyebrow: 'TONE · SPEAKING',
-          body: RepeatStep(item: item, tip: step.text),
-          primaryLabel: 'Start recording',
+          body: RepeatStep(
+            item: item,
+            tip: step.text,
+            audioAssetPath: package.audioAssetPathForItem(item.id),
+            onRecordingComplete: (_) => controller.useSpeakingFallback(),
+          ),
+          primaryLabel: 'Continue without recording',
           onPrimary: () async => controller.useSpeakingFallback(),
         );
       case 'dialogue_turn':

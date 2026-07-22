@@ -15,6 +15,7 @@ final class CoursePackage {
     required this.knowledgeItemsById,
     required this.lessonsById,
     required this.dialoguesById,
+    required this.assetsById,
   });
 
   factory CoursePackage.fromJson(
@@ -35,6 +36,11 @@ final class CoursePackage {
       (entry) =>
           CourseDialogue.fromJson(entry.$2, '$source.dialogues[${entry.$1}]'),
     );
+    final assets = _objects(json, 'assets', source, required: false).indexed
+        .map(
+          (entry) =>
+              CourseAsset.fromJson(entry.$2, '$source.assets[${entry.$1}]'),
+        );
 
     return CoursePackage._(
       schemaVersion: _requiredInt(json, 'schemaVersion', source),
@@ -43,6 +49,7 @@ final class CoursePackage {
       knowledgeItemsById: _indexById(knowledgeItems, (item) => item.id),
       lessonsById: _indexById(lessons, (lesson) => lesson.id),
       dialoguesById: _indexById(dialogues, (dialogue) => dialogue.id),
+      assetsById: _indexById(assets, (asset) => asset.id),
     );
   }
 
@@ -52,6 +59,7 @@ final class CoursePackage {
   final Map<String, CourseKnowledgeItem> knowledgeItemsById;
   final Map<String, CourseLesson> lessonsById;
   final Map<String, CourseDialogue> dialoguesById;
+  final Map<String, CourseAsset> assetsById;
 
   CourseLesson lesson(String lessonId) {
     final lesson = lessonsById[lessonId];
@@ -81,6 +89,15 @@ final class CoursePackage {
       );
     }
     return dialogue;
+  }
+
+  String? audioAssetPathForItem(String itemId) {
+    final item = knowledgeItem(itemId);
+    final asset = assetsById[item.audioAssetId];
+    if (asset == null || asset.kind != 'audio' || asset.status != 'ready') {
+      return null;
+    }
+    return asset.path;
   }
 }
 
@@ -117,6 +134,35 @@ final class CourseKnowledgeItem {
   final String english;
   final String audioAssetId;
   final List<String> tags;
+}
+
+final class CourseAsset {
+  const CourseAsset({
+    required this.id,
+    required this.kind,
+    required this.status,
+    required this.path,
+    required this.license,
+    required this.credit,
+  });
+
+  factory CourseAsset.fromJson(Map<String, Object?> json, String path) {
+    return CourseAsset(
+      id: _requiredString(json, 'id', path),
+      kind: _requiredString(json, 'kind', path),
+      status: _requiredString(json, 'status', path),
+      path: _optionalString(json, 'path', path),
+      license: _requiredString(json, 'license', path),
+      credit: _requiredString(json, 'credit', path),
+    );
+  }
+
+  final String id;
+  final String kind;
+  final String status;
+  final String? path;
+  final String license;
+  final String credit;
 }
 
 final class CourseLesson {
@@ -270,9 +316,13 @@ Map<String, T> _indexById<T>(
 List<Map<String, Object?>> _objects(
   Map<String, Object?> json,
   String key,
-  String path,
-) {
+  String path, {
+  bool required = true,
+}) {
   final value = json[key];
+  if (value == null && !required) {
+    return const [];
+  }
   if (value is! List) {
     throw CourseContentException('$path.$key must be a list.');
   }

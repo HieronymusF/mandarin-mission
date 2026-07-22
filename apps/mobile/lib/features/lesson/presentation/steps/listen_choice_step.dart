@@ -4,8 +4,8 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../../../../core/theme/app_layout.dart';
 import '../../../../data/content/course_content_models.dart';
 import '../../../../shared/presentation/app_leading_row.dart';
+import '../../../../shared/presentation/audio_player_bar.dart';
 import '../../../../shared/presentation/hanzi_pinyin_text.dart';
-import '../lesson_audio_notice.dart';
 
 class ListenChoiceStep extends StatelessWidget {
   const ListenChoiceStep({
@@ -25,17 +25,16 @@ class ListenChoiceStep extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
     final selectedIsCorrect = selectedOptionId == step.itemId;
+    final audioAssetPath = step.itemId == null
+        ? null
+        : package.audioAssetPathForItem(step.itemId!);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        ShadButton.secondary(
-          key: const Key('replay-order-action'),
-          width: double.infinity,
-          height: AppLayout.controlHeight,
-          onPressed: () => showLessonAudioUnavailable(context),
-          leading: const Icon(LucideIcons.volume2, size: 16),
-          mainAxisAlignment: MainAxisAlignment.start,
-          child: const Text('Replay the order'),
+        AudioPlayerBar(
+          key: const Key('listen-audio-player'),
+          assetPath: audioAssetPath,
+          showLabel: false,
         ),
         const SizedBox(height: AppSpacing.md),
         for (final itemId in step.optionItemIds) ...[
