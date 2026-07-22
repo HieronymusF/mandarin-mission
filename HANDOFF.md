@@ -1,6 +1,6 @@
 # Mandarin Mission 项目交接
 
-> 最后更新：2026-07-22 11:57（Asia/Hong_Kong）
+> 最后更新：2026-07-22 12:46（Asia/Hong_Kong）
 > 项目：`D:\mandarin-mission\mandarin-mission`
 > 分支/工作树：`feat/audio-playback-recording`，音频模块功能分支
 
@@ -8,7 +8,7 @@
 
 ## 当前正在做什么
 
-- 音频播放与录音模块正在 `feat/audio-playback-recording` 功能分支继续实现；全部改动仍为本地未提交状态。
+- 音频播放与录音模块已提交并推送到 `origin/feat/audio-playback-recording`；本地分支跟踪远端，当前未创建 PR。
 - `record` 包兼容性阻塞已解除，核心媒体架构、权限状态、录音回放、本地降级和内容资产路径接线已通过自动验证。
 - 媒体组件级 Widget 测试与课程媒体生命周期自动清理已补齐，当前重点转为真人音频资产和真实 Android 设备验证。
 - 已新增中文 `repo-docs/` living guide；后续行为代码或稳定项目认知变化要按 `AGENTS.md` 的 repo-docs sync gate 核对最小 owning page。
@@ -27,7 +27,7 @@
 - PR [#12](https://github.com/HieronymusF/mandarin-mission/pull/12) 已在三项 CI 全部通过后合并，merge commit 为 `5b20cd5`。
 - `main` 最后一次交接刷新提交为 `8ebcb77`，当时本地与 `origin/main` 同步，main push CI 三项 job 全部通过。
 - 已按 `maintain-project-continuity` 建立根目录 `AGENT_LESSONS.md`，并把它接入 `AGENTS.md` 与详细交接基线的强制启动顺序。
-- 本次交接材料保留为本地未提交改动，供新对话或其他 agent 直接读取。
+- 共享 UI 基线提交为 `85f3141`，音频/录音功能提交为 `602f2d7`，项目准则与 repo-docs 提交为 `e581459`；三笔均已推送到远端功能分支。
 - 曾误建的 PR #13 已关闭且未合并，远端临时分支和本地临时提交均已移除，不影响 `main` 历史。
 - `record` 已固定为 `7.1.1`；解析结果为 `record_linux 2.1.1`、`record_platform_interface 2.1.0`，与当前 Flutter 3.44.6 / Dart 3.12.2 兼容。
 - 已修复设置页递归、本地录音被当作 asset 回放、权限分支不可达、dBFS 音量未归一化、录音到达时长上限后无法停止，以及播放结束后回放状态不复位。
@@ -55,7 +55,7 @@
 
 ## 下一步要做什么
 
-1. **新对话先复核本地 diff**：按 `AGENTS.md` 的四项行为约束检查现有工作区改动，保护音频工作；不要因为交接写着“完成”就跳过当前代码核验。
+1. **新对话先核验 Git 状态**：确认 `feat/audio-playback-recording` 与远端同步且工作树干净；不要把本文记录的提交或验证结果直接当作当前事实。
 2. **处理候选布局组件**：在真实 UI 任务出现两个生产调用点时再采用；若长期只有测试/文档引用，不继续增加抽象，并在独立授权下考虑删除。
 3. **加入真人音频资产**：获得内部录音或许可明确的普通话录音后，放入 App asset 目录，在内容 JSON 中写 `path`、`sha256`、`license`、`credit` 并把状态改为 `ready`；不得用未审核 TTS 冒充真人音频。
 4. **真实设备测试**：在 Android 设备上验证：
@@ -65,7 +65,7 @@
    - 音量检查和提示
    - 服务不可用时的降级路径
 5. **真机生命周期验收**：验证来电、切后台、恢复和页面离开时的播放器/录音器状态与临时文件清理；自动停止/清理代码已完成，按真机结果做最小修正。
-6. **等待用户明确 Git 授权**：只有用户要求后才提交、推送或创建 PR。
+6. **按用户要求决定 PR**：当前分支已推送但未创建 PR；只有用户明确要求后才创建、标记 ready 或合并。
 7. **完成 M1 里程碑**：在真实设备完成课程 → 重启 → 进度保留 → 到期复习闭环。
 
 ## 哪些坑不要再踩
