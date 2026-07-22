@@ -242,7 +242,7 @@ class _HanziWritingBoardState extends State<HanziWritingBoard> {
       child: AspectRatio(
         aspectRatio: aspectRatio,
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.md),
           child: RawGestureDetector(
             behavior: HitTestBehavior.opaque,
             gestures: widget.phase == HanziWritingPhase.compare
@@ -370,7 +370,7 @@ class _WritingComparison extends StatelessWidget {
           padding: AppLayout.compactCardPadding,
           decoration: BoxDecoration(
             color: theme.colorScheme.muted,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.md),
           ),
           child: Column(
             children: [
@@ -480,7 +480,7 @@ class _WritingPhaseRow extends StatelessWidget {
                     color: active
                         ? ShadTheme.of(context).colorScheme.primary
                         : ShadTheme.of(context).colorScheme.muted,
-                    borderRadius: BorderRadius.circular(999),
+                    borderRadius: BorderRadius.circular(AppRadius.pill),
                   ),
                 ),
               );

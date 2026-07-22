@@ -11,9 +11,11 @@ abstract final class AppSpacing {
 }
 
 abstract final class AppRadius {
+  static const double xs = 4;
   static const double sm = 8;
   static const double md = 12;
   static const double lg = 16;
+  static const double pill = 999;
 }
 
 abstract final class AppLayout {
@@ -29,6 +31,8 @@ abstract final class AppLayout {
   static const double iconTileSize = 48;
   static const double noticeIconSlot = 24;
   static const double listIconSlot = 32;
+  static const double listItemMinHeight = 72;
+  static const double trailingActionMinWidth = 44;
 
   static const EdgeInsets cardPadding = EdgeInsets.all(AppSpacing.lg);
   static const EdgeInsets compactCardPadding = EdgeInsets.all(AppSpacing.md);

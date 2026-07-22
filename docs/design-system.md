@@ -4,11 +4,13 @@
 
 ## 1. 来源与优先级
 
-1. 可执行令牌：`apps/mobile/lib/core/theme/app_theme.dart` 与 `apps/mobile/lib/core/theme/app_layout.dart`。
-2. 本文档：组件选择、页面结构和使用边界。
-3. Flutter 组件实现：[shadcn_ui](https://pub.dev/packages/shadcn_ui)。
-4. 视觉原则与组件目录：[shadcn/ui](https://ui.shadcn.com/docs)。
-5. 扩展模式与素材发现目录：[awesome-shadcn-ui](https://github.com/birobirobiro/awesome-shadcn-ui)。
+1. 根目录执行准则：`WIDGET_LIBRARY.md`。
+2. 可执行令牌：`apps/mobile/lib/core/theme/app_theme.dart`、`apps/mobile/lib/core/theme/app_layout.dart` 与 `apps/mobile/lib/core/theme/app_text_styles.dart`。
+3. 项目级 Widget 入口：`apps/mobile/lib/shared/presentation/app_widgets.dart`。
+4. 本文档：组件选择、页面结构和使用边界。
+5. Flutter 组件实现：[shadcn_ui](https://pub.dev/packages/shadcn_ui)。
+6. 视觉原则与组件目录：[shadcn/ui](https://ui.shadcn.com/docs)。
+7. 扩展模式与素材发现目录：[awesome-shadcn-ui](https://github.com/birobirobiro/awesome-shadcn-ui)。
 
 `ui.shadcn.com` 的官方代码面向 React，不能直接放入 Flutter App。项目实际依赖 Flutter 移植版 `shadcn_ui: 0.55.0`，版本固定在 `apps/mobile/pubspec.yaml` 和 lockfile 中；官方站点用于选择组件、命名状态和理解组合方式。
 
@@ -27,7 +29,7 @@ Figma 不再是开始前端开发的必经门槛。品牌插画、商店素材�
 
 ## 3. 语义令牌
 
-颜色与字体令牌以 `app_theme.dart` 为准，布局与尺寸令牌以 `app_layout.dart` 为准。
+颜色令牌以 `app_theme.dart` 为准，布局与尺寸令牌以 `app_layout.dart` 为准，字体尺寸、字重、行高和中英文字体回退以 `app_text_styles.dart` 为准。
 
 | 令牌 | 当前值 | 用途 |
 |---|---|---|
