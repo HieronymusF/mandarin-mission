@@ -1,6 +1,6 @@
 # Mandarin Mission 项目交接
 
-> 最后更新：2026-07-22 12:46（Asia/Hong_Kong）
+> 最后更新：2026-07-22 12:47（Asia/Hong_Kong）
 > 项目：`D:\mandarin-mission\mandarin-mission`
 > 分支/工作树：`feat/audio-playback-recording`，音频模块功能分支
 
@@ -28,6 +28,7 @@
 - `main` 最后一次交接刷新提交为 `8ebcb77`，当时本地与 `origin/main` 同步，main push CI 三项 job 全部通过。
 - 已按 `maintain-project-continuity` 建立根目录 `AGENT_LESSONS.md`，并把它接入 `AGENTS.md` 与详细交接基线的强制启动顺序。
 - 共享 UI 基线提交为 `85f3141`，音频/录音功能提交为 `602f2d7`，项目准则与 repo-docs 提交为 `e581459`；三笔均已推送到远端功能分支。
+- 推送后远端 SHA 已与本地核对一致；`.github/workflows/core-ci.yml` 只监听 `main` push 和面向 `main` 的 PR，因此本次功能分支 push 没有产生 GitHub Actions 运行，不能写成远端 CI 已通过。
 - 曾误建的 PR #13 已关闭且未合并，远端临时分支和本地临时提交均已移除，不影响 `main` 历史。
 - `record` 已固定为 `7.1.1`；解析结果为 `record_linux 2.1.1`、`record_platform_interface 2.1.0`，与当前 Flutter 3.44.6 / Dart 3.12.2 兼容。
 - 已修复设置页递归、本地录音被当作 asset 回放、权限分支不可达、dBFS 音量未归一化、录音到达时长上限后无法停止，以及播放结束后回放状态不复位。
@@ -65,7 +66,7 @@
    - 音量检查和提示
    - 服务不可用时的降级路径
 5. **真机生命周期验收**：验证来电、切后台、恢复和页面离开时的播放器/录音器状态与临时文件清理；自动停止/清理代码已完成，按真机结果做最小修正。
-6. **按用户要求决定 PR**：当前分支已推送但未创建 PR；只有用户明确要求后才创建、标记 ready 或合并。
+6. **按用户要求决定 PR**：当前分支已推送但未创建 PR；只有用户明确要求后才创建、标记 ready 或合并。创建面向 `main` 的 PR 后再等待并核验三项 CI。
 7. **完成 M1 里程碑**：在真实设备完成课程 → 重启 → 进度保留 → 到期复习闭环。
 
 ## 哪些坑不要再踩
