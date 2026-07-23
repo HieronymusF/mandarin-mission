@@ -2,6 +2,7 @@
 
 ## 2026-07-23
 
+- 17:04 +08:00：完整功能批次提交为 `610af84`，推送到 `feat/audio-playback-recording`，PR #14 在 `mobile`、`learning-core`、`api` 三项远端 CI 全部成功后以 merge commit `161c8e1` 合并到 `main`。本地 `main` 已快进到同一提交；功能分支保留。Synced through 161c8e1。
 - 16:37 +08:00：修复 Journey 咖啡课程卡硬编码 `Not started` 的问题，改为读取持久化课程进度，完成后显示 100% 与 `Practice again`。Sony `XQ-DQ72` 已完成课程、覆盖安装/两次冷启动进度保留、8 项必做到期复习保存，以及飞行模式完整重走课程；结束后飞行模式已关闭。目标测试先失败再通过；移动端 format、analyze（0 issues）、全量 52 tests 和 debug APK 通过。真实来电因设备无 SIM 延期。Synced through 8072279；工作树仍未提交。
 - 16:12 +08:00：同步 Sony `XQ-DQ72` 权限与步骤生命周期真机验收：普通拒绝后的说明/重试、永久拒绝后的 `Open Settings`、设置授权返回后的实时权限刷新，以及录音中从第 6 步返回第 5 步的停止和临时文件清理均通过。修复权限状态缓存未在 `resumed` 刷新、课程步骤返回未等待媒体清理两个问题。验证：移动端 format、analyze（0 issues）、全量 52 tests、debug APK、Sony 真机界面/日志/缓存；Synced through 8072279，工作树仍未提交。
 - 15:52 +08:00：修正第 7 步预设对话的静态空壳行为。页面初始隐藏答案并禁用发送，用户需选择 `I said it aloud` 或 `Use phrase ticket`；phrase ticket 会显示整句，随后 `Send reply` 才能进入第 8 步。验证：移动端 format、analyze、全量 51 tests、debug APK，以及 Sony `XQ-DQ72` 两条交互路径和进入第 8 步的真机验收。Synced through 8072279；工作树仍未提交。
@@ -25,5 +26,7 @@
 - 同步媒体组件行为：loading 反馈、不可用降级优先级，以及 4 项组件 Widget 测试。
 - 验证：移动端 format、analyze、46 tests 和 debug APK 通过；`validate_repo_docs.py` 为 0 errors。代码地图因每个目录按规则重复“重要代码”表头保留 1 条 broad-value warning。
 - 当时基线为 8ebcb77；同时核对 2026-07-22 当前 `feat/audio-playback-recording` 未提交工作树。
+
+当前同步锚点：Synced through 161c8e1。
 
 后续只记录会改变读者模型、阅读路径或证据范围的更新；临时调试状态继续放在根目录 `HANDOFF.md`。

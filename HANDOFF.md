@@ -1,8 +1,8 @@
 # Mandarin Mission 项目交接
 
-> 最后更新：2026-07-23 16:37（Asia/Hong_Kong）
+> 最后更新：2026-07-23 17:04（Asia/Hong_Kong）
 > 项目：`D:\mandarin-mission\mandarin-mission`
-> 分支/工作树：`feat/audio-playback-recording`，音频模块功能分支
+> 分支/工作树：`main`，已快进到 `origin/main`
 
 本文件是本项目唯一的实时交接入口。每次新对话或新任务必须先按根目录 `AGENTS.md` 的顺序读取全局协议、本文件、`AGENT_LESSONS.md` 和 `docs/handoff/ai-agent-handoff.md`，再核验仓库与 GitHub 当前状态。`AGENT_LESSONS.md` 保存去重后的项目特定复用经验；详细且相对稳定的项目基线在 `docs/handoff/ai-agent-handoff.md`。
 
@@ -11,12 +11,13 @@
 - Sony `XQ-DQ72`（Android 15，序列号 `QV770PBLJ4`）真机验收已覆盖书写跟手、包内音频播放、首次授权、普通拒绝/重试、永久拒绝/打开设置/返回恢复、录音、音量提示、回放、重新录制、Home 和步骤返回清理。只剩真实来电中断/恢复；最终课程音色也未获用户认可。
 - 第 7 步原先只有静态答案与可直接推进的 `Send reply`，无法验证用户完成对话。现已改为初始隐藏答案并禁用发送，选择 `I said it aloud` 或 `Use phrase ticket` 后才可进入第 8 步；两条路径已在 Sony 真机通过。
 - 第 7 步 `Reply ready` 状态卡的短文案曾因内容列收缩而左对齐；现已将状态卡内容列横向撑满并居中。几何回归测试与 Sony 同状态前后截图通过，修复后截图为 `mandarin-step7-reply-centered.png`。
-- 2026-07-23 新会话已重新核验实际 Git 根目录、分支和工作树：`feat/audio-playback-recording` 的本地 HEAD、upstream 与远端仍一致指向 `8072279`，进入会话前的全部未提交改动仍保留；Sony 真机权限、可自主触发生命周期、本地学习闭环与飞行模式课程已经完成。真实来电因该设备无 SIM 无法执行。
-- 已按 2026-07-23 用户提供的小红书“Claude Code Project Structure”思路完成 Codex 等价结构调整：根 `AGENTS.md` 只保留稳定规则与路由，产品/架构、局部上下文、重复验证和机械护栏分别下沉到 docs、局部 `AGENTS.md`、项目 Skill、Hook 与脚本。全部改动仍在当前未提交工作树中。
-- 音频播放与录音模块已提交并推送到 `origin/feat/audio-playback-recording`；本地分支跟踪远端，当前未创建 PR。
+- PR [#14](https://github.com/HieronymusF/mandarin-mission/pull/14) 已在 `mobile`、`learning-core`、`api` 三项远端 CI 全部成功后合并到 `main`；merge commit 为 `161c8e1`，功能分支 head 为 `610af84`。本地 `main` 已快进到同一 merge commit。
+- Sony 真机权限、可自主触发生命周期、本地学习闭环与飞行模式课程已经完成。真实来电因该设备无 SIM 无法执行。
+- 已按 2026-07-23 用户提供的小红书“Claude Code Project Structure”思路完成 Codex 等价结构调整：根 `AGENTS.md` 只保留稳定规则与路由，产品/架构、局部上下文、重复验证和机械护栏分别下沉到 docs、局部 `AGENTS.md`、项目 Skill、Hook 与脚本；相关改动已随 PR #14 合并。
+- 音频播放与录音模块及本轮真机修复已进入 `main`；远端功能分支保留，未删除。
 - `record` 包兼容性阻塞已解除，核心媒体架构、权限状态、录音回放、本地降级和内容资产路径接线已通过自动验证。
 - 媒体组件级 Widget 测试、课程媒体生命周期自动清理和复习 listening 真实音频接线已补齐；三条 Apache-2.0 Kokoro TTS 音频只作为开发占位接入，用户评价为“能用但不满意”，后续允许换用许可清晰且听感更好的商用 TTS。当前真机重点只剩真实来电分支。
-- 当前工作树新增播放/录音/录音回放错误原地重试、普通麦克风权限拒绝反馈及回归测试，尚未提交或推送；进入本轮前已有的 `AGENTS.md`、`HANDOFF.md` 修改已完整保留。
+- 播放/录音/录音回放错误原地重试、普通麦克风权限拒绝反馈及回归测试均已随 PR #14 合并。
 - 已新增中文 `repo-docs/` living guide；后续行为代码或稳定项目认知变化要按 `AGENTS.md` 的 repo-docs sync gate 核对最小 owning page。
 - UI 基线已扩展为可供 AI 直接调用的项目 Widget 库；后续页面和对齐修复必须按根目录 `WIDGET_LIBRARY.md` 执行。
 - 已完成本轮开发方法纠偏并准备交给新对话：所有非琐碎任务先暴露假设和成功标准，Bug 先复现，修改保持精准，验证必须对应用户可见结果。
@@ -92,7 +93,7 @@
 3. **最终音色后续替换**：当前 `zf_xiaoxiao` 继续服务开发流程，不阻塞工程推进；扩展正式课程前调研并选择更自然的真人或商用 TTS，按 `docs/development-workflow.md` 的音频门禁重新核验和试听。
 4. **真实设备剩余测试**：服务不可用时的降级路径仍只有自动测试证据；首次授权、普通拒绝/重试、永久拒绝/设置恢复、播放、录音、音量、回放和重录已通过。
 5. **真机生命周期剩余验收**：只剩真实来电中断/恢复；Home 切后台和录音中从第 6 步返回第 5 步已通过，按来电结果做最小修正。
-6. **按用户要求决定 PR**：当前分支已推送但未创建 PR；只有用户明确要求后才创建、标记 ready 或合并。创建面向 `main` 的 PR 后再等待并核验三项 CI。
+6. **发布已完成**：PR #14 已在三项 CI 全部成功后合并到 `main`；后续发布仍需新的用户明确授权，不沿用本次授权。
 7. **继续关闭 M1 其他条件**：真机课程 → 重启 → 进度保留 → 到期复习和飞行模式课程已通过；剩余重点是最终课程音频、缺失步骤类型与正式资产。
 
 ## 哪些坑不要再踩
