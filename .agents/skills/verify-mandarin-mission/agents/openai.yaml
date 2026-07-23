@@ -1,0 +1,4 @@
+interface:
+  display_name: "Verify Mandarin Mission"
+  short_description: "Run risk-matched checks for this repository"
+  default_prompt: "Use $verify-mandarin-mission to select and run the checks required for my current changes."

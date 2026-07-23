@@ -130,6 +130,7 @@ class RecordingControls extends ConsumerWidget {
     // 检查权限状态
     if (!recordingState.hasPermission) {
       return _PermissionRequestCard(
+        permissionDenied: recordingState.isPermissionDenied,
         onRequestPermission: controller.requestPermission,
       );
     }
@@ -195,6 +196,17 @@ class RecordingControls extends ConsumerWidget {
               ),
               textAlign: TextAlign.center,
             ),
+            const SizedBox(height: AppSpacing.sm),
+            ShadButton.outline(
+              onPressed: recordingState.isPlaybackError
+                  ? controller.playRecording
+                  : controller.startRecording,
+              child: Text(
+                recordingState.isPlaybackError
+                    ? 'Try playback again'
+                    : 'Try recording again',
+              ),
+            ),
           ],
         ],
       ),
@@ -210,8 +222,12 @@ class RecordingControls extends ConsumerWidget {
 
 /// 权限请求卡片
 class _PermissionRequestCard extends StatelessWidget {
-  const _PermissionRequestCard({required this.onRequestPermission});
+  const _PermissionRequestCard({
+    required this.permissionDenied,
+    required this.onRequestPermission,
+  });
 
+  final bool permissionDenied;
   final VoidCallback onRequestPermission;
 
   @override
@@ -229,7 +245,9 @@ class _PermissionRequestCard extends StatelessWidget {
               const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Text(
-                  'Microphone Access',
+                  permissionDenied
+                      ? 'Microphone access denied'
+                      : 'Microphone Access',
                   style: theme.textTheme.small.copyWith(
                     fontWeight: FontWeight.w500,
                   ),
@@ -239,13 +257,19 @@ class _PermissionRequestCard extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.sm),
           Text(
-            'This lesson requires microphone access for speaking practice. Your recordings are stored locally and never uploaded.',
+            permissionDenied
+                ? 'You can try again or continue below without recording and complete a self-check.'
+                : 'This lesson requires microphone access for speaking practice. Your recordings are stored locally and never uploaded.',
             style: theme.textTheme.small,
           ),
           const SizedBox(height: AppSpacing.md),
           ShadButton(
             onPressed: onRequestPermission,
-            child: const Text('Allow Microphone Access'),
+            child: Text(
+              permissionDenied
+                  ? 'Try Microphone Access Again'
+                  : 'Allow Microphone Access',
+            ),
           ),
         ],
       ),

@@ -199,6 +199,8 @@ class RecordingControllerState {
     this.errorMessage,
     this.isUnavailable = false,
     this.isPermanentlyDenied = false,
+    this.isPermissionDenied = false,
+    this.isPlaybackError = false,
   });
 
   final bool isRequestingPermission;
@@ -212,6 +214,8 @@ class RecordingControllerState {
   final String? errorMessage;
   final bool isUnavailable;
   final bool isPermanentlyDenied;
+  final bool isPermissionDenied;
+  final bool isPlaybackError;
 
   RecordingControllerState copyWith({
     bool? isRequestingPermission,
@@ -225,6 +229,8 @@ class RecordingControllerState {
     Object? errorMessage = _unset,
     bool? isUnavailable,
     bool? isPermanentlyDenied,
+    bool? isPermissionDenied,
+    bool? isPlaybackError,
   }) {
     return RecordingControllerState(
       isRequestingPermission:
@@ -243,6 +249,8 @@ class RecordingControllerState {
           : errorMessage as String?,
       isUnavailable: isUnavailable ?? this.isUnavailable,
       isPermanentlyDenied: isPermanentlyDenied ?? this.isPermanentlyDenied,
+      isPermissionDenied: isPermissionDenied ?? this.isPermissionDenied,
+      isPlaybackError: isPlaybackError ?? this.isPlaybackError,
     );
   }
 
@@ -282,6 +290,7 @@ class RecordingController extends Notifier<RecordingControllerState> {
           newState = state.copyWith(
             isRequestingPermission: false,
             hasPermission: true,
+            isPermissionDenied: false,
           );
           break;
         case RecordingState.recording:
@@ -289,6 +298,7 @@ class RecordingController extends Notifier<RecordingControllerState> {
             isRecording: true,
             hasRecording: false,
             errorMessage: null,
+            isPlaybackError: false,
           );
           break;
         case RecordingState.playing:
@@ -309,6 +319,7 @@ class RecordingController extends Notifier<RecordingControllerState> {
             isRecording: false,
             isPlayingBack: false,
             errorMessage: 'Recording error. Please try again.',
+            isPlaybackError: false,
           );
           break;
         case RecordingState.unavailable:
@@ -334,9 +345,14 @@ class RecordingController extends Notifier<RecordingControllerState> {
       audioState,
     ) {
       if (!state.isPlayingBack) return;
-      if (audioState == AudioState.stopped ||
-          audioState == AudioState.error ||
+      if (audioState == AudioState.error ||
           audioState == AudioState.unavailable) {
+        state = state.copyWith(
+          isPlayingBack: false,
+          errorMessage: 'Recording playback failed. Please try again.',
+          isPlaybackError: true,
+        );
+      } else if (audioState == AudioState.stopped) {
         state = state.copyWith(isPlayingBack: false);
       }
     });
@@ -358,12 +374,14 @@ class RecordingController extends Notifier<RecordingControllerState> {
   /// 请求麦克风权限
   Future<void> requestPermission() async {
     final recordingService = ref.read(recordingServiceProvider);
-    await recordingService.requestPermission();
+    final granted = await recordingService.requestPermission();
     final available = await recordingService.isAvailable;
+    final permanentlyDenied = await recordingService.isPermanentlyDenied;
     state = state.copyWith(
       isRequestingPermission: false,
       hasPermission: await recordingService.hasPermission,
-      isPermanentlyDenied: await recordingService.isPermanentlyDenied,
+      isPermanentlyDenied: permanentlyDenied,
+      isPermissionDenied: !granted && !permanentlyDenied && available,
       isUnavailable: !available,
     );
   }
@@ -374,6 +392,22 @@ class RecordingController extends Notifier<RecordingControllerState> {
     await recordingService.openAppSettings();
   }
 
+  Future<void> refreshPermissionState() async {
+    final recordingService = ref.read(recordingServiceProvider);
+    final available = await recordingService.isAvailable;
+    final hasPermission = await recordingService.hasPermission;
+    final permanentlyDenied =
+        !hasPermission && await recordingService.isPermanentlyDenied;
+    if (!ref.mounted) return;
+    state = state.copyWith(
+      isRequestingPermission: false,
+      hasPermission: hasPermission,
+      isPermanentlyDenied: permanentlyDenied,
+      isPermissionDenied: hasPermission ? false : state.isPermissionDenied,
+      isUnavailable: !available,
+    );
+  }
+
   /// 开始录音
   Future<void> startRecording() async {
     final recordingService = ref.read(recordingServiceProvider);
@@ -382,6 +416,7 @@ class RecordingController extends Notifier<RecordingControllerState> {
       recordingPath: null,
       recordingDuration: 0.0,
       errorMessage: null,
+      isPlaybackError: false,
     );
     await recordingService.startRecording();
   }
@@ -403,6 +438,8 @@ class RecordingController extends Notifier<RecordingControllerState> {
       hasRecording: false,
       recordingPath: null,
       recordingDuration: 0.0,
+      errorMessage: null,
+      isPlaybackError: false,
     );
   }
 
@@ -414,7 +451,11 @@ class RecordingController extends Notifier<RecordingControllerState> {
 
     // 使用 AudioService 来播放录音
     final audioService = ref.read(audioServiceProvider);
-    state = state.copyWith(isPlayingBack: true);
+    state = state.copyWith(
+      isPlayingBack: true,
+      errorMessage: null,
+      isPlaybackError: false,
+    );
     await audioService.playAudio(state.recordingPath!);
   }
 
@@ -422,7 +463,11 @@ class RecordingController extends Notifier<RecordingControllerState> {
   Future<void> stopPlayback() async {
     final audioService = ref.read(audioServiceProvider);
     await audioService.stopAudio();
-    state = state.copyWith(isPlayingBack: false);
+    state = state.copyWith(
+      isPlayingBack: false,
+      errorMessage: null,
+      isPlaybackError: false,
+    );
   }
 
   /// 停止当前课程的媒体活动并清理临时录音。
@@ -445,6 +490,7 @@ class RecordingController extends Notifier<RecordingControllerState> {
       hasPermission: state.hasPermission,
       isUnavailable: state.isUnavailable,
       isPermanentlyDenied: state.isPermanentlyDenied,
+      isPermissionDenied: state.isPermissionDenied,
     );
   }
 

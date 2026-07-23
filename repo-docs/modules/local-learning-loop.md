@@ -26,6 +26,8 @@ App 的核心不变量是离线可学。用户动作先写本地事务，UI 在�
 
 课程完成也使用同一原则：初始化缺失掌握度、更新 `lesson_progress_entries`、追加课程事件。已完成课程再次提交会直接返回，避免重复初始化。
 
+Journey 的 `cafe-01` 卡片通过 FutureProvider 读取这条持久化进度；完成事务成功后课程页显式失效查询，再返回 Journey。这样返回页和冷启动都会从数据库得到 `completed`，而不是继续显示硬编码的 0%。Sony `XQ-DQ72` 已验证完成状态跨 APK 覆盖与冷启动保留，并完成 8 项必做到期复习；飞行模式下完整课程也通过。
+
 ## 四维状态与 0—5 箱
 
 每个知识点分别保存 `meaning`、`listening`、`tone`、`hanzi`。 [复习调度器](../../packages/learning_core/lib/src/review_scheduler.dart) 是纯 Dart 确定性规则：

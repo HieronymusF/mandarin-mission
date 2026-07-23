@@ -154,6 +154,7 @@ class _LessonPlayerPageState extends ConsumerState<_LessonPlayerPage>
     with WidgetsBindingObserver {
   Future<void>? _mediaCleanup;
   late final Future<void> Function() _endMediaSessionAction;
+  late final Future<void> Function() _refreshRecordingPermissionAction;
 
   @override
   void initState() {
@@ -161,18 +162,23 @@ class _LessonPlayerPageState extends ConsumerState<_LessonPlayerPage>
     _endMediaSessionAction = ref
         .read(recordingControllerProvider.notifier)
         .endSession;
+    _refreshRecordingPermissionAction = ref
+        .read(recordingControllerProvider.notifier)
+        .refreshPermissionState;
     WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state != AppLifecycleState.resumed) {
-      _endMediaSession();
+    if (state == AppLifecycleState.resumed) {
+      unawaited(_refreshRecordingPermissionAction());
+      return;
     }
+    unawaited(_endMediaSession());
   }
 
-  void _endMediaSession() {
-    if (_mediaCleanup != null) return;
+  Future<void> _endMediaSession() {
+    if (_mediaCleanup != null) return _mediaCleanup!;
 
     final cleanup = _endMediaSessionAction();
     _mediaCleanup = cleanup;
@@ -183,12 +189,13 @@ class _LessonPlayerPageState extends ConsumerState<_LessonPlayerPage>
         }
       }),
     );
+    return cleanup;
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _endMediaSession();
+    unawaited(_endMediaSession());
     super.dispose();
   }
 
@@ -225,7 +232,9 @@ class _LessonPlayerPageState extends ConsumerState<_LessonPlayerPage>
                 LessonHeader(
                   lesson: lesson,
                   stepIndex: state.stepIndex,
-                  onBack: () {
+                  onBack: () async {
+                    await _endMediaSession();
+                    if (!context.mounted) return;
                     if (state.stepIndex == 0) {
                       context.go('/');
                     } else {
@@ -434,15 +443,20 @@ class _LessonPlayerPageState extends ConsumerState<_LessonPlayerPage>
         );
       case 'dialogue_turn':
         final dialogue = package.dialogue(step.dialogueId!);
+        final replyMethod = state.dialogueReplyMethod;
         return _StepPresentation(
           eyebrow: 'THE CHALLENGE',
           body: DialogueStep(
             package: package,
             dialogue: dialogue,
             supportText: step.text,
+            selectedReplyMethod: replyMethod,
+            onReplyMethodChanged: controller.selectDialogueReplyMethod,
           ),
-          primaryLabel: 'Send reply',
-          onPrimary: () async => next(),
+          primaryLabel: replyMethod == null
+              ? 'Choose how to reply'
+              : 'Send reply',
+          onPrimary: replyMethod == null ? null : () async => next(),
         );
       case 'summary':
         return _StepPresentation(
@@ -455,6 +469,7 @@ class _LessonPlayerPageState extends ConsumerState<_LessonPlayerPage>
               lesson: lesson,
             );
             if (completed && context.mounted) {
+              ref.invalidate(lessonProgressProvider(lesson.id));
               context.go('/');
             }
           },

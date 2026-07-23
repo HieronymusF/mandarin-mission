@@ -14,7 +14,7 @@ void main() {
 
       expect(package.schemaVersion, 1);
       expect(package.status, 'draft');
-      expect(package.version, '0.1.0');
+      expect(package.version, '0.1.3');
       expect(package.lessonsById.keys, ['cafe-01']);
       expect(package.lesson('cafe-01').steps, hasLength(8));
       expect(
@@ -30,7 +30,14 @@ void main() {
         '您好，您想喝什么？',
       );
       expect(package.assetsById.keys, contains('audio-kafei'));
-      expect(package.audioAssetPathForItem('noun-kafei'), isNull);
+      expect(
+        package.audioAssetPathForItem('noun-kafei'),
+        'assets/audio/kokoro/kafei.wav',
+      );
+      final audioBytes = await rootBundle.load(
+        package.audioAssetPathForItem('noun-kafei')!,
+      );
+      expect(audioBytes.lengthInBytes, greaterThan(44));
     });
 
     test('resolves only ready audio assets to their bundled path', () async {

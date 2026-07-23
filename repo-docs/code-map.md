@@ -1,6 +1,6 @@
 # Mandarin Mission 代码地图
 
-本页覆盖仓库的一方运行时代码、内容契约和 CI。建议先读 [点咖啡课程的真实运行路径](walkthroughs/one-real-run.md)，再用这里回答“这类修改从哪里开始”。
+本页覆盖仓库的一方运行时代码、内容契约、Agent 工作流和 CI。建议先读 [点咖啡课程的真实运行路径](walkthroughs/one-real-run.md)，再用这里回答“这类修改从哪里开始”。
 
 | 路径 | 职责 | 关键代码 | 与主流程的关系 |
 | --- | --- | --- | --- |
@@ -12,6 +12,9 @@
 | `packages/learning_core/lib/` | 保存不依赖 Flutter 的学习规则与内容校验 | `ReviewScheduler`、`ContentValidator` | 决定内容能否进入 App、复习何时到期 |
 | `content/` | 保存版本化课程 Fixture、Schema 与 Flutter asset 常量 | `cafe-course.json`、`course-package.schema.json` | 是当前“点咖啡”课程的输入 |
 | `services/api/` | 提供 Go 容器与最小 HTTP 骨架 | `main`、`httpapi.New` | 当前不进入本地学习闭环，只提供运维端点 |
+| `.agents/skills/` | 保存仓库可共享的 Codex 重复工作流 | `verify-mandarin-mission` | 根据 diff 选择风险匹配验证 |
+| `.codex/` | 保存可信仓库内的 Codex 配置与工具前护栏 | `config.toml`、`pre_tool_use_policy.py` | 在执行前阻止已知批量删除方式 |
+| `tools/scripts/` | 保存人工和 Skill 共用的确定性命令入口 | `verify.ps1` | 统一 mobile/core/content/api/docs 验证 |
 | `.github/workflows/` | 执行三条 CI 验证链 | `core-ci.yml` | 检查生成文件、App、规则、内容、API 和镜像 |
 
 ## `apps/mobile/lib/app/`
@@ -51,7 +54,7 @@ UI 规则的文字入口仍是根目录 `WIDGET_LIBRARY.md` 与 `docs/design-sys
 
 | 重要代码 | 功能 | 关键符号 | 调用方 / 使用方 |
 | --- | --- | --- | --- |
-| [Journey 页面](../apps/mobile/lib/features/journey/presentation/journey_page.dart) | 显示单地点任务与真实到期摘要 | `JourneyPage` | `/` 路由 |
+| [Journey 页面](../apps/mobile/lib/features/journey/presentation/journey_page.dart) | 显示单地点任务、持久化课程完成状态与真实到期摘要 | `JourneyPage` | `/` 路由、课程进度 Provider |
 | [课程状态](../apps/mobile/lib/features/lesson/application/lesson_providers.dart) | 管理步骤、答题、自评、提交与完成 | `LessonPlayerController` | 课程页面 |
 | [课程页面](../apps/mobile/lib/features/lesson/presentation/lesson_overview_page.dart) | 按 step type 组合步骤 Widget | `LessonOverviewPage` | lesson 路由 |
 | [复习状态](../apps/mobile/lib/features/review/application/review_providers.dart) | 建立最多 8 项会话并处理补救、失败重试 | `ReviewSessionController` | 复习页面、Journey 摘要 |
@@ -108,9 +111,34 @@ UI 规则的文字入口仍是根目录 `WIDGET_LIBRARY.md` 与 `docs/design-sys
 
 CI 还会重新生成 Drift 文件并要求 `git diff --exit-code`，防止 schema 与生成代码漂移。
 
+## `.agents/skills/`
+
+| 重要代码 | 功能 | 关键符号 | 调用方 / 使用方 |
+| --- | --- | --- | --- |
+| [项目验证 Skill](../.agents/skills/verify-mandarin-mission/SKILL.md) | 根据改动区域选择最小验证范围，并要求补充 UI、真机、媒体或资产证据 | `$verify-mandarin-mission` | Codex 与项目维护者 |
+
+Skill 使用 Codex `skill-creator` 的校验器验证；Codex 从仓库根或子目录启动时会扫描根 `.agents/skills/`。
+
+## `.codex/`
+
+| 重要代码 | 功能 | 关键符号 | 调用方 / 使用方 |
+| --- | --- | --- | --- |
+| [Codex 项目配置](../.codex/config.toml) | 注册 `PreToolUse` 文件安全 Hook | `hooks.PreToolUse` | 可信仓库中的 Codex 会话 |
+| [文件安全 Hook](../.codex/hooks/pre_tool_use_policy.py) | 阻止已知递归强制删除命令和多文件删除补丁 | `_blocked_reason` | Codex 工具调用 |
+
+Hook 脚本自带 `--self-test`；项目 Hook 只有在仓库受信任且用户在 `/hooks` 复核当前定义后才运行。
+
+## `tools/scripts/`
+
+| 重要代码 | 功能 | 关键符号 | 调用方 / 使用方 |
+| --- | --- | --- | --- |
+| [统一验证脚本](../tools/scripts/verify.ps1) | 执行 mobile、core、content、api、docs 或 all 范围 | `Scope`、`BuildApk`、`BuildContainer` | Skill、开发者、本地交付检查 |
+
+脚本语法可用 PowerShell Parser 检查；每个 scope 的结果仍需按 UI、真机、媒体和远端 CI 边界解释。根 `AGENTS.md` 只保存稳定规则和知识路由；`apps/mobile`、`content`、`packages/learning_core`、`services/api` 与 `docs` 使用局部 `AGENTS.md` 追加各自上下文。
+
 ## 覆盖范围
 
-- 已覆盖：上表列出的全部一方运行时代码、内容输入和 CI 入口。
+- 已覆盖：上表列出的全部一方运行时代码、内容输入、Agent 工作流和 CI 入口。
 - 汇总而未展开：Drift 生成文件、迁移快照、Flutter 平台模板；它们由生成门禁或目标平台构建验证。
 - 排除：`new-chat/` 研究资料、历史方案与普通项目文档；它们提供背景，不直接决定当前运行行为。
 - 暂缓：未来 Neon、R2、身份、订阅和 Azure Speech 适配器，因为对应一方实现尚不存在。

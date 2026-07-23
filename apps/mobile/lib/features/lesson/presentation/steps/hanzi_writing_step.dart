@@ -206,22 +206,46 @@ class HanziWritingBoard extends StatefulWidget {
 }
 
 class _HanziWritingBoardState extends State<HanziWritingBoard> {
+  late List<List<Offset>> _strokes;
+
+  @override
+  void initState() {
+    super.initState();
+    _strokes = _copyStrokes(widget.strokes);
+  }
+
+  @override
+  void didUpdateWidget(covariant HanziWritingBoard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.strokes, widget.strokes)) {
+      _strokes = _copyStrokes(widget.strokes);
+    }
+  }
+
   void _startStroke(PointerDownEvent event) {
-    final updated =
-        widget.strokes
-            .map((stroke) => List<Offset>.of(stroke))
-            .toList(growable: true)
-          ..add([event.localPosition]);
-    widget.onChanged(updated);
+    _updateStrokes(_copyStrokes(_strokes)..add([event.localPosition]));
   }
 
   void _extendStroke(PointerMoveEvent event) {
-    if (widget.strokes.isEmpty) return;
-    final updated = widget.strokes
-        .map((stroke) => List<Offset>.of(stroke))
-        .toList(growable: true);
-    updated.last.add(event.localPosition);
-    widget.onChanged(updated);
+    if (_strokes.isEmpty) return;
+    final updated = _copyStrokes(_strokes);
+    final size = context.size;
+    final characterCount = _writingCharacters(widget.hanzi).length;
+    final crossedCharacterBoundary =
+        size != null &&
+        _cellIndex(updated.last.last.dx, size.width, characterCount) !=
+            _cellIndex(event.localPosition.dx, size.width, characterCount);
+    if (crossedCharacterBoundary) {
+      updated.add([event.localPosition]);
+    } else {
+      updated.last.add(event.localPosition);
+    }
+    _updateStrokes(updated);
+  }
+
+  void _updateStrokes(List<List<Offset>> strokes) {
+    setState(() => _strokes = strokes);
+    widget.onChanged(_copyStrokes(strokes));
   }
 
   @override
@@ -264,7 +288,7 @@ class _HanziWritingBoardState extends State<HanziWritingBoard> {
               child: CustomPaint(
                 painter: _HanziWritingPainter(
                   characters: characters,
-                  strokes: widget.strokes,
+                  strokes: _strokes,
                   showGuide: guideVisible,
                   guideColor: theme.colorScheme.mutedForeground.withValues(
                     alpha: widget.phase == HanziWritingPhase.compare
@@ -282,6 +306,17 @@ class _HanziWritingBoardState extends State<HanziWritingBoard> {
       ),
     );
   }
+}
+
+List<List<Offset>> _copyStrokes(List<List<Offset>> strokes) {
+  return strokes
+      .map((stroke) => List<Offset>.of(stroke))
+      .toList(growable: true);
+}
+
+int _cellIndex(double dx, double width, int characterCount) {
+  final cellWidth = width / characterCount;
+  return (dx / cellWidth).floor().clamp(0, characterCount - 1);
 }
 
 class _DrawingActions extends StatelessWidget {

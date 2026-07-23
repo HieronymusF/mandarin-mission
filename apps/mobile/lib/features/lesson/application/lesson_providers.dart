@@ -5,12 +5,19 @@ import 'package:learning_core/learning_core.dart';
 
 import '../../../data/content/course_content_models.dart';
 import '../../../data/content/course_content_provider.dart';
+import '../../../data/local/app_database.dart';
 import '../../../data/local/app_database_provider.dart';
 import '../../../data/progress/lesson_progress_repository.dart';
 
 final lessonProgressRepositoryProvider = Provider<LessonProgressRepository>(
   (ref) => LessonProgressRepository(ref.watch(appDatabaseProvider)),
 );
+
+final lessonProgressProvider =
+    FutureProvider.family<LessonProgressEntry?, String>(
+      (ref, lessonId) =>
+          ref.watch(lessonProgressRepositoryProvider).getLesson(lessonId),
+    );
 
 final lessonContentProvider = FutureProvider.family<LessonContent, String>((
   ref,
@@ -52,6 +59,7 @@ final class LessonPlayerState {
     this.writingSelfCheck,
     this.usedWritingHint = false,
     this.writingNeedsPractice = false,
+    this.dialogueReplyMethod,
     this.isSubmitting = false,
     this.errorMessage,
     DateTime? stepEnteredAt,
@@ -67,6 +75,7 @@ final class LessonPlayerState {
   final String? writingSelfCheck;
   final bool usedWritingHint;
   final bool writingNeedsPractice;
+  final String? dialogueReplyMethod;
   final bool isSubmitting;
   final String? errorMessage;
   final DateTime stepEnteredAt;
@@ -84,6 +93,7 @@ final class LessonPlayerState {
     Object? writingSelfCheck = _unset,
     bool? usedWritingHint,
     bool? writingNeedsPractice,
+    Object? dialogueReplyMethod = _unset,
     bool? isSubmitting,
     Object? errorMessage = _unset,
     DateTime? stepEnteredAt,
@@ -106,6 +116,9 @@ final class LessonPlayerState {
           : writingSelfCheck as String?,
       usedWritingHint: usedWritingHint ?? this.usedWritingHint,
       writingNeedsPractice: writingNeedsPractice ?? this.writingNeedsPractice,
+      dialogueReplyMethod: identical(dialogueReplyMethod, _unset)
+          ? this.dialogueReplyMethod
+          : dialogueReplyMethod as String?,
       isSubmitting: isSubmitting ?? this.isSubmitting,
       errorMessage: identical(errorMessage, _unset)
           ? this.errorMessage
@@ -191,6 +204,11 @@ final class LessonPlayerController extends Notifier<LessonPlayerState> {
       usedWritingHint: usedHint,
       errorMessage: null,
     );
+  }
+
+  void selectDialogueReplyMethod(String value) {
+    if (state.isSubmitting) return;
+    state = state.copyWith(dialogueReplyMethod: value, errorMessage: null);
   }
 
   Future<bool> submitListenChoice({

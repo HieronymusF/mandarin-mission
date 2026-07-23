@@ -1,18 +1,84 @@
-# Mandarin Mission 开发记忆准则
+# Mandarin Mission Agent Guide
 
-本文件是本仓库的跨电脑、跨任务长期规则。Codex 或其他开发代理进入仓库后，必须先遵守全局 `C:\Users\Jerome\.codex\HANDOFF.md`，再按本文件规定的顺序读取项目交接；完成启动核验前不得开始分析、规划或修改代码。
+本文件只保存每个代理都必须遵守的稳定规则。产品、架构、运行与验证细节分别放在 `docs/`、局部 `AGENTS.md`、项目 Skills 和自动化脚本中；实时进度只放根目录 `HANDOFF.md`。
 
-## 1. 项目身份
+## 项目定位
 
-- 项目代号：Mandarin Mission。
-- GitHub：`https://github.com/HieronymusF/mandarin-mission`。
-- 产品：面向英语使用者的零基础简体普通话学习 App。
-- 核心承诺：用户每天用约 10 分钟，在真实场景中做到“看得懂、听得出、说得出”。
-- 开发者情况：一人独立开发。所有方案必须优先控制开发量、内容量、服务成本和长期维护成本。
-- 开发协作分工：前端采用代码优先流程，任何能修改 Flutter 代码的 AI 代理都可直接使用仓库内主题和 shadcn 组件完成 UI；不再按是否具有 Figma 插件能力分工。Figma、静态视觉稿或代码实验只用于品牌素材、复杂交互和高风险视觉方向，不是开始编码的通用门槛。
-- 当前阶段：一期工程基础已建立；包含纯 Dart 学习核心、课程 Schema/Fixture、Go API 容器、Flutter Android/iOS App 外壳、Drift v1 本地 schema、安装包内课程 Repository、由内容数据驱动的八步“点咖啡”课程播放器、简单汉字临摹与脱稿书写、课程练习与四维掌握度持久化、Journey 真实到期入口、四维本地复习与保存失败重试，以及基于 `shadcn_ui`、共享布局令牌和稳定对齐规则的代码优先 UI 基线。
-- 当前下一里程碑：完成“点咖啡”一节课的 Android 端到端垂直切片。
-- 当前下一小模块：实现真人音频播放、本地录音、回放和明确权限流程；媒体能力不可用时必须保留可完成的本地降级路径。
+- 产品：面向英语使用者的零基础简体普通话学习 App，核心体验是每天约 10 分钟完成真实场景中的理解、听辨和开口任务。
+- 团队：一人独立开发；优先控制开发量、内容量、服务成本和长期维护成本。
+- 当前范围、阻塞和下一步以 `HANDOFF.md` 为准，不在本文件复制实时状态。
+- 稳定产品与技术边界见 `docs/architecture.md`；完整方案见 `docs/开发方案.md`。
+
+## 开始任务
+
+每次新任务或上下文恢复按顺序完成：
+
+1. 阅读全局 `C:\Users\Jerome\.codex\HANDOFF.md`。
+2. 阅读本文件、根目录 `HANDOFF.md` 和 `AGENT_LESSONS.md`。
+3. 阅读 `repo-docs/README.md`；需要理解主流程时继续读 `repo-docs/walkthroughs/one-real-run.md`。
+4. 运行 `git status -sb` 与 `git log -5 --oneline --decorate`，保护现有改动并核验交接状态。
+5. 只读取与任务有关的文档和最近的局部 `AGENTS.md`；使用 `rg --files` 验证真实目录。
+6. 涉及 GitHub、第三方 SDK、商店规范、价格或云能力时，使用当前官方来源核验，不把旧记录当成事实。
+
+文档与代码冲突时，以测试、提交历史和实际运行证据判断当前事实，再修正文档；不要静默猜测。
+
+## 知识路由
+
+| 需要知道什么 | 权威入口 |
+| --- | --- |
+| 当前正在做什么、卡点、下一步 | `HANDOFF.md` |
+| 可复用的项目纠错经验 | `AGENT_LESSONS.md` |
+| 产品边界、技术基线、架构不变量 | `docs/architecture.md` |
+| 详细开发方案与阶段计划 | `docs/开发方案.md` |
+| 功能从立项到交付的流程 | `docs/development-workflow.md` |
+| 运行、验证、真机验收 | `docs/runbooks/` |
+| 不可轻易逆转的架构决定 | `docs/decisions/` |
+| 人类可读的真实行为与代码地图 | `repo-docs/` |
+| UI 组件、布局和视觉验证 | `WIDGET_LIBRARY.md`、`docs/design-system.md` |
+| 课程内容制作 | `docs/content-authoring.md` |
+| 详细环境与已完成基线 | `docs/handoff/ai-agent-handoff.md`、`docs/project-status.md` |
+
+## 局部规则
+
+Codex 会把根规则与当前目录最近的局部规则合并。进入下列区域时必须读取对应文件：
+
+- `apps/mobile/AGENTS.md`：Flutter、UI、数据持久化、媒体与移动端验证。
+- `content/AGENTS.md`：课程 Schema、稳定 ID、资产许可与内容校验。
+- `packages/learning_core/AGENTS.md`：纯 Dart 学习规则与算法测试。
+- `services/api/AGENTS.md`：Go 单体 API、云边界与服务端验证。
+- `docs/AGENTS.md`：文档归属、ADR、runbook 与实时状态边界。
+
+## 工作方式
+
+- 代码编写、Bug 修复、重构或代码审查前调用 `$karpathy-guidelines`。
+- 非琐碎任务先说明假设、歧义、取舍和可观察成功标准。
+- Bug 先建立可重复的失败证据；每一行修改都要能追溯到当前需求或失败证据。
+- 优先复用现有代码、Flutter/Dart/Go 原生能力和已安装依赖；不为单次使用建立抽象，不预建空层或未来脚手架。
+- 不用绿测试替代用户结果。UI Bug 必须保存相同页面、状态、viewport 和文字缩放下的修复前后证据。
+- 新共享组件至少要有两个真实生产调用点；测试或文档引用不算生产复用。
+- 功能任务按 `docs/development-workflow.md` 推进；验证优先调用项目 Skill `$verify-mandarin-mission` 或 `tools/scripts/verify.ps1`。
+
+## 不可违反的边界
+
+- App 本地优先；网络、语音和分析服务失败不能阻断核心课程。
+- Flutter App 不直接连接 PostgreSQL；外部供应商必须通过 Service/Adapter/Provider 边界。
+- 不在仓库、日志、分析事件或错误报告中记录密钥、Token、邮箱、原始录音、完整转写或购买票据。
+- 真实 Secret 只进入本地环境、安全密钥库或 GitHub Secrets；仓库只允许提交 `.env.example`。
+- 保留用户已有改动，不重置、不覆盖、不擅自清理工作区。
+- 禁止批量删除文件或目录。不得使用 `del /s`、`rd /s`、`rmdir /s`、`Remove-Item -Recurse`、`rm -rf`；删除时一次只处理一个已确认的明确文件路径，需要批量删除时停止并请用户手动处理。
+- 不使用 `git reset --hard`、破坏性 checkout、强制推送或静默 amend。
+- 搜索优先使用 `rg`/`rg --files`；手工修改使用补丁方式。
+
+项目级 `.codex` Hook 会拦截已知批量删除命令和一次删除多个文件的补丁。Hook 是补充护栏，不替代上述规则；首次使用或 Hook 变更后需要在 Codex `/hooks` 中复核并信任。
+
+## Git 与交付
+
+- 默认分支 `main` 必须保持可构建；功能使用独立分支和草稿 PR，除非用户明确要求，不直接提交到 `main`。
+- 修改前后运行 `git status -sb`；工作区混杂时显式暂存本任务文件，禁止 `git add -A`。
+- 可独立验收的小模块使用单独 Conventional Commit；不改写用户提交。
+- 推送前运行与风险匹配的验证。创建 PR 后必须核验当前 head SHA 对应的 CI，不能把旧 CI 当作当前结果。
+- “准备交接”默认只产生本地未提交改动；除非用户明确要求，不据此建分支、提交、推送、创建 PR 或合并。
+- 交付时说明变更、验证、提交/推送状态和已知限制；不得虚报测试、真机、CI、提交或外部操作。
 
 ## Repo docs
 
@@ -28,288 +94,9 @@ If the needed guide work is broader and not required for the current answer to b
 
 When behavior-bearing code, config, data, scripts, or tests change, compare the change with the guide before finishing unless the user asked not to touch docs. Record meaningful guide updates in `repo-docs/change-log.md` with verification and `Synced through <sha>` when git is available.
 
-## 2. 开始任何任务前
-
-每次新对话、新任务、接手或上下文恢复都必须按顺序完成，即使代理认为自己已经熟悉项目也不得跳过：
-
-1. 阅读全局 `C:\Users\Jerome\.codex\HANDOFF.md`。
-2. 进入 `D:\mandarin-mission\mandarin-mission`，阅读根目录 `AGENTS.md`。
-3. 阅读根目录 `HANDOFF.md`；它是本项目唯一的实时交接状态。
-4. 阅读根目录 `AGENT_LESSONS.md`；它只保存去重后的项目特定复用经验。
-5. 阅读 `docs/handoff/ai-agent-handoff.md` 和 `docs/project-status.md`，获得详细项目基线。
-6. 运行 `git status -sb`，保护用户已有改动。
-7. 运行 `git log -5 --oneline --decorate`，确认最近完成的工作。
-8. 核验交接中会变化的 GitHub PR、CI、分支或其他外部状态；不得把旧记录直接当作当前事实。
-9. 阅读 `README.md`。
-10. 阅读 `docs/开发方案.md` 中与当前任务相关的章节。
-11. UI 任务还要先阅读根目录 `WIDGET_LIBRARY.md`，再阅读 `docs/design-system.md` 和 `docs/development-workflow.md`。
-12. 产品范围或教学机制相关任务，还要阅读 `new-chat/outputs/英语使用者学中文App一期方案.md`。
-13. 使用 `rg --files` 确认当前实际目录；不要根据文档假定尚未创建的文件已经存在。
-14. 如果任务涉及第三方 SDK、商店规范、价格或云服务能力，使用官方文档核验当前状态，不依赖旧版本记忆。
-
-如果文档与现有代码不一致，先用测试、提交历史和实际运行结果判断当前事实，再修正文档；不要静默猜测。
-
-### 功能开发流程
-
-- 每个功能从立项到交付按 `docs/development-workflow.md` 推进：判断任务等级 → 定义切片 → 选择组件 → 建立状态/契约 → 端到端实现 → 分层验证 → 交付。
-- 每个阶段都有明确产物和门槛，未达标不得进入下一步；S/M/L 任务使用不同过程重量。
-- 纯本地、无 UI 的特性可跳过组件选择，但需求边界和测试仍然适用。
-- 接口先定义，使数据层/后端与 UI 可以并行；不要让 UI 因后端尚未完成而直接依赖散落的 mock。
-
-### AI 开发行为约束
-
-本项目采用 [andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills) 的四项原则，并结合本项目验证门禁执行：
-
-1. **编码前思考**：非琐碎任务先写清假设、歧义、取舍和成功标准；不确定且会改变结果时先停下来确认，不静默猜测。
-2. **简洁优先**：先复用现有代码、Flutter/Dart 原生能力和已安装依赖；不为单次使用建立抽象，不添加未要求的灵活性、配置或未来脚手架。
-3. **精准修改**：每一行改动都必须能追溯到当前需求；不顺手重构、格式化或清理无关代码，只清理由本次改动产生的孤儿代码。
-4. **目标驱动**：Bug 先建立可重复的失败证据，再修根因并跑回归；功能先定义可观察的用户结果和验证命令，循环到成功标准成立。
-
-补充门禁：
-
-- “更少代码”不能省略输入校验、隐私、安全、数据持久化、错误恢复和无障碍。
-- 编译、静态分析和测试通过只证明相应工程属性，不自动证明用户需求完成。
-- UI Bug 必须在相同页面、状态、viewport、文字缩放下先复现并保存修复前证据，再做最小父级布局修复并保存修复后证据；没有视觉证据不得宣称视觉问题已修复。
-- 新共享组件必须至少对应两个真实生产调用点；只有测试或文档引用不算复用证据。
-
-### 前端任务的代码优先流程
-
-- UI 单一基线是根目录 `WIDGET_LIBRARY.md`、`docs/design-system.md`、`apps/mobile/lib/core/theme/app_theme.dart`、`apps/mobile/lib/core/theme/app_layout.dart`、`apps/mobile/lib/core/theme/app_text_styles.dart` 和 `apps/mobile/lib/shared/presentation/app_widgets.dart`。
-- 视觉原则和基础组件先参考 [shadcn/ui](https://ui.shadcn.com/docs)；需要更多组合模式时，可从 [awesome-shadcn-ui](https://github.com/birobirobiro/awesome-shadcn-ui) 发现候选。该仓库是资源目录，不是 Flutter 依赖；实际实现继续使用固定版本的 `shadcn_ui`，不要把 React/Tailwind 代码放进 App。
-- 从 `awesome-shadcn-ui` 采用任何外部组件、图标、插画或代码前，必须单独核验来源项目的许可证、维护状态和移动端适用性；目录仓库的 MIT 许可证不替代被收录项目的许可证。
-- 标准按钮、卡片、徽章、进度、表单和反馈直接组合代码，不先画 Figma。
-- 新增页面必须覆盖适用的正常、加载、空、错误、不可用和提交中状态，并保存关键状态截图用于评审。
-- View 只渲染和转发意图；异步提交、判分、Repository 调用与错误处理放在 Controller/ViewModel。
-- 品牌插画、商店素材、全新复杂交互或多个高成本方向需要比较时，才按任务使用 Figma、静态视觉稿或小型代码实验。
-- UI 草稿 PR 必须说明使用的组件、截图、验证结果和已知差异；只有实际使用 Figma 时才附节点链接。
-
-## 3. 信息优先级
-
-发生冲突时按以下顺序处理：
-
-1. 用户在当前任务中的明确要求；
-2. 根目录 `AGENTS.md`；
-3. `docs/开发方案.md`；
-4. `new-chat/outputs/英语使用者学中文App一期方案.md`；
-5. README、竞品资料和历史讨论。
-
-竞品资料是决策依据，不是需要照抄的功能清单。
-
-## 4. 已确认的产品决策
-
-### 用户与语言
-
-- 核心用户：18—40 岁、以英语为主要使用语言的普通话零基础成人。
-- 一期：英语界面、普通话、简体中文。
-- 暂不服务：儿童、高阶 HSK、繁体字、粤语和多界面语言。
-
-### 学习闭环
-
-每个知识点分别维护：
-
-- `meaning`：意义理解；
-- `listening`：声音与听辨；
-- `tone`：发音和声调；
-- `hanzi`：汉字识认。
-
-场景任务负责综合检验，不允许只做孤立单词卡。每日主闭环是：
-
-1. 一节新课；
-2. 一次到期复习；
-3. 一次开口任务。
-
-### 游戏化白名单
-
-一期只能优先实现：
-
-- 城市旅行地图；
-- 理解、记忆、开口三颗能力星；
-- 每日三任务；
-- 连胜和休息券；
-- 地点印章；
-- 预设分支场景终局挑战；
-- 不进入数值经济的连击动画和音效。
-
-一期不做：排行榜、好友、组队、公会、实时 PK、抽卡、装备、宠物经济、复杂商城和用户生成内容。
-
-### 版本范围
-
-- 垂直切片：1 个地点、1 节完整课。
-- 可玩原型：3 个地点、12 节课。
-- 公开 MVP：6 个地点、约 30 节课。
-- 一期完整版：验证成功后扩展到 10 个生活场景。
-
-不要因为代码容易写就提前加入 P1/P2 功能。新增范围必须说明替代或延后的现有工作，以及可验证的成功指标。
-
-## 5. 已确认的技术基线
-
-- 客户端：Flutter / Dart，Android 优先，随后 iOS。
-- UI：代码优先；`shadcn_ui` + 语义主题令牌 + Lucide 图标，Material 保留为平台外壳和兼容层。
-- 架构：功能优先目录 + MVVM。
-- 状态与依赖：Riverpod。
-- 导航：go_router。
-- 本地数据：Drift + SQLite。
-- 业务后端：单个 Go 单体服务，容器部署到 Google Cloud Run；不使用自管虚拟机或 Kubernetes。
-- 云数据库：Neon PostgreSQL，客户端不得直连；迁移由仓库管理。
-- 对象存储与分发：Cloudflare R2（S3 兼容）+ 自定义域名 + Cloudflare CDN。
-- 身份与订阅：服务端自行维护会话和权益；Apple/Google 身份令牌、商店票据与服务端通知作为外部协议接入，不依赖 Supabase Auth 或 RevenueCat。
-- 语音：真人课程音频；Azure Speech 放在可替换 Provider 接口后，由服务端代理调用。
-- 分析与崩溃：业务事件批量写入自研 API；容器日志使用 Cloud Run 日志，移动端崩溃采集在 MVP 前按最小范围实现。
-- 自动化：GitHub Actions。
-
-这些是当前默认值，不是无条件永久决定。只有出现可验证的技术阻塞、成本问题或用户要求时才更换；更换前记录决策、迁移成本和回滚方案。
-
-## 6. 架构不变量
-
-- App 必须本地优先：课程、进度和到期复习不能因短时断网不可用。
-- 用户操作先写本地事务，再进入同步 Outbox；UI 不等待云端成功才更新。
-- View 负责呈现，ViewModel 负责页面状态，Repository 统一数据访问，Service 包装外部接口。
-- 复习调度、课程判分、连胜和同步冲突规则写成纯 Dart 逻辑，并有单元测试。
-- 外部供应商通过 Adapter/Provider 接口接入，业务代码不能散落 SDK 调用。
-- 一期后端保持单体，不以“未来扩展”为理由提前拆微服务。
-- Cloud Run 保持 `min-instances=0` 并设置最大实例数预算护栏；任何放宽都要有真实负载证据。
-- 订阅权限以服务端权益记录为准，本地只缓存最近状态；商店通知必须幂等处理。
-- Flutter App 不直接连接 PostgreSQL。每个用户数据请求由 API 会话确定 `user_id`，并测试用户只能访问自己的数据。
-- 课程大文件直接走 R2 自定义域名和 CDN；API 只返回元数据和短时授权，不能代理音频、图片或课程包流量。
-- 网络、语音或分析服务失败不能阻断核心课程。
-
-## 7. 内容工程规则
-
-- 课程是版本化数据，不把每节课写成专用页面或专用业务逻辑。
-- 同一份内容元数据应尽量生成课程步骤、复习题、地图进度和奖励。
-- `CourseManifest`、`Location`、`Lesson`、`KnowledgeItem`、`Exercise`、`Dialogue` 和 `Asset` 使用稳定 ID。
-- 显示文案、排序或资源路径变化不得随意更换稳定 ID。
-- 所有内容必须经过 Schema、ID、引用、前置知识、对话可达性和资源完整性校验。
-- 音频和图片必须记录来源、授权或内部制作标记。
-- 真人音频优先；TTS 只用于低风险动态内容。
-- 英文解释需要英语母语编辑审核；课程顺序和中文易错点需要国际中文教师审核。
-- 不允许 AI 自由生成未经审核的正式主课程。
-
-## 8. 复习算法 v1
-
-首版使用可解释的 0—5 分箱调度，每个知识点的四个维度独立保存：
-
-| 箱位 | 下次复习 |
-|---:|---:|
-| 0 | 10 分钟后 |
-| 1 | 1 天后 |
-| 2 | 3 天后 |
-| 3 | 7 天后 |
-| 4 | 14 天后 |
-| 5 | 30 天后 |
-
-- 错误或“忘记”：减 2 箱，最低 0；本次任务尾部补救一次。
-- 正确但“模糊”：箱位不变，次日复习。
-- 正确且及时选择“记得”：加 1 箱，最高 5。
-- 使用明显提示后答对：不升级。
-- 同日同一知识点最多补救两次。
-- 首次课程不能授予记忆星；至少跨学习日成功回忆一次。
-
-修改算法必须先补或更新测试，并说明对现有进度数据的迁移影响。
-
-## 9. 语音、隐私与安全
-
-- 麦克风使用前明确说明用途并请求权限。
-- 默认不长期保存原始录音；只保留当前回放需要的临时文件。
-- 服务端完成评测后不长期保存音频。
-- 低置信度、超时或供应商失败时降级为回放和用户自评，不把整课判错。
-- 不在仓库、日志、分析事件或错误报告中记录密钥、Token、邮箱、原始录音、完整转写或购买票据。
-- 真实 Secret 只能进入本地环境、安全密钥库或 GitHub Secrets。
-- 仓库只允许提交 `.env.example`，不得提交真实 `.env`。
-- 客户端不得包含 PostgreSQL 连接串、R2 密钥、会话签名密钥、Azure secret 或商店服务端凭据。
-- 账号删除必须覆盖 Auth、用户数据、对象存储和第三方用户映射。
-
-## 10. 文件操作安全
-
-禁止批量删除文件或目录。不要使用：
-
-- `del /s`
-- `rd /s`
-- `rmdir /s`
-- `Remove-Item -Recurse`
-- `rm -rf`
-
-需要删除时，只能一次删除一个经过确认的明确文件路径。需要批量删除时停止操作，请用户手动处理。
-
-此外：
-
-- 保留用户已有改动，不重置、不覆盖、不擅自清理工作区。
-- 不使用 `git reset --hard`、强制推送或破坏性 checkout。
-- 优先使用 `rg`/`rg --files` 搜索。
-- 手工文件修改使用补丁方式；格式化和代码生成可使用官方命令。
-
-## 11. Git 工作规则
-
-- 默认分支为 `main`，应保持可构建。
-- 修改前后运行 `git status -sb`。
-- 每完成一个可独立验收的小模块，立即单独提交并推送到 GitHub；不要把多个已完成模块攒成一次大提交。
-- 每个小模块使用独立功能分支和草稿 PR，CI 通过后再合并；除非用户明确要求，不直接提交到 `main`。
-- 暂存时显式列出本任务文件；工作区混杂时禁止 `git add -A`。
-- 提交使用简洁 Conventional Commits，例如：
-  - `feat(lesson): render data-driven steps`
-  - `fix(review): cap same-day retries`
-  - `docs: update development baseline`
-- 不改写用户提交，不静默 amend，不强制推送。
-- 推送前运行与改动风险相称的测试，并在交付中说明结果。
-- 如果直连 GitHub 失败，先检查本机代理是否存在；不要把代理地址永久写进仓库配置。
-
-## 12. 代码和目录约定
-
-计划目录以 `docs/开发方案.md` 为准。建立 Flutter 工程后：
-
-- App 放在 `apps/mobile`。
-- 功能放在 `lib/features/<feature>`，不要建立巨型 `screens` 或 `utils` 目录。
-- 通用基础能力放 `lib/core`；真正跨功能的 UI 放 `lib/shared`。
-- 纯规则放 `lib/domain`，不能依赖 Flutter Widget 或云 SDK。
-- 数据库、远端服务和 Repository 实现放 `lib/data`。
-- 课程数据和资源放 `content`，Schema 与 Fixture 一并版本控制。
-- Go 业务 API、数据库迁移和服务端适配器放 `services/api`；保持单体目录，不预建空服务。
-- 基础设施声明放 `infra`；只有真正开始部署时才创建对应文件。
-- 自动生成文件按工具惯例管理，不手工编辑生成结果。
-
-不要为了“未来可能需要”建立空层、空接口或泛化框架。先支持点咖啡垂直切片，再从重复中提炼抽象。
-
-## 13. 测试和完成标准
-
-每项功能至少覆盖最接近风险的验证：
-
-- 复习、判分、连胜、解锁和同步规则：单元测试。
-- Repository 和数据库迁移：数据层测试。
-- 课程步骤、提示、重试和无障碍：Widget 测试。
-- 首次启动、完成课程、次日复习和挑战：集成测试。
-- 课程包：Schema、稳定 ID、资源、分支和 Manifest 校验。
-
-一次任务完成必须满足：
-
-1. 用户要求已实现，没有已知必需工作遗留；
-2. 没有顺手扩大范围；
-3. 相关测试通过；
-4. 文档、内容 Schema 或数据库迁移在需要时已同步；
-5. `git status -sb` 中没有本任务遗漏文件；
-6. 交付说明包含变更、验证、提交和已知限制。
-7. UI 任务遵守根目录 `WIDGET_LIBRARY.md` 和 `docs/design-system.md`，关键状态已有截图或 Golden/真实设备验证；实际使用视觉稿时说明实现差异。
-
-## 14. 当前开工顺序
-
-工程基线、代码优先 UI 基线、八步课程播放器、简单汉字书写、进度持久化和本地到期复习闭环已经建立。除非用户另有要求，接下来按以下顺序：
-
-1. 实现音频播放、录音、回放和本地降级；
-2. 补齐“点咖啡”缺失的首批步骤类型与真实资产；
-3. 在真实 Android 设备验证课程 → 重启 → 到期复习闭环；
-4. 扩展到 3 个地点、12 节课和可玩循环。
-
-首个里程碑只有在真实 Android 设备上能够从地图完成课程、重启 App 后保留进度，并在正确时间出现复习时才算完成。
-
-## 15. 每次开发后的记忆维护
-
-不要把聊天记录当作唯一项目记忆。出现以下变化时更新仓库文件：
-
-- 长对话结束、任务切换、暂停、阻塞、交接，或当前状态/下一步/风险发生实质变化：先读取并更新根目录 `HANDOFF.md`；
-- 出现有复用价值的纠正：先做反思，区分信息缺口、推理错误、执行缺口或状态过期；把去重后的项目特定预防规则合并到 `AGENT_LESSONS.md`；
-- 准备交接材料默认只产生本地未提交改动；除非用户明确要求，不得据此建分支、提交、推送、创建 PR 或合并。
-- 产品边界、技术栈或关键规则改变：更新 `AGENTS.md` 和 `docs/开发方案.md`。
-- 新增不可轻易逆转的架构决定：在 `docs/decisions/` 增加简短 ADR。
-- 当前阶段、运行方式或目录改变：更新 `README.md`。
-- 内容 Schema 或课程制作流程改变：更新相应内容文档和示例。
-
-根目录 `HANDOFF.md` 是唯一实时交接；`AGENT_LESSONS.md` 保存去重后的项目特定复用经验；`docs/handoff/ai-agent-handoff.md` 只维护详细且相对稳定的架构、环境、验证和风险基线。不要创建竞争性的实时交接或流水账式反思文件。更新必须基于已完成和已验证的事实，不得把计划写成已实现。
+## 连续性维护
+
+- 长对话结束、任务切换、暂停、阻塞或当前状态发生实质变化时，先读取并更新唯一的根 `HANDOFF.md`。
+- 有复用价值的纠正先分类为 `information-gap`、`reasoning-error`、`execution-gap` 或 `stale-state`，再去重合并到 `AGENT_LESSONS.md`。
+- 稳定产品/技术规则改变时更新 `docs/architecture.md` 与相应方案；不可逆架构决定写入 `docs/decisions/`。
+- 当前阶段或运行方式改变时更新 README；不要在根 `AGENTS.md` 复制实时进度或详细机制。

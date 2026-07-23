@@ -32,7 +32,7 @@
 - Verification: 发布前能指出当前对话中的明确授权；没有授权时，`git status -sb` 只显示本地交接文件改动。
 - Evidence: PR #13 在用户纠正后关闭且未合并，远端临时分支已删除，本地提交已移除。
 - Status: active
-- Promoted to: `AGENTS.md` 第 15 节
+- Promoted to: 根 `AGENTS.md` 的“连续性维护”与知识路由
 
 ## Lesson: PR 改基线后显式触发 CI
 
@@ -44,13 +44,23 @@
 - Status: active
 - Promoted to: none
 
-## Lesson: 滚动容器中的书写画布必须主动接管手势
+## Lesson: 书写画布必须在本地完整接管高频指针序列
 
-- Last confirmed: 2026-07-18
-- Pattern: 汉字书写画布位于可滚动课程页中时，竖向笔画可能被父级滚动手势竞争，导致笔迹中断或页面移动。
-- Prevention rule: 自定义书写画布应尽早接管指针序列，并保留清除、重写、跳过与对照自评路径。
-- Verification: 在 Android 设备或模拟器上分别验证横、竖、斜笔画连续，页面不随书写滚动；再运行对应 Widget 测试。
-- Evidence: `apps/mobile/lib/features/lesson/presentation/steps/hanzi_writing_step.dart` 与汉字书写 Android 交互验收。
+- Last confirmed: 2026-07-23
+- Pattern: 汉字书写画布位于可滚动课程页中时，父级可能竞争竖向手势；如果每个 `PointerMoveEvent` 又从尚未重建的父组件 props 复制笔迹，同一帧内较早采样点会被覆盖，曲线被拉成稀疏直线。双字共用画布若不按字符格线断笔，还会把“咖”与“啡”跨格连接。
+- Prevention rule: 自定义书写画布应尽早接管指针序列，并在本地保存当前手势的连续采样；向父级回传副本，不以父级重建作为下一事件的数据源。多字画布跨字符格线时新开一笔，同时保留清除、重写、跳过与对照自评路径。
+- Verification: Widget 测试在不 `pump` 的情况下连续发送多个 move，确认全部采样保留；跨字符中线后确认产生两笔。再在 Android 真机分别验证横、竖、斜、曲线和跨字移动，页面不滚动、笔迹不被拉直或跨格连线。
+- Evidence: `apps/mobile/lib/features/lesson/presentation/steps/hanzi_writing_step.dart`、`apps/mobile/test/features/lesson/presentation/hanzi_writing_step_test.dart` 与 2026-07-23 Sony XQ-DQ72 真机反馈。
+- Status: active
+- Promoted to: none
+
+## Lesson: 学习挑战必须先有可观察动作再允许推进
+
+- Last confirmed: 2026-07-23
+- Pattern: `dialogue_turn` 只展示标准答案和静态麦克风图标，同时让底部主按钮直接进入下一步。页面虽然能导航，但用户没有可执行、可验证的挑战动作，终局对话退化为静态过场。
+- Prevention rule: 每个练习或挑战步骤至少提供一个与目标一致的可观察动作；在动作完成前禁用主推进按钮。P0 不具备 AI 判音时，应明确使用脱稿自报或提示卡降级，不伪装成语音识别。
+- Verification: Widget/端到端测试先点击禁用主按钮并确认仍停留当前步骤，再分别走无提示和提示路径；真机确认所有入口可见、状态反馈明确、完成后才能进入下一步。
+- Evidence: `DialogueStep`、`LessonPlayerState.dialogueReplyMethod`、`app_test.dart` 与 2026-07-23 Sony XQ-DQ72 第 7 步真机验收。
 - Status: active
 - Promoted to: none
 
@@ -76,10 +86,20 @@
 
 ## Lesson: Riverpod 生命周期清理不能在卸载后读取 ref
 
-- Last confirmed: 2026-07-22
-- Pattern: `ConsumerState.dispose()` 中再通过 `ref.read(...)` 获取媒体 Controller 会触发 unmounted ref 错误；异步清理完成时直接写 Notifier state，也可能遇到 Provider 已释放。连续生命周期事件还可能重复取消同一次录音。
-- Prevention rule: 在 `initState()` 保存需要的 Controller 回调；生命周期事件与页面离开复用一个幂等清理 Future；异步间隙后写 state 前检查 `ref.mounted`。
-- Verification: Widget 测试覆盖 App 切后台和离开课程页；Controller 测试覆盖停止播放、停止回放、清理录音和异步状态竞态。
+- Last confirmed: 2026-07-23
+- Pattern: `ConsumerState.dispose()` 中再通过 `ref.read(...)` 获取媒体 Controller 会触发 unmounted ref 错误；异步清理完成时直接写 Notifier state，也可能遇到 Provider 已释放。连续生命周期事件可能重复取消同一次录音；系统设置中改变权限后，Controller 的缓存状态可能过期；同一课程页内切换步骤不会触发 `dispose()`，录音可能跨步骤继续。
+- Prevention rule: 在 `initState()` 保存需要的 Controller 回调；生命周期、页面离开与步骤返回复用一个幂等清理 Future，导航前等待清理完成；App 恢复到 `resumed` 时重新读取平台权限；异步间隙后写 state 前检查 `ref.mounted`。
+- Verification: Widget 测试覆盖 App 切后台、设置返回权限刷新和从录音步骤返回上一课程步骤；Controller 测试覆盖停止播放、停止回放、清理录音、平台权限刷新和异步状态竞态。真机同时核对界面、AudioRecord/音频焦点日志与缓存文件。
 - Evidence: `lesson_overview_page.dart`、`audio_controller.dart`、`lesson_media_lifecycle_test.dart` 与 `audio_controller_test.dart`。
+- Status: active
+- Promoted to: none
+
+## Lesson: 持久化成功不等于返回页已经呈现真实状态
+
+- Last confirmed: 2026-07-23
+- Pattern: 课程完成事务正确写入 `lesson_progress_entries`，到期复习也能从同一数据库出现，但 Journey 课程卡仍可能因为硬编码文案、进度值和按钮而显示 `Not started`；只检查数据库或复习数量会漏掉这个用户可见断链。
+- Prevention rule: 汇总页必须从 owning Repository 读取持久化事实；完成事务成功后显式刷新对应查询再导航。若没有持久化步骤索引，不得把 `in_progress` 文案写成可恢复原步骤的 `Continue`。
+- Verification: 端到端测试在返回 Journey 后断言 completed 文案与操作；真机完成课程后覆盖安装并冷启动，核对完成状态、复习数量与操作按钮共同保留，再完成一轮到期复习并二次冷启动。
+- Evidence: `lesson_progress_repository.dart`、`lesson_providers.dart`、`journey_page.dart`、`lesson_overview_page.dart`、`app_test.dart` 与 2026-07-23 Sony `XQ-DQ72` 真机闭环。
 - Status: active
 - Promoted to: none

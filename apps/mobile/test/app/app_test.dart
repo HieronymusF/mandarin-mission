@@ -115,6 +115,30 @@ void main() {
 
     expect(find.text('Take your turn'), findsOneWidget);
     expect(find.text('7 / 8'), findsOneWidget);
+    expect(find.byKey(const Key('dialogue-answer-card')), findsNothing);
+    expect(find.text('Choose how to reply'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('lesson-primary-action')));
+    await tester.pumpAndSettle();
+    expect(find.text('Take your turn'), findsOneWidget);
+
+    await tester.ensureVisible(find.byKey(const Key('dialogue-said-aloud')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('dialogue-said-aloud')));
+    await tester.pumpAndSettle();
+    expect(find.text('Reply ready'), findsOneWidget);
+    expect(find.text('Send reply'), findsOneWidget);
+    _expectCenteredIn(
+      tester,
+      child: find.text('Reply ready'),
+      parent: find.byKey(const Key('dialogue-reply-status-card')),
+    );
+
+    await tester.ensureVisible(find.byKey(const Key('dialogue-use-ticket')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('dialogue-use-ticket')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('dialogue-answer-card')), findsOneWidget);
+    expect(find.text('Send reply'), findsOneWidget);
     _expectCenteredIn(
       tester,
       child: find.descendant(
@@ -155,6 +179,8 @@ void main() {
     await tester.tap(find.byKey(const Key('lesson-primary-action')));
     await tester.pumpAndSettle();
     expect(find.text('Your Mandarin journey'), findsOneWidget);
+    expect(find.text('Completed'), findsOneWidget);
+    expect(find.text('Practice again'), findsOneWidget);
 
     final progress = await database
         .select(database.lessonProgressEntries)

@@ -45,6 +45,35 @@ void main() {
     expect(state.isUnavailable, isFalse);
   });
 
+  test(
+    'permission refresh clears permanent denial after settings grant',
+    () async {
+      final audioService = _FakeAudioService();
+      final recordingService = _FakeRecordingService(isPermanentlyDenied: true);
+      final container = _container(audioService, recordingService);
+      addTearDown(() async {
+        container.dispose();
+        await audioService.dispose();
+        await recordingService.dispose();
+      });
+
+      final controller = container.read(recordingControllerProvider.notifier);
+      await Future<void>.delayed(Duration.zero);
+      expect(
+        container.read(recordingControllerProvider).isPermanentlyDenied,
+        isTrue,
+      );
+
+      recordingService.setPermission(granted: true, permanentlyDenied: false);
+      await controller.refreshPermissionState();
+
+      final state = container.read(recordingControllerProvider);
+      expect(state.hasPermission, isTrue);
+      expect(state.isPermanentlyDenied, isFalse);
+      expect(state.isPermissionDenied, isFalse);
+    },
+  );
+
   test('recording playback clears when audio finishes', () async {
     final audioService = _FakeAudioService();
     final recordingService = _FakeRecordingService(hasPermission: true);
@@ -67,6 +96,37 @@ void main() {
 
     expect(container.read(recordingControllerProvider).isPlayingBack, isFalse);
   });
+
+  test(
+    'recording playback failure preserves the file and offers retry',
+    () async {
+      final audioService = _FakeAudioService();
+      final recordingService = _FakeRecordingService(hasPermission: true);
+      final container = _container(audioService, recordingService);
+      addTearDown(() async {
+        container.dispose();
+        await audioService.dispose();
+        await recordingService.dispose();
+      });
+
+      final controller = container.read(recordingControllerProvider.notifier);
+      await Future<void>.delayed(Duration.zero);
+      await controller.stopRecording();
+      await controller.playRecording();
+
+      audioService.emit(AudioState.error);
+      await Future<void>.delayed(Duration.zero);
+
+      final state = container.read(recordingControllerProvider);
+      expect(state.isPlayingBack, isFalse);
+      expect(state.hasRecording, isTrue);
+      expect(state.isPlaybackError, isTrue);
+      expect(
+        state.errorMessage,
+        'Recording playback failed. Please try again.',
+      );
+    },
+  );
 
   test(
     'service failure uses unavailable state without permission denial',
@@ -185,9 +245,14 @@ final class _FakeRecordingService implements RecordingService {
   final _volumeController = StreamController<double>.broadcast();
   bool _hasPermission;
   final bool _isAvailable;
-  final bool _isPermanentlyDenied;
+  bool _isPermanentlyDenied;
   int clearRecordingCount = 0;
   int stopPlaybackCount = 0;
+
+  void setPermission({required bool granted, required bool permanentlyDenied}) {
+    _hasPermission = granted;
+    _isPermanentlyDenied = permanentlyDenied;
+  }
 
   @override
   Future<bool> get hasPermission async => _hasPermission;

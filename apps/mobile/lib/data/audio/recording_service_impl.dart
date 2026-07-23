@@ -51,7 +51,11 @@ class RecordingServiceImpl implements RecordingService {
       permissions.Permission.microphone.isGranted;
 
   @override
-  Future<bool> get isPermanentlyDenied async => _isPermanentlyDenied;
+  Future<bool> get isPermanentlyDenied async {
+    final status = await permissions.Permission.microphone.status;
+    _isPermanentlyDenied = status.isPermanentlyDenied;
+    return _isPermanentlyDenied;
+  }
 
   @override
   Future<bool> requestPermission() async {

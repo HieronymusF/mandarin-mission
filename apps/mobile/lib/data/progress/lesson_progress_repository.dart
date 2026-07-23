@@ -19,6 +19,12 @@ final class LessonProgressRepository {
   final ReviewScheduler _scheduler;
   final RecordIdFactory _idFactory;
 
+  Future<LessonProgressEntry?> getLesson(String lessonId) {
+    return (_database.select(
+      _database.lessonProgressEntries,
+    )..where((entry) => entry.lessonId.equals(lessonId))).getSingleOrNull();
+  }
+
   Future<void> startLesson({
     required String lessonId,
     required String contentVersion,

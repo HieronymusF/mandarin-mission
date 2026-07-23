@@ -96,6 +96,11 @@ class AudioPlayerBar extends ConsumerWidget {
               color: theme.colorScheme.destructive,
             ),
           ),
+          const SizedBox(height: AppSpacing.sm),
+          ShadButton.outline(
+            onPressed: () => controller.playAudio(assetPath!),
+            child: const Text('Try again'),
+          ),
         ],
       ],
     );

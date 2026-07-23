@@ -78,7 +78,9 @@
 
 ## 文档
 
-- [跨电脑开发记忆准则](AGENTS.md)
+- [Agent 项目入口](AGENTS.md)
+- [产品与架构基线](docs/architecture.md)
+- [运行与验收手册](docs/runbooks/README.md)
 - [开发方案](docs/开发方案.md)
 - [功能开发流程](docs/development-workflow.md)
 - [代码优先 UI 系统](docs/design-system.md)
@@ -96,29 +98,39 @@
 
 ```text
 .
-├─ AGENTS.md                         # Codex 跨电脑开发入口与长期约束
+├─ AGENTS.md                         # 短、准、稳定的项目级 Agent 入口
+├─ HANDOFF.md                        # 唯一实时交接状态
+├─ AGENT_LESSONS.md                  # 去重后的项目纠错经验
 ├─ README.md
-├─ .github/workflows/                 # 自动检查
-├─ content/                           # 课程 Schema 与开发 Fixture
+├─ .agents/skills/                   # 可复用的项目级 Codex 工作流
+├─ .codex/
+│  ├─ config.toml                    # 可信仓库内的 Codex 配置
+│  └─ hooks/                         # 工具调用前的机械护栏
+├─ .github/workflows/                # 远端 CI
+├─ tools/scripts/                    # 人工可调用的确定性验证脚本
+├─ content/                          # 课程 Schema、Fixture 与局部 AGENTS.md
 ├─ docs/
+│  ├─ AGENTS.md                      # 文档区域局部规则
+│  ├─ architecture.md                # 稳定产品与架构基线
 │  ├─ 开发方案.md
 │  ├─ development-workflow.md
 │  ├─ design-system.md
-│  ├─ handoff/                         # AI agents 当前交接入口
-│  ├─ decisions/                       # 架构决策记录
+│  ├─ handoff/                        # 详细且相对稳定的 Agent 基线
+│  ├─ decisions/                      # 架构决策记录
+│  ├─ runbooks/                       # 可执行运行与验收步骤
 │  └─ content-authoring.md
 ├─ packages/
-│  └─ learning_core/                  # 纯 Dart 学习规则与内容校验器
+│  └─ learning_core/                 # 纯 Dart 学习规则、校验器与局部规则
 ├─ apps/
-│  └─ mobile/                         # Flutter Android/iOS App
+│  └─ mobile/                        # Flutter Android/iOS App 与局部规则
 ├─ services/
-│  └─ api/                            # 自研 Go 单体 API 与容器
+│  └─ api/                           # 自研 Go 单体 API、容器与局部规则
 └─ new-chat/
-   ├─ outputs/                         # 已确认的一期产品方案
-   └─ work/中英语言学习竞品-资料/       # 调研原始资料与摘要
+   ├─ outputs/                        # 已确认的一期产品方案
+   └─ work/中英语言学习竞品-资料/      # 调研原始资料与摘要
 ```
 
-开发启动后将按 `apps/mobile`、`content`、`packages`、`services/api`、`infra` 和 `tooling` 组织代码与课程资产，详细结构见开发方案。
+根 `AGENTS.md` 只负责规则与路由；进入 `apps/mobile`、`content`、`packages/learning_core`、`services/api` 或 `docs` 后，继续应用该目录下的局部 `AGENTS.md`。重复验证优先调用 `$verify-mandarin-mission` 或 `tools/scripts/verify.ps1`。
 
 ## 当前使用方式
 

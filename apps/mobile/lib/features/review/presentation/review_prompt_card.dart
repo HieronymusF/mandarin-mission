@@ -5,6 +5,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../../../core/theme/app_layout.dart';
 import '../../../data/content/course_content_models.dart';
 import '../../../shared/presentation/app_leading_row.dart';
+import '../../../shared/presentation/audio_player_bar.dart';
 import '../../../shared/presentation/hanzi_pinyin_text.dart';
 import '../application/review_providers.dart';
 
@@ -191,7 +192,8 @@ class _ListeningPrompt extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
-    final item = session.current!.knowledgeItem;
+    final entry = session.current!;
+    final item = entry.knowledgeItem;
     return ShadCard(
       key: const Key('review-prompt-listening'),
       width: double.infinity,
@@ -201,26 +203,33 @@ class _ListeningPrompt extends StatelessWidget {
         children: [
           Text('Listen and identify the phrase', style: theme.textTheme.h3),
           const SizedBox(height: AppSpacing.md),
-          ShadCard(
-            key: const Key('review-audio-unavailable'),
-            width: double.infinity,
-            padding: AppLayout.compactCardPadding,
-            backgroundColor: theme.colorScheme.custom['warning'],
-            border: ShadBorder.none,
-            child: AppLeadingRow(
-              leadingWidth: AppLayout.noticeIconSlot,
-              gap: AppSpacing.sm,
-              leading: Icon(
-                LucideIcons.volumeX,
-                size: 20,
-                color: theme.colorScheme.custom['warningForeground'],
-              ),
-              child: Text(
-                'Audio is not available in this content build. Use the written fallback; this counts as a hint.',
-                style: theme.textTheme.small,
+          if (entry.audioAssetPath != null)
+            AudioPlayerBar(
+              key: const Key('review-audio-player'),
+              assetPath: entry.audioAssetPath,
+              label: 'Play prompt',
+            )
+          else
+            ShadCard(
+              key: const Key('review-audio-unavailable'),
+              width: double.infinity,
+              padding: AppLayout.compactCardPadding,
+              backgroundColor: theme.colorScheme.custom['warning'],
+              border: ShadBorder.none,
+              child: AppLeadingRow(
+                leadingWidth: AppLayout.noticeIconSlot,
+                gap: AppSpacing.sm,
+                leading: Icon(
+                  LucideIcons.volumeX,
+                  size: 20,
+                  color: theme.colorScheme.custom['warningForeground'],
+                ),
+                child: Text(
+                  'Audio is not available in this content build. Use the written fallback; this counts as a hint.',
+                  style: theme.textTheme.small,
+                ),
               ),
             ),
-          ),
           const SizedBox(height: AppSpacing.lg),
           if (!session.isAnswerRevealed)
             ShadButton.secondary(

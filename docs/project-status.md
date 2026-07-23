@@ -1,7 +1,7 @@
 # Mandarin Mission 项目现状与代码审视
 
 > 本文档是对**已落地代码**的盘点和质量审视，作为后续开发的对照基线。以代码和测试为唯一事实来源，不轻信文档描述。证据格式为 `文件:行号`。
-> 维护原则：发现代码与本文档不符时，以代码为准并更新本文档（参考 `AGENTS.md` 第 2 节）。
+> 维护原则：发现代码与本文档不符时，以代码、测试和运行证据为准并更新本文档（参考根 `AGENTS.md` 的开始任务与知识路由）。
 > 最近核对基线：`feat/code-first-ui`，UI 对齐验证提交 `293e9dd`（2026-07-18）；合并后以主分支对应提交替换。
 
 ---
@@ -15,7 +15,7 @@
 | 移动端 `apps/mobile` 数据层 | ✅ 已实现 | Drift 6 表约束扎实，Repository 全事务化 |
 | 移动端 UI/课程播放器 | ✅ 基线已实现 | shadcn 主题、Journey 和数据驱动 8 步走通；含简单汉字书写，步骤组件与提交逻辑已分层 |
 | 移动端复习功能 | ✅ 本地闭环已实现 | Journey 真实入口、四维题型、自评、补救和失败重试均已接入本地队列 |
-| 移动端音频/录音 | ⚠️ 核心架构已实现 | 播放、录音、权限、回放和降级已接线；缺真人资产与真实设备验收 |
+| 移动端音频/录音 | ⚠️ 开发占位已接入 | 播放、录音、权限、回放和降级已接线；Apache-2.0 Kokoro 音频已打包但听感未获最终认可，缺最终音色与真实设备验收 |
 | Go 后端 `services/api` | ❌ 仅骨架 | 只有 healthz/readyz/meta，无 DB/认证/业务 |
 | CI | ✅ 已实现 | 三 job 覆盖 mobile/learning-core/api，有生成文件门禁 |
 | 文档 | ✅ 较全 | 开发方案 + 代码优先 UI 系统 + ADR + 分级流程齐全 |
@@ -27,7 +27,7 @@
 ### 1. 纯 Dart 核心 `packages/learning_core` ✅
 
 **已实现**：
-- `review_scheduler.dart` — 0–5 分箱调度，纯函数 `apply()`，严格对应 `AGENTS.md` 第 8 节算法。interval 表、忘记 −2/模糊不变/记得 +1/hint 不升、同日补救上限 2，全部落地。
+- `review_scheduler.dart` — 0–5 分箱调度，纯函数 `apply()`，严格对应 `docs/architecture.md` 的复习算法 v1。interval 表、忘记 −2/模糊不变/记得 +1/hint 不升、同日补救上限 2，全部落地。
 - `content_validator.dart`（540 行）— 覆盖：schemaVersion、status 枚举、稳定 ID kebab-case 正则 + 全局去重、location/lesson/item/asset 引用完整性、pinyinSyllables 与汉字数对齐（CJK 区段过滤标点）、对话可达性 + 环检测 + 不可达节点检测、release 资产必须 ready + license/credit。
 - `learning_core_base.dart` — `LearningDimension`、`ReviewRating` 两个枚举。
 
@@ -42,7 +42,7 @@
 ### 2. 内容工程 `content/` ✅
 
 - `schema/course-package.schema.json` — JSON Schema Draft 2020-12，`additionalProperties:false` 全开，定义 10 种 step 类型。
-- `fixtures/cafe-course.json` — 1 location / 3 知识点 / 1 lesson（8 步）/ 1 dialogue / 4 assets。所有 asset `status:"planned"`（无 path/sha256，是合法 draft，不能 release）。
+- `fixtures/cafe-course.json` — 1 location / 3 知识点 / 1 lesson（8 步）/ 1 dialogue / 4 assets。图片仍为 `planned`；三条音频已接入 Kokoro `zf_xiaoxiao` 生成的 `ready` 开发占位资源，含 path/sha256/Apache-2.0 来源；`ready` 只表示技术资源可用，整个包仍是 draft。
 - `lib/mandarin_mission_content.dart` — 5 行，暴露 asset 路径常量。
 
 **审视点**：
@@ -62,7 +62,7 @@
 
 **审视点**：
 - `dueItems` 在 SQL 层**没有 limit**（`review_queue_repository.dart:42-46`），全表拉回内存再 `.take(limit)`。内容多了之后是性能隐患（MVP 阶段可接受）。
-- **纯规则散落在非 domain 层**，违反 `AGENTS.md` 第 12 节"纯规则放 `lib/domain`"：
+- **纯规则散落在非 domain 层**，偏离 `docs/architecture.md` 的代码边界：
   - `_confidenceFor`（`lesson_progress_repository.dart:326-338`）— forgotten/vague/remembered/hint 四象限 confidence 规则，只通过 Repository 测试间接覆盖，**无单元测试**。
   - `_compareQueueItems`（`review_queue_repository.dart:84-109`）— 复杂排序规则，同样只间接覆盖。
   - 应迁移到 `learning_core` 并补单元测试。
@@ -86,16 +86,16 @@
 - 课程通用文案尚未接入 i18n，但内容标题与教学数据继续来自 Fixture；
 - `shadcn_ui` 为 `0.x` 依赖，必须按 ADR 0002 单独升级并做截图回归。
 
-#### 3.3 Journey 页 ⚠️（视觉基线完成，数据接线待做）
+#### 3.3 Journey 页 ⚠️（课程进度与复习已接线，其余动态状态待做）
 
-`journey_page.dart` 已迁移代码优先 UI，但仍是静态单地点外壳，`cafe-01` 和今日任务未接入真实进度/连胜/解锁。在出现这些动态状态时再引入 ViewModel，当前不为了形式提前建立空状态层。
+`journey_page.dart` 已迁移代码优先 UI。`cafe-01` 卡片现在读取 `lesson_progress_entries`：未开始、进行中和已完成分别显示真实状态，完成后显示 100% 与 `Practice again`，冷启动后仍保留。到期复习摘要也来自真实队列；连胜、地点解锁和每日任务仍是静态外壳。在这些状态接线时再引入对应 ViewModel，当前不为了形式提前建立空状态层。
 
 #### 3.4 复习功能 ✅（本地闭环）
 
 - `features/review/application/review_providers.dart` 提供到期摘要、8 项必做会话上限、异步加载、逐项保存和保存失败重试状态。
 - `features/review/presentation/` 与 `/review` 路由覆盖 `meaning/listening/tone/hanzi` 四维题型、忘记/模糊/记得反馈、同轮补救、空队列和完成态。
 - Journey 直接查询真实到期队列，并把超出必做上限的项目显示为额外巩固。
-- 当前内容包无真人音频；listening 明确显示书面降级并记录 `usedHint`，不伪装为音频已完成。
+- 课程内容包已有可播放的 Kokoro TTS 音频，但复习 Provider 当前仍把 listening 标为 `audioAvailable: false`，因此复习继续显示书面降级并记录 `usedHint`；课程资产接入没有被误写成复习音频已完成。
 
 #### 3.5 测试覆盖
 
@@ -114,8 +114,13 @@
 - `record` 固定为与 Flutter 3.44 / Dart 3.12 匹配的 `7.1.1`；`record_linux 2.1.1` 与 `record_platform_interface 2.1.0` 已消除旧版传递依赖冲突。
 - 课程播放器从 `knowledgeItems[].audioAssetId` 解析 `assets[].path`；资源不是 `ready` 时明确显示不可用，不硬编码或伪造音频存在。
 - 课程页在 App 进入非 `resumed` 状态或页面离开时结束媒体会话，停止播放器、取消录音或回放并清理当前临时文件；重录前也会删除旧文件。
-- 自动验证：Flutter format、analyze、46 tests、debug APK 通过；包含 4 项媒体组件 Widget 测试、5 项录音 Controller 测试、1 项课程媒体生命周期 Widget 测试和 ready 音频路径解析测试。
-- 尚未完成：真人普通话资产、真实 Android 麦克风权限/录音/回放，以及来电、切后台和恢复的真实平台验证。
+- 播放、录音和录音回放失败后会在当前步骤显示对应重试按钮：课程播放重用当前 asset 路径，录音重新进入录制状态，录音回放保留当前临时文件并重试同一路径，不要求用户退出课程。
+- 用户普通拒绝麦克风权限后会看到独立拒绝状态、再次授权入口和无录音自评说明；它不会再退回成看似从未请求过的初始权限卡。
+- 三条 Kokoro WAV 已放入 `assets/audio/kokoro/`，使用 `zf_xiaoxiao`（speaker 47）、0.95 语速和 24 kHz/16-bit/mono 格式；内容资产标为 `ready` 并记录 SHA-256、模型/工具 Apache-2.0 来源与生成版本。旧 `zf_xiaoyi` 因机械感明显被替换，当前声线得到“能用但不满意”的反馈，只作为开发占位，后续仍会替换。
+- 自动验证：Flutter format、analyze、49 tests、debug APK 通过；包含 6 项媒体组件 Widget 测试、6 项录音 Controller 测试、1 项课程媒体生命周期 Widget 测试和 ready 音频路径解析测试。
+- Android 模拟器已从课程第 2 步播放新的 Kokoro“我要”；系统日志确认解码 24 kHz/16-bit/mono `audio/raw`、交付 17,604 帧（与 WAV 样本数一致）并释放音频焦点。模拟器证据不代表普通话人工试听或真机验收完成。
+- Sony `XQ-DQ72` 已在课程第 6 步验证首次授权、普通拒绝/重试、永久拒绝/设置恢复、录音/回放/重录、Home 和步骤返回清理。
+- 尚未完成：Kokoro 三条音频的最终普通话听感认可、服务不可用的真机制造，以及真实来电中断/恢复；该 Sony 无 SIM，来电分支当前无法执行。
 
 ---
 
@@ -153,7 +158,7 @@
 
 ---
 
-## 三、整体进度对照（`AGENTS.md` 第 14 节开工顺序）
+## 三、整体进度对照（根 `HANDOFF.md` 的当前里程碑）
 
 | # | 任务 | 状态 | 关键证据 |
 |---|---|---|---|
@@ -161,14 +166,14 @@
 | 2 | CI | ✅ | `core-ci.yml` 三 job |
 | 3 | Schema + Fixture + validator | ✅ | `content/schema`、`content_validator.dart` |
 | 4 | Drift 表 + migration 测试 | ⚠️ 部分 | 6 表完整；migration 测试只验 v1 自洽，无真实迁移 |
-| 5 | Journey 外壳 | ✅ | shadcn 视觉基线完成；动态进度待后续接线 |
+| 5 | Journey 外壳 | ✅ | shadcn 视觉、真实到期摘要和 `cafe-01` 持久化完成状态已接线；连胜/解锁/每日任务待后续接线 |
 | 6 | 数据驱动课程步骤 | ⚠️ 部分 | MVVM 泄漏已修；已实现 7/10 step 类型，含 `hanzi_trace` |
 | 7 | 持久化练习和掌握度 | ✅ | `lesson_progress_repository.dart` + 集成测试 |
 | 8 | 复习分箱算法与本地 UI | ✅ | `review_scheduler.dart`、队列、Journey 入口和四维会话闭环 |
-| 9 | 音频/录音/回放/降级 | ⚠️ 部分 | 核心架构和构建通过；缺真人资产与真实设备验收 |
-| 10 | 点咖啡端到端 | ⚠️ 部分 | 播放器与本地复习走通，缺真人音频/录音和完整设备持久化验收 |
+| 9 | 音频/录音/回放/降级 | ⚠️ 部分 | Kokoro 开发占位已打包，Sony 真机主路径与权限分支通过；缺最终音色、服务不可用真机证据和真实来电 |
+| 10 | 点咖啡端到端 | ⚠️ 部分 | Sony 已通过课程、冷启动进度保留、到期复习和飞行模式完整课程；缺最终内容/音频放行 |
 
-**里程碑判定**：自动集成测试已完成课程、持久化、本地到期复习和媒体状态架构；Android 模拟设备已走完 8 项真实队列。真人音频资产、真实录音/回放与完整“课程 → 杀进程 → 到期复习”设备验收仍未完成，M1 **未达成**。
+**里程碑判定**：自动集成测试已完成课程、持久化、本地到期复习和媒体状态架构；Sony 真机已完成“课程 → 杀进程 → 进度保留 → 到期复习”及飞行模式完整课程，真实录音/回放也已通过。Kokoro 音频仍只是用户认为“能用但不满意”的开发占位，缺失步骤类型与正式资产也未关闭，因此 M1 **仍未达成**。
 
 ---
 
@@ -187,11 +192,11 @@
 ## 五、需要改进的（按优先级）
 
 ### P0 — 阻塞里程碑
-1. **音频/录音缺真人资产和真实设备验收**——代码与构建已就绪，但尚未证明真实播放、权限、录音、回放和生命周期行为。
+1. **音频缺最终音色和少数真实平台边界**——Kokoro 开发占位的许可、文件和打包链已落地，真机权限、录音、回放和可自主触发的生命周期已通过，但听感只达到“能用”；后续可换商用 TTS并重新核验许可、哈希和普通话听感。真实来电因当前 Sony 无 SIM 未验证，服务不可用仍只有自动测试证据。
 
 ### P1 — 架构债（扩大规模前必须纠正）
 3. **纯规则散落在非 domain 层**——`_confidenceFor`、`_compareQueueItems`、`score` 应迁移到 `learning_core` 并补单元测试。
-4. **Journey 动态状态未接线**——接入进度、解锁和每日任务时建立 ViewModel，不预建空层。
+4. **Journey 动态状态只完成一部分**——课程完成进度与到期摘要已接线；连胜、解锁和每日任务接入时建立对应 ViewModel，不预建空层。
 
 ### P2 — 一致性与健壮性
 5. **schema 与 validator 不一致**——补 sha256 校验，或在 schema 去掉。
@@ -205,7 +210,7 @@
 
 | 文档说法 | 代码实际 |
 |---|---|
-| `AGENTS.md` 第 12 节：纯规则放 `lib/domain` | `lib/domain` 目录不存在，规则散在 data/presentation |
+| `docs/architecture.md`：纯规则放 `lib/domain` | `lib/domain` 目录不存在，规则散在 data/presentation |
 | `course-package.schema.json`：ready 资产必须有 sha256 | validator 只检查 path，不检查 sha256 |
 | schema 定义 10 种 step 类型 | 播放器只实现 7 种 |
 | `docs/开发方案.md` 第 13.1 节：cloud tables | `services/api` 无 DB |

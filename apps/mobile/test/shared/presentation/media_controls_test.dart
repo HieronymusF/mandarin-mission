@@ -39,11 +39,17 @@ void main() {
     expect(find.byIcon(LucideIcons.play), findsOneWidget);
 
     audio.emit(AudioState.error);
-    await tester.pump();
+    await tester.pumpAndSettle();
     expect(
       find.text('Audio playback error. Please try again.'),
       findsOneWidget,
     );
+
+    expect(find.text('Try again'), findsOneWidget);
+    await tester.tap(find.text('Try again'));
+    await tester.pump();
+    expect(audio.playCount, 2);
+    expect(audio.lastPlayedPath, 'assets/audio/cafe.m4a');
 
     await audio.dispose();
   });
@@ -70,7 +76,14 @@ void main() {
     expect(find.text('Allow Microphone Access'), findsOneWidget);
     await tester.tap(find.text('Allow Microphone Access'));
     await tester.pumpAndSettle();
-    expect(find.text('Allow Microphone Access'), findsOneWidget);
+    expect(find.text('Microphone access denied'), findsOneWidget);
+    expect(
+      find.text(
+        'You can try again or continue below without recording and complete a self-check.',
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('Try Microphone Access Again'), findsOneWidget);
 
     final permanent = _FakeRecordingService(waitForPermissionResult: true);
     await _pumpRecording(tester, permanent);
@@ -137,6 +150,72 @@ void main() {
     await audio.dispose();
     await recording.dispose();
   });
+
+  testWidgets('recording error offers a retry from the same step', (
+    tester,
+  ) async {
+    final recording = _FakeRecordingService(hasPermission: true);
+    await _pumpRecording(tester, recording);
+    expect(find.text('Tap to record'), findsOneWidget);
+
+    recording.emit(RecordingState.error);
+    await tester.pump();
+    expect(find.text('Recording error. Please try again.'), findsOneWidget);
+    expect(find.text('Try recording again'), findsOneWidget);
+
+    await tester.tap(find.text('Try recording again'));
+    await tester.pump();
+    expect(recording.startCount, 1);
+    expect(find.text('Tap to stop'), findsOneWidget);
+
+    await recording.dispose();
+  });
+
+  testWidgets('recording playback error offers playback retry', (tester) async {
+    final audio = _FakeAudioService();
+    final recording = _FakeRecordingService(hasPermission: true);
+    final container = ProviderContainer(
+      overrides: [
+        audioServiceProvider.overrideWithValue(audio),
+        recordingServiceProvider.overrideWithValue(recording),
+      ],
+    );
+    addTearDown(container.dispose);
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: _TestApp(child: RecordingControls(onRecordingComplete: (_) {})),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(LucideIcons.mic));
+    await tester.pump();
+    await tester.tap(find.byIcon(LucideIcons.square));
+    await tester.pump();
+    await tester.tap(find.byIcon(LucideIcons.play));
+    await tester.pump();
+    expect(audio.playCount, 1);
+
+    audio.emit(AudioState.playing);
+    await tester.pump();
+
+    audio.emit(AudioState.error);
+    await tester.pumpAndSettle();
+    expect(container.read(recordingControllerProvider).isPlaybackError, isTrue);
+
+    expect(
+      find.text('Recording playback failed. Please try again.'),
+      findsOneWidget,
+    );
+    expect(find.text('Try playback again'), findsOneWidget);
+    await tester.tap(find.text('Try playback again'));
+    await tester.pump();
+    expect(audio.playCount, 2);
+    expect(audio.lastPlayedPath, '/tmp/recording.m4a');
+
+    await audio.dispose();
+    await recording.dispose();
+  });
 }
 
 Future<void> _pumpRecording(
@@ -178,6 +257,7 @@ final class _FakeAudioService implements AudioService {
   final _positions = StreamController<double>.broadcast();
 
   String? lastPlayedPath;
+  int playCount = 0;
 
   @override
   Stream<AudioState> get audioState => _states.stream;
@@ -198,6 +278,7 @@ final class _FakeAudioService implements AudioService {
 
   @override
   Future<void> playAudio(String assetPath) async {
+    playCount += 1;
     lastPlayedPath = assetPath;
   }
 
@@ -235,6 +316,7 @@ final class _FakeRecordingService implements RecordingService {
   Completer<bool>? _permissionResult;
   final bool _hasPermission;
   bool _permanentlyDenied = false;
+  int startCount = 0;
 
   void completePermission({required bool permanentlyDenied}) {
     _permanentlyDenied = permanentlyDenied;
@@ -293,7 +375,10 @@ final class _FakeRecordingService implements RecordingService {
   }
 
   @override
-  Future<void> startRecording() async => emit(RecordingState.recording);
+  Future<void> startRecording() async {
+    startCount += 1;
+    emit(RecordingState.recording);
+  }
 
   @override
   Future<void> stopPlayback() async => emit(RecordingState.stopped);
