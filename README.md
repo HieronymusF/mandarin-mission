@@ -2,7 +2,7 @@
 
 一款面向英语使用者的零基础中文学习 App：用城市地图串联真实生活任务，通过视觉记忆、分维度复习和受控口语练习，帮助用户每天用约 10 分钟学会当天能使用的中文。
 
-> 当前状态：一期工程基础已启动。仓库包含竞品调研、产品与开发方案、纯 Dart 学习核心、课程 Schema、首个“点咖啡”Draft Fixture、Go API 容器、可运行的 Flutter Android/iOS App、Drift v1 本地数据库、安装包内课程 Repository、数据驱动的八步课程播放器、汉字临摹与脱稿书写、练习结果与四维掌握度持久化，以及基于 `shadcn_ui` 的代码优先 UI 基线。
+> 当前状态：M1 的本地学习闭环已在 Sony Android 15 真机通过，覆盖“点咖啡”八步课程、包内音频、本地录音/回放、权限分支、汉字书写、课程完成状态、冷启动进度保留、到期复习和飞行模式课程。当前三条 Kokoro 音频仍是开发占位，最终音色、缺失步骤类型与正式资产尚未放行；真实来电中断因验收设备无 SIM 未验证。
 
 ## 产品定位
 
@@ -45,7 +45,7 @@
 - 云数据：Neon PostgreSQL；Flutter App 只访问 API，不直接连接数据库。
 - 资源：Cloudflare R2（S3 兼容）+ 自定义域名 + Cloudflare 全球 CDN，大文件不经过 API。
 - 身份与订阅：API 自行维护会话和权益，对接 Apple/Google 身份及商店服务端协议，不依赖 Supabase 或 RevenueCat。
-- 语音：真人课程音频；发音评测通过服务端代理接入 Azure Speech，并保留替换供应商的接口。
+- 语音：当前包内三条 Kokoro TTS 仅用于开发与流程验收；正式课程优先使用许可清晰、通过普通话人工试听的真人或商用 TTS。Azure Speech 发音评测属于后续服务端能力，尚未接入当前 App 主路径。
 - 质量与数据：业务事件和最小崩溃报告批量写入自研 API；GitHub Actions 执行静态检查、测试、内容校验与容器构建。
 
 ## 设计与前端开发流程
@@ -74,6 +74,12 @@
 - 按失败记录、听力/声调薄弱项和到期时间排序，并通过 v1 分箱调度提交结果的本地复习队列 Repository；
 - Journey 真实到期入口、每日 8 项必做上限、四维复习卡、忘记/模糊/记得反馈、同轮补救与本地保存失败重试；
 - 在认读后完成字模临摹、隐藏字模默写、对照自评并写入 `hanzi` 掌握度的本地书写步骤；
+- 从内容元数据解析并播放三条包内 Kokoro 开发占位音频，课程与 listening 复习共用同一资产路径；
+- 本地麦克风权限说明、普通拒绝/重试、永久拒绝/设置恢复、录音、音量提示、回放、重录、错误重试与文本自评降级；
+- App 切后台、课程步骤返回或页面释放时停止媒体并清理当前临时录音；
+- 第 7 步要求用户选择脱稿自报或 phrase ticket 后才能发送回复，不伪装成已接入语音识别；
+- Journey 从本地数据库读取 `cafe-01` 的真实完成状态，完成后显示 100% 与 `Practice again`；
+- Sony Android 15 真机完成课程、覆盖安装/冷启动进度保留、8 项必做到期复习保存和飞行模式完整课程；
 - GitHub Actions 移动端、学习核心、内容校验和 API 容器构建流程。
 
 ## 文档
@@ -85,6 +91,9 @@
 - [功能开发流程](docs/development-workflow.md)
 - [代码优先 UI 系统](docs/design-system.md)
 - [项目现状与代码审视](docs/project-status.md)
+- [中文仓库导览与源码证据](repo-docs/README.md)
+- [当前实时交接状态](HANDOFF.md)
+- [共享 Widget 库规则](WIDGET_LIBRARY.md)
 - [AI agents 项目交接](docs/handoff/ai-agent-handoff.md)
 - [自研托管容器后端 ADR](docs/decisions/0001-managed-container-backend.md)
 - [代码优先 shadcn UI ADR](docs/decisions/0002-code-first-shadcn-ui.md)
@@ -133,6 +142,14 @@
 根 `AGENTS.md` 只负责规则与路由；进入 `apps/mobile`、`content`、`packages/learning_core`、`services/api` 或 `docs` 后，继续应用该目录下的局部 `AGENTS.md`。重复验证优先调用 `$verify-mandarin-mission` 或 `tools/scripts/verify.ps1`。
 
 ## 当前使用方式
+
+全仓确定性验证：
+
+```powershell
+.\tools\scripts\verify.ps1 -Scope all
+```
+
+可按改动范围将 `all` 替换为 `mobile`、`core`、`content`、`api` 或 `docs`；需要额外构建 Android debug APK 时添加 `-BuildApk`。详细说明见 [验证手册](docs/runbooks/verification.md)。
 
 Flutter App：
 
@@ -186,7 +203,8 @@ go run ./cmd/api
 - [x] 建立代码优先的 shadcn UI 基线并迁移现有页面。
 - [x] 实现本地到期复习 UI 与 Journey 入口。
 - [x] 为“点咖啡”补齐简单汉字临摹与脱稿书写。
-- [ ] 完成“点咖啡”端到端垂直切片。
+- [x] 完成“点咖啡”的本地真机闭环：课程、录音、冷启动进度保留、到期复习和飞行模式课程。
+- [ ] 完成“点咖啡”端到端垂直切片的正式内容放行：最终音色、缺失步骤类型和正式资产。
 - [ ] 扩展到 3 个地点、12 节课并开展封闭测试。
 - [ ] 根据激活、D1/D7 留存和 7 日回忆率决定是否扩展公开 MVP。
 - [ ] 完成 6 个地点、订阅、同步和商店发布。
