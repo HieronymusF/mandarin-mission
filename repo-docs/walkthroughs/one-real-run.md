@@ -1,0 +1,90 @@
+# 一次真实运行：完成点咖啡课程并进入复习
+
+场景很具体：用户在 Journey 点击咖啡地点，完成“Order one coffee”课程，回到首页，并在知识点到期后进入复习。输入是一份随 App 打包的课程 JSON；成功输出是本地课程进度、答题记录、四维掌握度和待同步事件。
+
+难点在于一次课程不只是翻八张卡片。内容引用必须先有效，答题失败不能丢失当前页面，完成动作要原子写入多张表，四个学习维度要独立安排复习；音频仍未就绪时，课程也必须走得完。
+
+## Step 1: 用户从 Journey 打开一个任务
+
+App 启动后先进入 Journey。当前页面只有一个真实地点入口，点击后把稳定课程 ID `cafe-01` 交给课程路由。路由只负责选择页面，不在这里拼课程内容或保存进度。
+
+[Journey 的课程入口](../../apps/mobile/lib/features/journey/presentation/journey_page.dart) 和 [App 路由](../../apps/mobile/lib/app/router.dart) 共同证明了这一步。Journey 同时读取 `cafe-01` 的持久化课程进度与本地到期摘要，因此用户完成后会看到 100% 与 `Practice again`，冷启动后仍保留，并能看到复习是否已到期。
+
+## Step 2: 内容包先通过校验，再变成课程对象
+
+课程页不能直接相信 JSON。Repository 先从安装包读取 Fixture，解析顶层对象，再调用纯 Dart 校验器检查稳定 ID、跨对象引用、步骤要求、拼音与汉字对齐、对话可达性和 release 资产状态。只有问题列表为空时，数据才会变成 App 使用的课程对象。
+
+当前 [点咖啡课程数据](../../content/fixtures/cafe-course.json) 包含 1 个地点、3 个知识点、1 节八步课程、1 段对话和 4 个资产。图片仍是 `planned`；三个音频资产是带 path、SHA-256、模型版本和 Apache-2.0 来源的 `ready` Kokoro TTS 开发占位，课程与复习媒体路径均可解析并播放。`ready` 只代表技术资源可用，当前音色没有获得最终听感认可，因此内容包保持 `draft`。
+
+这段入口位于 [内容 Repository](../../apps/mobile/lib/data/content/course_content_repository.dart)，交叉引用规则位于 [内容校验器](../../packages/learning_core/lib/src/content_validator.dart)。无效 JSON、缺失引用或不可达对话会在 UI 建模前变成明确错误。
+
+## Step 3: 页面状态推进八个数据驱动步骤
+
+课程 Controller 保存当前步骤、选择结果、提示使用、自评、错误和提交中状态。页面根据每个 step 的 `type` 选择展示组件，并把用户意图交回 Controller；保存、判分和 Repository 调用不放在按钮回调里散开。
+
+当前 Fixture 的主序列是：
+
+| 顺序 | 用户动作 | step type | 主要学习维度 |
+| ---: | --- | --- | --- |
+| 1 | 接受场景任务 | `scene_intro` | 综合入口 |
+| 2—3 | 学习“我要”和“咖啡” | `teach_card` | `meaning` |
+| 4 | 临摹或脱稿写“咖啡” | `hanzi_trace` | `hanzi` |
+| 5 | 从选项中听辨整句 | `listen_choice` | `listening` |
+| 6 | 录音、自听或降级自评 | `repeat` | `tone` |
+| 7 | 先脱稿说出订单，或打开 phrase ticket 后发送回复 | `dialogue_turn` | 综合应用 |
+| 8 | 查看总结并完成课程 | `summary` | 完成入口 |
+
+[课程 Controller](../../apps/mobile/lib/features/lesson/application/lesson_providers.dart) 负责状态和提交，[课程页面](../../apps/mobile/lib/features/lesson/presentation/lesson_overview_page.dart) 负责组合对应步骤 Widget。未知 step type 会显示不可用提示，而不是静默跳过。
+
+第 7 步属于预设对话，不做 AI 语音识别。页面初始隐藏标准答案并禁用发送；用户可以先说出订单并选择 `I said it aloud`，也可以打开 `Use phrase ticket` 查看整句。完成其中一个可观察动作后，`Send reply` 才能进入总结页。
+
+## Step 4: 每次练习先写本地事务
+
+听力、汉字和口语自评提交时，Controller 会进入提交中状态并调用进度 Repository。Repository 在同一 Drift 事务中写练习结果、更新该知识点对应维度的掌握度，并追加一条 Outbox 事件。保存失败时 Controller 保留当前步骤并显示重试文案。
+
+这条设计让 UI 不需要等待尚未实现的云端同步。写入模型可以压缩成：
+
+```text
+用户答案
+  -> review_attempts 或 speaking_attempts
+  -> mastery_states 的一个 item + dimension
+  -> sync_outbox_events
+  -> 事务成功后才推进 UI
+```
+
+[进度 Repository](../../apps/mobile/lib/data/progress/lesson_progress_repository.dart) 是这个写入边界，[本地表定义](../../apps/mobile/lib/data/local/tables.dart) 则约束分数、箱位、置信度、维度和同日补救次数。
+
+## Step 5: 完成课程建立十二个复习锚点
+
+总结页提交完成动作时，Repository 先检查课程是否已经完成。首次完成会为 3 个知识点各建立 `meaning`、`listening`、`tone`、`hanzi` 四条掌握度，共 12 条；初始箱位为 0，到期时间是完成后 10 分钟。随后课程状态写成 `completed`，并追加课程进度 Outbox 事件。
+
+重复完成会提前返回，因此不会反复初始化掌握度。完成事务成功后，课程进度查询会失效并重新读取数据库，Journey 卡片不再硬编码为 `Not started`。这个幂等边界可以从 [完成课程实现](../../apps/mobile/lib/data/progress/lesson_progress_repository.dart) 和 [完整课程端到端测试](../../apps/mobile/test/app/app_test.dart) 同时核对。
+
+## Step 6: 到期项目重新出现在 Journey
+
+Journey 用当前 UTC 时间查询 `dueAt <= now` 的掌握度。失败项目优先，听力与声调优先于意义与汉字；一次会话最多取 8 个必做项目，多出的保留为可选巩固。
+
+用户提交“忘记、模糊、记得”后，纯 Dart 调度器决定新箱位、下次到期时间和是否在同一会话补救。错误或忘记会降两箱并在 10 分钟后到期；模糊保持箱位并延后 1 天；无提示记得会升一箱。
+
+[复习队列 Repository](../../apps/mobile/lib/data/review/review_queue_repository.dart) 负责查询与排序，[复习调度器](../../packages/learning_core/lib/src/review_scheduler.dart) 负责确定性规则，[复习流程测试](../../apps/mobile/test/app/review_flow_test.dart) 覆盖四维写入、补救、保存失败和空队列。
+
+听力复习条目会从内容元数据解析 `ready` 音频并显示共享播放器；如果资产为 `planned`、缺失或没有路径，则显示书面降级。书面降级揭晓答案会保存 `usedHint: true`，正常音频路径不会被误记为提示。
+
+## 验证这条路径
+
+在仓库根目录运行：
+
+```powershell
+Set-Location apps/mobile
+flutter test test/app/app_test.dart test/app/review_flow_test.dart
+Set-Location ../../packages/learning_core
+dart test test/learning_core_test.dart test/repository_content_test.dart
+```
+
+端到端课程测试的关键结果是 1 条 `completed` 进度、12 条掌握度、4 条复习尝试、1 条口语尝试和 6 条 Outbox 事件。若这些结果改变，应先回到 [源码证据中的反证检查](../references/source-evidence.md#会改变当前解释的检查)，再更新本 walkthrough。
+
+真机证据（2026-07-23）：Sony `XQ-DQ72` 完成八步课程后，Journey 显示 `Completed`、100% 与 `Practice again`；覆盖安装和两次冷启动后状态仍保留。设备完成 8 项必做到期复习并显示 `Review saved`，返回后只剩 2 项可选巩固；再次冷启动结果仍保留。随后开启飞行模式完整重走八步课程并返回 completed Journey，验证结束后已关闭飞行模式。
+
+理解行为后，可用 [代码地图定位每类修改的入口](../code-map.md)，再进入内容、本地闭环或媒体模块查看机制细节。
+
+证据状态：除特别标注外，本页基于当前源码已确认。

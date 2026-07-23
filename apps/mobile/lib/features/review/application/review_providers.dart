@@ -57,13 +57,15 @@ final class ReviewSessionEntry {
     required this.queueItem,
     required this.knowledgeItem,
     required this.options,
-    required this.audioAvailable,
+    required this.audioAssetPath,
   });
 
   final ReviewQueueItem queueItem;
   final CourseKnowledgeItem knowledgeItem;
   final List<CourseKnowledgeItem> options;
-  final bool audioAvailable;
+  final String? audioAssetPath;
+
+  bool get audioAvailable => audioAssetPath != null;
 
   ReviewSessionEntry retry() {
     return ReviewSessionEntry(
@@ -72,7 +74,7 @@ final class ReviewSessionEntry {
       ),
       knowledgeItem: knowledgeItem,
       options: options,
-      audioAvailable: audioAvailable,
+      audioAssetPath: audioAssetPath,
     );
   }
 }
@@ -383,7 +385,7 @@ final class ReviewSessionController extends AsyncNotifier<ReviewSessionState> {
       queueItem: queueItem,
       knowledgeItem: knowledgeItem,
       options: List.unmodifiable(options),
-      audioAvailable: false,
+      audioAssetPath: package.audioAssetPathForItem(knowledgeItem.id),
     );
   }
 }

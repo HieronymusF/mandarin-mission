@@ -1,24 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_layout.dart';
 import '../../../../data/content/course_content_models.dart';
 import '../../../../shared/presentation/app_leading_row.dart';
+import '../../../../shared/presentation/audio_player_bar.dart';
 import '../../../../shared/presentation/hanzi_pinyin_text.dart';
-import '../lesson_audio_notice.dart';
+import '../../../../shared/presentation/recording_controls.dart';
 
-class RepeatStep extends StatelessWidget {
-  const RepeatStep({required this.item, required this.tip, super.key});
+class RepeatStep extends ConsumerWidget {
+  const RepeatStep({
+    required this.item,
+    required this.tip,
+    required this.audioAssetPath,
+    required this.onRecordingComplete,
+    super.key,
+  });
 
   final CourseKnowledgeItem item;
   final String? tip;
+  final String? audioAssetPath;
+  final ValueChanged<String> onRecordingComplete;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = ShadTheme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        // 目标短语卡片
         ShadCard(
           width: double.infinity,
           child: Column(
@@ -33,41 +44,52 @@ class RepeatStep extends StatelessWidget {
             ],
           ),
         ),
+
         const SizedBox(height: AppSpacing.md),
-        ShadCard(
-          width: double.infinity,
-          height: AppLayout.mediaPanelHeight,
-          backgroundColor: theme.colorScheme.accent,
-          border: ShadBorder.none,
-          child: Center(
-            child: Icon(
-              LucideIcons.audioLines,
-              size: 40,
-              color: theme.colorScheme.accentForeground,
-            ),
+
+        // 示例音频播放
+        AudioPlayerBar(
+          assetPath: audioAssetPath,
+          showLabel: true,
+          label: 'Play example',
+        ),
+
+        const SizedBox(height: AppSpacing.md),
+
+        // 声调提示卡片
+        if (tip != null)
+          ShadCard(
+            width: double.infinity,
+            padding: AppLayout.compactCardPadding,
+            backgroundColor: theme.colorScheme.custom['warning'],
+            border: ShadBorder.none,
+            title: const Text('Tone tip'),
+            description: Text(tip!),
           ),
-        ),
-        const SizedBox(height: AppSpacing.md),
-        ShadCard(
-          width: double.infinity,
-          padding: AppLayout.compactCardPadding,
-          backgroundColor: theme.colorScheme.custom['warning'],
-          border: ShadBorder.none,
-          title: const Text('Tone tip'),
-          description: Text(tip ?? ''),
-        ),
+
         const SizedBox(height: AppSpacing.sm),
+
+        // 录音控制
+        RecordingControls(
+          onRecordingComplete: onRecordingComplete,
+          maxDuration: 30.0,
+          minVolumeThreshold: 0.1,
+        ),
+
+        const SizedBox(height: AppSpacing.sm),
+
+        // 隐私提示
         Row(
           children: [
             Icon(
-              LucideIcons.mic,
+              LucideIcons.shield,
               size: 16,
               color: theme.colorScheme.mutedForeground,
             ),
             const SizedBox(width: AppSpacing.xs),
             Expanded(
               child: Text(
-                'Microphone is used only for this practice.',
+                'Recordings are stored locally and never uploaded.',
                 style: theme.textTheme.muted,
               ),
             ),
@@ -78,20 +100,22 @@ class RepeatStep extends StatelessWidget {
   }
 }
 
-class SpeakingFallback extends StatelessWidget {
+class SpeakingFallback extends ConsumerWidget {
   const SpeakingFallback({
     required this.item,
+    required this.audioAssetPath,
     required this.selected,
     required this.onSelected,
     super.key,
   });
 
   final CourseKnowledgeItem item;
+  final String? audioAssetPath;
   final String? selected;
   final ValueChanged<String> onSelected;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = ShadTheme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -111,7 +135,7 @@ class SpeakingFallback extends StatelessWidget {
               color: theme.colorScheme.custom['warningForeground'],
             ),
             child: const Text(
-              'You can still finish. Listen, record locally, then judge your own attempt.',
+              'You can still finish. Listen, then judge your own attempt.',
             ),
           ),
         ),
@@ -127,11 +151,11 @@ class SpeakingFallback extends StatelessWidget {
                 hanziFontSize: 28,
               ),
               const SizedBox(height: AppSpacing.md),
-              ShadButton.outline(
-                height: AppLayout.controlHeight,
-                onPressed: () => showLessonAudioUnavailable(context),
-                leading: const Icon(LucideIcons.volume2, size: 16),
-                child: const Text('Play example'),
+              // 示例音频播放
+              AudioPlayerBar(
+                assetPath: audioAssetPath,
+                showLabel: true,
+                label: 'Play example',
               ),
             ],
           ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import 'app_layout.dart';
+import 'app_text_styles.dart';
 
 const missionPrimary = Color(0xFF176B52);
 const missionPrimaryForeground = Color(0xFFFFFFFF);
@@ -48,6 +49,7 @@ ShadThemeData buildAppShadTheme() {
 
   return ShadThemeData(
     colorScheme: colorScheme,
+    textTheme: AppTextStyles.shadTextTheme,
     radius: BorderRadius.circular(AppRadius.md),
     cardTheme: const ShadCardTheme(
       padding: AppLayout.cardPadding,

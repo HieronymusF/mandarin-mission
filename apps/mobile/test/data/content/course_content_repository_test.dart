@@ -14,7 +14,7 @@ void main() {
 
       expect(package.schemaVersion, 1);
       expect(package.status, 'draft');
-      expect(package.version, '0.1.0');
+      expect(package.version, '0.1.3');
       expect(package.lessonsById.keys, ['cafe-01']);
       expect(package.lesson('cafe-01').steps, hasLength(8));
       expect(
@@ -28,6 +28,40 @@ void main() {
       expect(
         package.dialogue('cafe-challenge').node('shopkeeper-question').text,
         '您好，您想喝什么？',
+      );
+      expect(package.assetsById.keys, contains('audio-kafei'));
+      expect(
+        package.audioAssetPathForItem('noun-kafei'),
+        'assets/audio/kokoro/kafei.wav',
+      );
+      final audioBytes = await rootBundle.load(
+        package.audioAssetPathForItem('noun-kafei')!,
+      );
+      expect(audioBytes.lengthInBytes, greaterThan(44));
+    });
+
+    test('resolves only ready audio assets to their bundled path', () async {
+      final source = await rootBundle.loadString(
+        CourseContentRepository.bundledCafeCourseAsset,
+      );
+      final content = jsonDecode(source) as Map<String, Object?>;
+      final assets = content['assets']! as List<Object?>;
+      final coffeeAudio =
+          assets.cast<Map<String, Object?>>().singleWhere(
+              (asset) => asset['id'] == 'audio-kafei',
+            )
+            ..['status'] = 'ready'
+            ..['path'] = 'assets/audio/kafei.mp3'
+            ..['sha256'] = List.filled(64, '0').join();
+      expect(coffeeAudio['kind'], 'audio');
+
+      final package = await CourseContentRepository(
+        bundle: _StringAssetBundle(jsonEncode(content)),
+      ).loadPackage();
+
+      expect(
+        package.audioAssetPathForItem('noun-kafei'),
+        'assets/audio/kafei.mp3',
       );
     });
 

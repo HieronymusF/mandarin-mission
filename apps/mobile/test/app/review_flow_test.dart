@@ -13,6 +13,7 @@ import 'package:mandarin_mission/data/local/app_database.dart';
 import 'package:mandarin_mission/data/local/app_database_provider.dart';
 import 'package:mandarin_mission/data/review/review_queue_repository.dart';
 import 'package:mandarin_mission/features/review/application/review_providers.dart';
+import 'package:mandarin_mission/shared/presentation/audio_player_bar.dart';
 
 void main() {
   final now = DateTime.utc(2026, 7, 18, 9);
@@ -82,7 +83,16 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Listening'), findsOneWidget);
-      expect(find.byKey(const Key('review-audio-unavailable')), findsOneWidget);
+      expect(find.byKey(const Key('review-audio-player')), findsOneWidget);
+      expect(find.byKey(const Key('review-audio-unavailable')), findsNothing);
+      expect(
+        tester
+            .widget<AudioPlayerBar>(
+              find.byKey(const Key('review-audio-player')),
+            )
+            .assetPath,
+        'assets/audio/kokoro/wo-yao.wav',
+      );
       await tester.tap(find.byKey(const Key('review-reveal-answer')));
       await tester.pumpAndSettle();
       await _rate(tester, const Key('review-rating-remembered'));
@@ -125,7 +135,7 @@ void main() {
                   attempt.dimension == LearningDimension.listening.name,
             )
             .usedHint,
-        isTrue,
+        isFalse,
       );
       expect(
         attempts
@@ -351,7 +361,11 @@ void main() {
     final container = ProviderContainer(
       overrides: [
         courseContentRepositoryProvider.overrideWithValue(
-          CourseContentRepository(bundle: _StringAssetBundle(contentSource)),
+          CourseContentRepository(
+            bundle: _StringAssetBundle(
+              _contentWithUnavailableAudio(contentSource),
+            ),
+          ),
         ),
         reviewQueueRepositoryProvider.overrideWithValue(queue),
         reviewNowProvider.overrideWithValue(() => now),
@@ -382,7 +396,20 @@ void main() {
     await _rate(tester, const Key('review-rating-remembered'));
 
     expect(find.byKey(const Key('review-complete')), findsOneWidget);
+    expect(queue.submissions.single.usedHint, isTrue);
   });
+}
+
+String _contentWithUnavailableAudio(String source) {
+  final package = jsonDecode(source) as Map<String, dynamic>;
+  final assets = package['assets'] as List<dynamic>;
+  final audio = assets.cast<Map<String, dynamic>>().singleWhere(
+    (asset) => asset['id'] == 'audio-wo-yao',
+  );
+  audio['status'] = 'planned';
+  audio.remove('path');
+  audio.remove('sha256');
+  return jsonEncode(package);
 }
 
 Future<void> _rate(WidgetTester tester, Key key, {bool settle = true}) async {

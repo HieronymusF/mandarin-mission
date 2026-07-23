@@ -159,6 +159,71 @@ void main() {
     expect(find.byKey(const Key('hanzi-writing-restart')), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('keeps every pointer sample received before a rebuild', (
+    tester,
+  ) async {
+    var strokes = <List<Offset>>[];
+    await tester.pumpWidget(
+      _WritingTestApp(
+        builder: (context, setState) => SizedBox(
+          width: 240,
+          child: HanziWritingBoard(
+            hanzi: item.hanzi,
+            phase: HanziWritingPhase.trace,
+            strokes: strokes,
+            onChanged: (value) => strokes = value,
+          ),
+        ),
+      ),
+    );
+
+    final board = find.byType(HanziWritingBoard);
+    final rect = tester.getRect(board);
+    final gesture = await tester.startGesture(
+      Offset(rect.left + 30, rect.center.dy),
+    );
+    await gesture.moveBy(const Offset(12, 8));
+    await gesture.moveBy(const Offset(12, -4));
+    await gesture.moveBy(const Offset(12, 6));
+    await gesture.up();
+
+    expect(strokes, hasLength(1));
+    expect(strokes.single, hasLength(4));
+  });
+
+  testWidgets('starts a new stroke when a pointer crosses character cells', (
+    tester,
+  ) async {
+    var strokes = <List<Offset>>[];
+    await tester.pumpWidget(
+      _WritingTestApp(
+        builder: (context, setState) => SizedBox(
+          width: 240,
+          child: HanziWritingBoard(
+            hanzi: item.hanzi,
+            phase: HanziWritingPhase.trace,
+            strokes: strokes,
+            onChanged: (value) => strokes = value,
+          ),
+        ),
+      ),
+    );
+
+    final board = find.byType(HanziWritingBoard);
+    final rect = tester.getRect(board);
+    final gesture = await tester.startGesture(
+      Offset(rect.left + rect.width * .25, rect.center.dy),
+    );
+    await gesture.moveTo(
+      Offset(rect.left + rect.width * .75, rect.center.dy + 10),
+    );
+    await gesture.up();
+
+    expect(strokes, hasLength(2));
+    expect(strokes.first.every((point) => point.dx < rect.width / 2), isTrue);
+    expect(strokes.last.every((point) => point.dx >= rect.width / 2), isTrue);
+  });
 }
 
 Future<void> _drawOnCanvas(WidgetTester tester) async {
