@@ -1,8 +1,8 @@
 # Mandarin Mission 项目交接
 
-> 最后更新：2026-07-24 23:21（Asia/Hong_Kong）
+> 最后更新：2026-07-24 23:30（Asia/Hong_Kong）
 > 项目：`D:\mandarin-mission\mandarin-mission`
-> Git：M1 功能提交 `6f89447` 已通过 PR #16 合并为 `d2c83b4`；`main` 与 `origin/main` 同步
+> Git：M1 功能提交 `6f89447` 已通过 PR #16 合并为 `d2c83b4`；交接刷新已通过 PR #17 合并为 `5fff6b3`，`main` 与 `origin/main` 同步
 
 本文件是本项目唯一的实时交接入口。每次新对话或新任务必须先按根目录 `AGENTS.md` 的顺序读取全局协议、本文件、`AGENT_LESSONS.md` 和 `docs/handoff/ai-agent-handoff.md`，再核验仓库与 GitHub 当前状态。`AGENT_LESSONS.md` 保存去重后的项目特定复用经验；详细且相对稳定的项目基线在 `docs/handoff/ai-agent-handoff.md`。
 
@@ -24,7 +24,7 @@
 - PR [#14](https://github.com/HieronymusF/mandarin-mission/pull/14) 已在 `mobile`、`learning-core`、`api` 三项远端 CI 全部成功后合并到 `main`；merge commit 为 `161c8e1`，功能分支 head 为 `610af84`。本地 `main` 已快进到同一 merge commit。
 - Sony 真机权限、可自主触发生命周期、本地学习闭环与飞行模式课程已经完成。真实来电因该设备无 SIM 无法执行。
 - 已按 2026-07-23 用户提供的小红书“Claude Code Project Structure”思路完成 Codex 等价结构调整：根 `AGENTS.md` 只保留稳定规则与路由，产品/架构、局部上下文、重复验证和机械护栏分别下沉到 docs、局部 `AGENTS.md`、项目 Skill、Hook 与脚本；相关改动已随 PR #14 合并。
-- 音频播放与录音模块及本轮真机修复已进入 `main`；远端功能分支保留，未删除。
+- 音频播放与录音模块及本轮真机修复已进入 `main`；2026-07-24 已删除 7 个已合并 PR 的本地与远端分支。当前远端仅保留 `main` 和已合并 PR #17 的 `agent/record-pr16-release`。
 - `record` 包兼容性阻塞已解除，核心媒体架构、权限状态、录音回放、本地降级和内容资产路径接线已通过自动验证。
 - 媒体组件级 Widget 测试、课程媒体生命周期自动清理和复习 listening 真实音频接线已补齐；旧 Kokoro 与 MeloTTS 候选均已被最终 CosyVoice 资产替换。当前真机重点只剩真实来电分支。
 - 播放/录音/录音回放错误原地重试、普通麦克风权限拒绝反馈及回归测试均已随 PR #14 合并。
@@ -100,7 +100,7 @@
 
 ## 下一步要做什么
 
-1. **发布边界**：M1 功能已通过 PR #16 合并到 `main`，远端功能分支保留。当前 release APK 是本地构建产物，没有创建 GitHub Release，且仍使用 Android Debug 签名；不得写成商店发布包。
+1. **发布边界**：M1 功能已通过 PR #16 合并到 `main`，交接刷新也已通过 PR #17 合并；已合并的历史功能分支已清理，当前远端仍保留 `agent/record-pr16-release`。当前 release APK 是本地构建产物，没有创建 GitHub Release，且仍使用 Android Debug 签名；不得写成商店发布包。
 2. **产品下一阶段**：M1 本地纵向切片已达成；下一个产品开发选项是扩展到 3 个地点、12 节课的封闭测试范围，开始前需用户确认优先级。
 3. **延期真实来电分支**：当前设备无 SIM，未来具备可呼入设备时，再验证录音中的来电中断与返回 App 后恢复；不要用 Home 或 ADB 模拟冒充真实来电证据。
 4. **完成项目 Skill 与 Hook 的 UI 侧启用确认**：`$verify-mandarin-mission` 仍未出现在本会话 Skills 列表，Hook 也尚未由用户在 `/hooks` 中复核并信任。
