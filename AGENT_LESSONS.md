@@ -4,6 +4,16 @@
 
 涉及稳定仓库行为或行为代码变更时，按根 `AGENTS.md` 的 Repo docs sync gate 核对并最小更新 `repo-docs/`。
 
+## Lesson: Release 交付必须验证远端可下载资产
+
+- Last confirmed: 2026-07-24
+- Pattern: 本地完成 `flutter build apk --release` 并记录产物，不代表 GitHub 已发布 Release；若仓库侧栏仍显示 `No releases published`，用户无法从 GitHub 下载安装包。
+- Prevention rule: 用户要求“打 release 包并上传到 Git”时，把交付门禁定义为：版本标签指向预期 `main` 提交、GitHub Release 已发布、APK 资产状态为 `uploaded`，且远端资产大小与 SHA-256 和本地产物一致。Debug 证书签名的 release 模式包必须标记为验收包或 Pre-release。
+- Verification: `gh release view <tag> --json assets,targetCommitish,url` 与 GitHub Releases 页面都能看到 APK；GitHub API 返回的 `size` 和 `digest` 与本地 `Get-Item`、`Get-FileHash -Algorithm SHA256` 一致。
+- Evidence: GitHub Pre-release `v0.1.0+1` 的 `app-release.apk` 为 62,720,887 bytes，远端和本地 SHA-256 均为 `235d7e2875d3d5c35040aab3f6078fa960ed8aeae36eed96fa017942e2819792`。
+- Status: active
+- Promoted to: none
+
 ## Lesson: 联邦 Flutter 插件必须验证整套平台依赖
 
 - Last confirmed: 2026-07-18

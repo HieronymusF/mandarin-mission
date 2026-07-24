@@ -1,8 +1,8 @@
 # Mandarin Mission 项目交接
 
-> 最后更新：2026-07-24 23:30（Asia/Hong_Kong）
+> 最后更新：2026-07-24 23:53（Asia/Hong_Kong）
 > 项目：`D:\mandarin-mission\mandarin-mission`
-> Git：M1 功能提交 `6f89447` 已通过 PR #16 合并为 `d2c83b4`；交接刷新已通过 PR #17 合并为 `5fff6b3`，`main` 与 `origin/main` 同步
+> Git：M1 功能提交 `6f89447` 已通过 PR #16 合并为 `d2c83b4`；交接刷新已通过 PR #17 合并为 `5fff6b3`，`main` 与 `origin/main` 同步；GitHub Pre-release `v0.1.0+1` 指向 `ce25b64`
 
 本文件是本项目唯一的实时交接入口。每次新对话或新任务必须先按根目录 `AGENTS.md` 的顺序读取全局协议、本文件、`AGENT_LESSONS.md` 和 `docs/handoff/ai-agent-handoff.md`，再核验仓库与 GitHub 当前状态。`AGENT_LESSONS.md` 保存去重后的项目特定复用经验；详细且相对稳定的项目基线在 `docs/handoff/ai-agent-handoff.md`。
 
@@ -15,6 +15,7 @@
 - 新增 320×640、200% 字号回归测试。测试先发现音频不可用卡片溢出 284 px、真实长选项按钮溢出 558 px，修复后长文案会自适应增高，音频降级文案会在可用宽度内换行。
 - 全量验证通过：learning_core 21 tests、Flutter 57 tests、内容包校验、Flutter analyze 0 issues、debug APK、Go vet/tests、repo-docs validator 0 errors / 1 个既有 broad-value warning；最终交接更新后的 `git diff --check` 也已通过。
 - PR #16 的 `mobile`、`learning-core`、`api` 三项远端 CI 均通过后以 merge commit `d2c83b4` 合并到 `main`。合并后从该 `main` 构建 `apps/mobile/build/app/outputs/flutter-apk/app-release.apk`；包为 62,720,887 bytes，SHA-256 `235d7e2875d3d5c35040aab3f6078fa960ed8aeae36eed96fa017942e2819792`，内含 `release` / `0.1.7` Fixture 和哈希匹配的三条 CosyVoice 音频，无 MeloTTS/Kokoro 遗留。`apksigner` 验证 v2 签名有效，但证书为 `Android Debug`；这是 release 模式验收包，不是可上架商店的正式签名包。
+- GitHub 已发布 Pre-release [`v0.1.0+1`](https://github.com/HieronymusF/mandarin-mission/releases/tag/v0.1.0%2B1)，标签指向当时的 `main` 提交 `ce25b64`。Release 资产 `app-release.apk` 为 62,720,887 bytes，GitHub 记录的 SHA-256 与本地一致：`235d7e2875d3d5c35040aab3f6078fa960ed8aeae36eed96fa017942e2819792`。它仍由 Android Debug 证书签名，只能作为安装验收包。
 - Fixture 升为 `release` 后，首次 Flutter 全量回归暴露两个降级测试副本仍把资产改为 `planned` 而未把顶层包改为 `draft`；一条目标测试先失败，修正这两个仅用于测试的副本后，目标测试与 Flutter 57 tests 全部通过。不得将首次失败省略为一次通过。
 - Android 模拟器 `emulator-5554` 已安装最终 debug APK，并实际走到第 4 步图片选择、第 6 步声调辨析和第 8 步语序重排；语序错误会留在本步并提示重试，正确后可进入第 9 步。
 - Sony `XQ-DQ72` 已完成新 11 步真机复验：用户确认第 4 步图片选择、第 6 步声调辨析和第 8 步语序重排均通过；随后从第 9 步无录音降级继续，经第 10 步口语回复到第 11 步完成页，返回 Journey 显示 `Completed · 11 short steps`，杀进程冷启动后状态仍保留。接着完成 6 项到期复习，Journey 显示 `Review done · Review is up to date`，再次杀进程冷启动后仍保留。第 4 步后来接入 `ready` 场景图，选项从英文 `meaning` 改为整行中文+拼音；第一版因咖啡杯过大、人物过小被否决，第二版调整为小杯子和更突出的人物后获用户真机确认。
@@ -100,7 +101,7 @@
 
 ## 下一步要做什么
 
-1. **发布边界**：M1 功能已通过 PR #16 合并到 `main`，交接刷新也已通过 PR #17 合并；已合并的历史功能分支已清理，当前远端仍保留 `agent/record-pr16-release`。当前 release APK 是本地构建产物，没有创建 GitHub Release，且仍使用 Android Debug 签名；不得写成商店发布包。
+1. **发布边界**：M1 功能已通过 PR #16 合并到 `main`，交接刷新也已通过 PR #17 合并；已合并的历史功能分支已清理，当前远端仍保留 `agent/record-pr16-release`。GitHub Pre-release `v0.1.0+1` 已包含可下载的 `app-release.apk`，但仍使用 Android Debug 签名；不得写成商店发布包。若准备商店发布，下一步必须配置独立 release keystore、签名密钥的安全存储和商店版构建验证。
 2. **产品下一阶段**：M1 本地纵向切片已达成；下一个产品开发选项是扩展到 3 个地点、12 节课的封闭测试范围，开始前需用户确认优先级。
 3. **延期真实来电分支**：当前设备无 SIM，未来具备可呼入设备时，再验证录音中的来电中断与返回 App 后恢复；不要用 Home 或 ADB 模拟冒充真实来电证据。
 4. **完成项目 Skill 与 Hook 的 UI 侧启用确认**：`$verify-mandarin-mission` 仍未出现在本会话 Skills 列表，Hook 也尚未由用户在 `/hooks` 中复核并信任。
