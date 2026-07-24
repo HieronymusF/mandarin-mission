@@ -13,9 +13,9 @@
 | 纯 Dart 核心 `packages/learning_core` | ✅ 已实现 | 项目最扎实的部分，纯函数 + 完整测试 |
 | 课程内容工程 `content/` | ✅ 已实现 | schema + validator + 1 套 fixture，校验严谨 |
 | 移动端 `apps/mobile` 数据层 | ✅ 已实现 | Drift 6 表约束扎实，Repository 全事务化 |
-| 移动端 UI/课程播放器 | ✅ 基线已实现 | shadcn 主题、Journey 和数据驱动 8 步走通；含简单汉字书写，步骤组件与提交逻辑已分层 |
+| 移动端 UI/课程播放器 | ✅ 基线已实现 | shadcn 主题、Journey 和数据驱动 11 步自动流程走通；含简单汉字书写，步骤组件与提交逻辑已分层 |
 | 移动端复习功能 | ✅ 本地闭环已实现 | Journey 真实入口、四维题型、自评、补救和失败重试均已接入本地队列 |
-| 移动端音频/录音 | ⚠️ 开发占位已接入 | 播放、录音、权限、回放和降级已接线；Apache-2.0 Kokoro 音频已打包但听感未获最终认可，缺最终音色与真实设备验收 |
+| 移动端音频/录音 | ✅ 主路径已实现 | 播放、录音、权限、回放和降级已接线；CosyVoice 三条音频已通过整组试听、APK 打包与 Sony 真机播放，仅留无 SIM 真实来电边界 |
 | Go 后端 `services/api` | ❌ 仅骨架 | 只有 healthz/readyz/meta，无 DB/认证/业务 |
 | CI | ✅ 已实现 | 三 job 覆盖 mobile/learning-core/api，有生成文件门禁 |
 | 文档 | ✅ 较全 | 开发方案 + 代码优先 UI 系统 + ADR + 分级流程齐全 |
@@ -42,11 +42,11 @@
 ### 2. 内容工程 `content/` ✅
 
 - `schema/course-package.schema.json` — JSON Schema Draft 2020-12，`additionalProperties:false` 全开，定义 10 种 step 类型。
-- `fixtures/cafe-course.json` — 1 location / 3 知识点 / 1 lesson（8 步）/ 1 dialogue / 4 assets。图片仍为 `planned`；三条音频已接入 Kokoro `zf_xiaoxiao` 生成的 `ready` 开发占位资源，含 path/sha256/Apache-2.0 来源；`ready` 只表示技术资源可用，整个包仍是 draft。
+- `fixtures/cafe-course.json` — 1 location / 3 知识点 / 1 lesson（11 步）/ 1 dialogue / 4 assets。咖啡场景图已通过真机构图确认；三条包内 CosyVoice 音频含 path/SHA-256/Apache-2.0 来源与生成参数，并通过整组人工试听、APK 打包和 Sony 真机播放。整个包已升为 `release`。
 - `lib/mandarin_mission_content.dart` — 5 行，暴露 asset 路径常量。
 
 **审视点**：
-- **schema 定义 10 种 step 类型，播放器实现 7 种**（scene_intro/teach_card/hanzi_trace/listen_choice/repeat/dialogue_turn/summary）。`image_choice / tone_contrast / order_tokens` 未实现，仍会落入默认的 Unsupported 分支。
+- **schema 定义的 10 种 step 类型均已实现**。2026-07-24 补齐 `image_choice / tone_contrast / order_tokens`，内容契约、错误重试、本地保存、11 步端到端流程、200% 文字缩放、Android 模拟器和 Sony 真机验收通过；完整完成页与冷启动进度保留也已复验。
 
 ---
 
@@ -82,7 +82,7 @@
 **剩余审视点**：
 
 - `LessonPlayerState.score` 仍缺独立单元测试；
-- schema 定义 10 种步骤，播放器仍只实现 7 种；
+- schema 定义的 10 种步骤均已实现；新增三种步骤已过模拟器与 Sony 真机；
 - 课程通用文案尚未接入 i18n，但内容标题与教学数据继续来自 Fixture；
 - `shadcn_ui` 为 `0.x` 依赖，必须按 ADR 0002 单独升级并做截图回归。
 
@@ -95,7 +95,7 @@
 - `features/review/application/review_providers.dart` 提供到期摘要、8 项必做会话上限、异步加载、逐项保存和保存失败重试状态。
 - `features/review/presentation/` 与 `/review` 路由覆盖 `meaning/listening/tone/hanzi` 四维题型、忘记/模糊/记得反馈、同轮补救、空队列和完成态。
 - Journey 直接查询真实到期队列，并把超出必做上限的项目显示为额外巩固。
-- 课程内容包已有可播放的 Kokoro TTS 音频，但复习 Provider 当前仍把 listening 标为 `audioAvailable: false`，因此复习继续显示书面降级并记录 `usedHint`；课程资产接入没有被误写成复习音频已完成。
+- 课程与复习 listening 题都从内容元数据解析同一条 `ready` 音频路径；只有 planned/缺失资产才进入书面降级并记录 `usedHint`。
 
 #### 3.5 测试覆盖
 
@@ -116,11 +116,11 @@
 - 课程页在 App 进入非 `resumed` 状态或页面离开时结束媒体会话，停止播放器、取消录音或回放并清理当前临时文件；重录前也会删除旧文件。
 - 播放、录音和录音回放失败后会在当前步骤显示对应重试按钮：课程播放重用当前 asset 路径，录音重新进入录制状态，录音回放保留当前临时文件并重试同一路径，不要求用户退出课程。
 - 用户普通拒绝麦克风权限后会看到独立拒绝状态、再次授权入口和无录音自评说明；它不会再退回成看似从未请求过的初始权限卡。
-- 三条 Kokoro WAV 已放入 `assets/audio/kokoro/`，使用 `zf_xiaoxiao`（speaker 47）、0.95 语速和 24 kHz/16-bit/mono 格式；内容资产标为 `ready` 并记录 SHA-256、模型/工具 Apache-2.0 来源与生成版本。旧 `zf_xiaoyi` 因机械感明显被替换，当前声线得到“能用但不满意”的反馈，只作为开发占位，后续仍会替换。
+- 三条 CosyVoice WAV 已放入 `assets/audio/cosyvoice/`，使用 `CosyVoice-300M-SFT` 内置 `中文女`、seed 1986，速度为 0.94/0.89；内容资产记录了路径、SHA-256、Apache-2.0 来源、合成文本差异和 PCM16 兼容转换。文件为 22.05 kHz/16-bit/mono，未使用真人克隆或声学后处理。
 - 自动验证：Flutter format、analyze、49 tests、debug APK 通过；包含 6 项媒体组件 Widget 测试、6 项录音 Controller 测试、1 项课程媒体生命周期 Widget 测试和 ready 音频路径解析测试。
-- Android 模拟器已从课程第 2 步播放新的 Kokoro“我要”；系统日志确认解码 24 kHz/16-bit/mono `audio/raw`、交付 17,604 帧（与 WAV 样本数一致）并释放音频焦点。模拟器证据不代表普通话人工试听或真机验收完成。
+- 新 CosyVoice APK 已安装到 Sony `XQ-DQ72`；“我要”、“咖啡”和“我要一杯咖啡”均从真实课程入口播放，Android 日志确认 22.05 kHz 单声道音轨正常完成并释放音频焦点。
 - Sony `XQ-DQ72` 已在课程第 6 步验证首次授权、普通拒绝/重试、永久拒绝/设置恢复、录音/回放/重录、Home 和步骤返回清理。
-- 尚未完成：Kokoro 三条音频的最终普通话听感认可、服务不可用的真机制造，以及真实来电中断/恢复；该 Sony 无 SIM，来电分支当前无法执行。
+- 尚未完成：真实来电中断/恢复；该 Sony 无 SIM，来电分支当前无法执行。服务不可用分支已由自动测试覆盖，但没有可控的真机制造证据。
 
 ---
 
@@ -167,13 +167,13 @@
 | 3 | Schema + Fixture + validator | ✅ | `content/schema`、`content_validator.dart` |
 | 4 | Drift 表 + migration 测试 | ⚠️ 部分 | 6 表完整；migration 测试只验 v1 自洽，无真实迁移 |
 | 5 | Journey 外壳 | ✅ | shadcn 视觉、真实到期摘要和 `cafe-01` 持久化完成状态已接线；连胜/解锁/每日任务待后续接线 |
-| 6 | 数据驱动课程步骤 | ⚠️ 部分 | MVVM 泄漏已修；已实现 7/10 step 类型，含 `hanzi_trace` |
+| 6 | 数据驱动课程步骤 | ✅ 已实现 | 10/10 step 类型已实现，并通过自动测试、Android 模拟器与 Sony 真机验收 |
 | 7 | 持久化练习和掌握度 | ✅ | `lesson_progress_repository.dart` + 集成测试 |
 | 8 | 复习分箱算法与本地 UI | ✅ | `review_scheduler.dart`、队列、Journey 入口和四维会话闭环 |
-| 9 | 音频/录音/回放/降级 | ⚠️ 部分 | Kokoro 开发占位已打包，Sony 真机主路径与权限分支通过；缺最终音色、服务不可用真机证据和真实来电 |
-| 10 | 点咖啡端到端 | ⚠️ 部分 | Sony 已通过课程、冷启动进度保留、到期复习和飞行模式完整课程；缺最终内容/音频放行 |
+| 9 | 音频/录音/回放/降级 | ✅ 主路径完成 | CosyVoice 音频放行、Sony 真机播放、权限、录音/回放与降级通过；仅留无 SIM 来电边界 |
+| 10 | 点咖啡端到端 | ✅ 已实现 | Sony 已通过 11 步课程、冷启动进度保留、到期复习、飞行模式与最终内容音频放行 |
 
-**里程碑判定**：自动集成测试已完成课程、持久化、本地到期复习和媒体状态架构；Sony 真机已完成“课程 → 杀进程 → 进度保留 → 到期复习”及飞行模式完整课程，真实录音/回放也已通过。Kokoro 音频仍只是用户认为“能用但不满意”的开发占位，缺失步骤类型与正式资产也未关闭，因此 M1 **仍未达成**。
+**里程碑判定**：M1 的 11 步课程、持久化、到期复习、媒体主路径、图片资产和最终 CosyVoice 音频均已通过自动验证与 Sony 真机证据，内容包已升为 `release`，因此 M1 **已达成**。无 SIM 设备上无法验证的真实来电中断是后续平台边界，不再阻断本地内容里程碑。
 
 ---
 
@@ -192,7 +192,7 @@
 ## 五、需要改进的（按优先级）
 
 ### P0 — 阻塞里程碑
-1. **音频缺最终音色和少数真实平台边界**——Kokoro 开发占位的许可、文件和打包链已落地，真机权限、录音、回放和可自主触发的生命周期已通过，但听感只达到“能用”；后续可换商用 TTS并重新核验许可、哈希和普通话听感。真实来电因当前 Sony 无 SIM 未验证，服务不可用仍只有自动测试证据。
+1. **少数真实平台边界**——最终 CosyVoice 音频已放行，真机权限、录音、回放和可自主触发的生命周期已通过；真实来电因当前 Sony 无 SIM 未验证，服务不可用仍只有自动测试证据。
 
 ### P1 — 架构债（扩大规模前必须纠正）
 3. **纯规则散落在非 domain 层**——`_confidenceFor`、`_compareQueueItems`、`score` 应迁移到 `learning_core` 并补单元测试。
@@ -200,9 +200,8 @@
 
 ### P2 — 一致性与健壮性
 5. **schema 与 validator 不一致**——补 sha256 校验，或在 schema 去掉。
-6. **schema 定义 10 种 step 但只实现 7 种**——按点咖啡切片补 `image_choice/tone_contrast/order_tokens`。
-7. **Go handler `panic`**，`/readyz` 仍缺测试。
-8. **测试盲点**：除汉字书写外，`LessonPlayerController` 状态机、各 step 独立状态和 Golden 回归仍不足。
+6. **Go handler `panic`**，`/readyz` 仍缺测试。
+7. **测试盲点**：除汉字书写外，`LessonPlayerController` 状态机、各 step 独立状态和 Golden 回归仍不足。
 
 ---
 
@@ -212,7 +211,7 @@
 |---|---|
 | `docs/architecture.md`：纯规则放 `lib/domain` | `lib/domain` 目录不存在，规则散在 data/presentation |
 | `course-package.schema.json`：ready 资产必须有 sha256 | validator 只检查 path，不检查 sha256 |
-| schema 定义 10 种 step 类型 | 播放器只实现 7 种 |
+| schema 定义 10 种 step 类型 | 播放器已实现 10 种；新增三种已有自动测试、模拟器和 Sony 真机证据 |
 | `docs/开发方案.md` 第 13.1 节：cloud tables | `services/api` 无 DB |
 
 这些偏差不一定是 bug——有些是"计划 vs 现状"的正常差距。但应在此文档或 ADR 里明确标注，避免后续 agent 误判。

@@ -60,18 +60,18 @@ void main() {
     final lessonController = container.read(
       lessonPlayerControllerProvider('cafe-01').notifier,
     );
-    for (var index = 0; index < 5; index += 1) {
-      lessonController.next(8);
+    for (var index = 0; index < 8; index += 1) {
+      lessonController.next(11);
     }
     await tester.pumpAndSettle();
-    expect(find.text('6 / 8'), findsOneWidget);
+    expect(find.text('9 / 11'), findsOneWidget);
 
     recordingService.emit(RecordingState.recording);
     await tester.pump();
     await tester.tap(find.byKey(const Key('lesson-back-action')));
     await tester.pumpAndSettle();
 
-    expect(find.text('5 / 8'), findsOneWidget);
+    expect(find.text('8 / 11'), findsOneWidget);
     expect(recordingService.cancelRecordingCount, 1);
     expect(audioService.stopCount, 2);
     expect(recordingService.clearRecordingCount, 2);

@@ -130,6 +130,96 @@ void main() {
     expect(messages, contains('hanzi_trace requires hanzi dimension'));
   });
 
+  test('accepts the three M1 interaction step contracts', () {
+    final package = validPackage();
+    final items = package['knowledgeItems'] as List;
+    items.add({
+      'id': 'noun-kafei',
+      'hanzi': '咖啡',
+      'pinyin': 'kāfēi',
+      'pinyinSyllables': ['kā', 'fēi'],
+      'english': 'coffee',
+      'audioAssetId': 'audio-wo-yao',
+    });
+    final assets = package['assets'] as List;
+    assets.add({
+      'id': 'image-cafe-counter',
+      'kind': 'image',
+      'status': 'planned',
+      'license': 'internal',
+      'credit': 'Mandarin Mission',
+    });
+    final lesson = (package['lessons'] as List).single as Map<String, Object?>;
+    lesson['itemIds'] = ['phrase-wo-yao', 'noun-kafei'];
+    final steps = lesson['steps'] as List<Map<String, Object?>>;
+    steps.insertAll(1, [
+      {
+        'id': 'cafe-image',
+        'type': 'image_choice',
+        'dimension': 'meaning',
+        'itemId': 'noun-kafei',
+        'assetId': 'image-cafe-counter',
+        'optionItemIds': ['noun-kafei', 'phrase-wo-yao'],
+      },
+      {
+        'id': 'cafe-tone',
+        'type': 'tone_contrast',
+        'dimension': 'tone',
+        'itemId': 'phrase-wo-yao',
+        'optionTexts': ['wǒ yào', 'wó yáo'],
+      },
+      {
+        'id': 'cafe-order',
+        'type': 'order_tokens',
+        'dimension': 'meaning',
+        'itemId': 'phrase-wo-yao',
+        'tokens': ['我', '要'],
+      },
+    ]);
+
+    expect(validator.validate(package), isEmpty);
+  });
+
+  test('rejects incomplete M1 interaction step contracts', () {
+    final package = validPackage();
+    final lesson = (package['lessons'] as List).single as Map<String, Object?>;
+    final steps = lesson['steps'] as List<Map<String, Object?>>;
+    steps.insertAll(1, [
+      {
+        'id': 'cafe-image',
+        'type': 'image_choice',
+        'dimension': 'tone',
+        'itemId': 'phrase-wo-yao',
+        'optionItemIds': <String>[],
+      },
+      {
+        'id': 'cafe-tone',
+        'type': 'tone_contrast',
+        'dimension': 'meaning',
+        'itemId': 'phrase-wo-yao',
+        'optionTexts': <String>[],
+      },
+      {
+        'id': 'cafe-order',
+        'type': 'order_tokens',
+        'dimension': 'meaning',
+        'itemId': 'phrase-wo-yao',
+        'tokens': ['要', '我'],
+      },
+    ]);
+
+    final messages = validator
+        .validate(package)
+        .map((issue) => issue.message)
+        .toList();
+    expect(messages, contains('image_choice requires meaning dimension'));
+    expect(messages, contains('image_choice requires assetId'));
+    expect(messages, contains('image_choice requires at least two options'));
+    expect(messages, contains('tone_contrast requires tone dimension'));
+    expect(messages, contains('tone_contrast requires at least two options'));
+    expect(messages, contains('order_tokens must rebuild the target Hanzi'));
+  });
+
   test('rejects pinyin syllables that do not match the Hanzi count', () {
     final package = validPackage();
     final item =

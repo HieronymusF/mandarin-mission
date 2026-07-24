@@ -23,7 +23,7 @@ final lessonContentProvider = FutureProvider.family<LessonContent, String>((
   ref,
   lessonId,
 ) async {
-  final package = await ref.read(courseContentRepositoryProvider).loadPackage();
+  final package = await ref.watch(coursePackageProvider.future);
   final lesson = package.lesson(lessonId);
   await ref
       .read(lessonProgressRepositoryProvider)
@@ -60,6 +60,7 @@ final class LessonPlayerState {
     this.usedWritingHint = false,
     this.writingNeedsPractice = false,
     this.dialogueReplyMethod,
+    this.orderedTokenIndexes = const [],
     this.isSubmitting = false,
     this.errorMessage,
     DateTime? stepEnteredAt,
@@ -76,6 +77,7 @@ final class LessonPlayerState {
   final bool usedWritingHint;
   final bool writingNeedsPractice;
   final String? dialogueReplyMethod;
+  final List<int> orderedTokenIndexes;
   final bool isSubmitting;
   final String? errorMessage;
   final DateTime stepEnteredAt;
@@ -94,6 +96,7 @@ final class LessonPlayerState {
     bool? usedWritingHint,
     bool? writingNeedsPractice,
     Object? dialogueReplyMethod = _unset,
+    List<int>? orderedTokenIndexes,
     bool? isSubmitting,
     Object? errorMessage = _unset,
     DateTime? stepEnteredAt,
@@ -119,6 +122,7 @@ final class LessonPlayerState {
       dialogueReplyMethod: identical(dialogueReplyMethod, _unset)
           ? this.dialogueReplyMethod
           : dialogueReplyMethod as String?,
+      orderedTokenIndexes: orderedTokenIndexes ?? this.orderedTokenIndexes,
       isSubmitting: isSubmitting ?? this.isSubmitting,
       errorMessage: identical(errorMessage, _unset)
           ? this.errorMessage
@@ -173,11 +177,11 @@ final class LessonPlayerController extends Notifier<LessonPlayerState> {
     state = state.copyWith(selectedOptionId: itemId, errorMessage: null);
   }
 
-  void _retryChoice() {
+  void _retryChoice({required bool markListeningHintUsed}) {
     state = state.copyWith(
       selectedOptionId: null,
       incorrectAttempts: state.incorrectAttempts + 1,
-      usedListeningHint: true,
+      usedListeningHint: state.usedListeningHint || markListeningHintUsed,
       isSubmitting: false,
       errorMessage: null,
       stepEnteredAt: DateTime.now().toUtc(),
@@ -211,16 +215,32 @@ final class LessonPlayerController extends Notifier<LessonPlayerState> {
     state = state.copyWith(dialogueReplyMethod: value, errorMessage: null);
   }
 
-  Future<bool> submitListenChoice({
+  void toggleOrderToken(int index) {
+    if (state.isSubmitting) return;
+    final selected = [...state.orderedTokenIndexes];
+    if (selected.contains(index)) {
+      selected.remove(index);
+    } else {
+      selected.add(index);
+    }
+    state = state.copyWith(
+      orderedTokenIndexes: List.unmodifiable(selected),
+      errorMessage: null,
+    );
+  }
+
+  Future<bool> submitChoice({
     required CoursePackage package,
     required CourseLesson lesson,
     required CourseLessonStep step,
+    bool markListeningHintUsedOnRetry = false,
+    String? correctOption,
   }) async {
     final selectedOptionId = state.selectedOptionId;
     if (selectedOptionId == null || state.isSubmitting) return false;
 
     final answeredAt = DateTime.now().toUtc();
-    final correct = selectedOptionId == step.itemId;
+    final correct = selectedOptionId == (correctOption ?? step.itemId);
     state = state.copyWith(isSubmitting: true, errorMessage: null);
     try {
       await ref
@@ -240,13 +260,62 @@ final class LessonPlayerController extends Notifier<LessonPlayerState> {
       if (correct) {
         next(lesson.steps.length);
       } else {
-        _retryChoice();
+        _retryChoice(markListeningHintUsed: markListeningHintUsedOnRetry);
       }
       return true;
     } catch (_) {
       state = state.copyWith(
         isSubmitting: false,
         errorMessage: 'Your answer was not saved. Try again.',
+      );
+      return false;
+    }
+  }
+
+  Future<bool> submitOrderTokens({
+    required CoursePackage package,
+    required CourseLesson lesson,
+    required CourseLessonStep step,
+  }) async {
+    final selected = state.orderedTokenIndexes;
+    if (selected.length != step.tokens.length || state.isSubmitting) {
+      return false;
+    }
+
+    final answeredAt = DateTime.now().toUtc();
+    final correct = selected.indexed.every((entry) => entry.$1 == entry.$2);
+    state = state.copyWith(isSubmitting: true, errorMessage: null);
+    try {
+      await ref
+          .read(lessonProgressRepositoryProvider)
+          .recordExerciseAttempt(
+            lessonId: lesson.id,
+            stepId: step.id,
+            contentVersion: package.version,
+            itemId: step.itemId!,
+            dimension: lessonDimension(step.dimension!),
+            rating: correct ? ReviewRating.remembered : ReviewRating.forgotten,
+            correct: correct,
+            usedHint: false,
+            latencyMs: state.latencyMs(answeredAt),
+            answeredAt: answeredAt,
+          );
+      if (correct) {
+        next(lesson.steps.length);
+      } else {
+        state = state.copyWith(
+          orderedTokenIndexes: const [],
+          incorrectAttempts: state.incorrectAttempts + 1,
+          isSubmitting: false,
+          errorMessage: null,
+          stepEnteredAt: DateTime.now().toUtc(),
+        );
+      }
+      return true;
+    } catch (_) {
+      state = state.copyWith(
+        isSubmitting: false,
+        errorMessage: 'Your word order was not saved. Try again.',
       );
       return false;
     }

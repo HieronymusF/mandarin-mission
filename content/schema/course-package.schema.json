@@ -162,6 +162,16 @@
           "type": "array",
           "items": { "$ref": "#/$defs/stableId" },
           "uniqueItems": true
+        },
+        "optionTexts": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "tokens": {
+          "type": "array",
+          "minItems": 2,
+          "items": { "type": "string", "minLength": 1 }
         }
       },
       "allOf": [
@@ -173,6 +183,47 @@
           "then": {
             "required": ["itemId", "dimension"],
             "properties": { "dimension": { "const": "hanzi" } }
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "image_choice" } },
+            "required": ["type"]
+          },
+          "then": {
+            "required": [
+              "itemId",
+              "dimension",
+              "assetId",
+              "optionItemIds"
+            ],
+            "properties": {
+              "dimension": { "const": "meaning" },
+              "optionItemIds": { "minItems": 2 }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "tone_contrast" } },
+            "required": ["type"]
+          },
+          "then": {
+            "required": ["itemId", "dimension", "optionTexts"],
+            "properties": {
+              "dimension": { "const": "tone" },
+              "optionTexts": { "minItems": 2 }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "order_tokens" } },
+            "required": ["type"]
+          },
+          "then": {
+            "required": ["itemId", "dimension", "tokens"],
+            "properties": { "dimension": { "const": "meaning" } }
           }
         }
       ]

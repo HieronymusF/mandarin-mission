@@ -1,5 +1,11 @@
 # Repo guide 变更记录
 
+## 2026-07-24
+
+- 22:43 +08:00：用户通过 CosyVoice I1“我要”、L2“咖啡”与 I3“我要一杯咖啡”最终整组试听。三条音频已替换包内 MeloTTS 资产，路径改为 `assets/audio/cosyvoice/`，Fixture 升至 `0.1.7` 并记录 Apache-2.0 来源、内置 `中文女`、seed 1986、速度、合成文本差异和 PCM16 兼容转换后 SHA-256。Fixture 升为 `release` 后，首次全量回归正确拦截了两个把资产改为 `planned` 却未把测试副本改为 `draft` 的降级测试；最小修正后，内容校验、Flutter format/analyze、57 tests、debug APK、repo-docs validator 和 `git diff --check` 通过。最终 APK SHA-256 为 `d19498171b60b501ba74ed16905a4ed7bb3311241bd40094b3814c5c46cea374`，内含 `release` / `0.1.7` Fixture、三条哈希匹配的 CosyVoice 资产，无 MeloTTS/Kokoro 遗留资源；已覆盖安装到 Sony `XQ-DQ72` 并保留 App 数据。三条音频均曾从真实课程入口播放并正常释放音频焦点；图片与音频的正式内容门禁已关闭。Synced through 236626b + current working tree。
+- 21:01 +08:00：按用户选择将三条课程音频从 Kokoro 开发占位切换为免费本地 MeloTTS 0.1.2，使用官方 `myshell-ai/MeloTTS-Chinese`、内置 `ZH` speaker 和 0.94 语速；Fixture 升至 `0.1.6`，稳定 `audioAssetId` 不变，路径改为 `assets/audio/melotts/`，同步 MIT 许可、生成参数和 SHA-256。验证：三条哈希匹配、内容校验、Flutter format（0 changed）、analyze（0 issues）、57 tests、debug APK、APK 内三条 `melotts` 资源且无 `kokoro` 资源。人工试听连续否决三轮：首版短音发音不完整，第二轮音色不一致，第三轮确定性母带长句出现电音；MeloTTS 因此淘汰。仓库外改用 Apache-2.0 `CosyVoice-300M-SFT` 内置 `中文女` 后，J 组把 `fēi` 压成近似 `fi`；同音“咖飞”K 组修正 `/ei/` 后，`kā` 又被指出偏轻声。“咔飞”L1 不通过，“喀飞”L2 同时保留一声和 `/ei/` 并获用户认可，现进入 I1/L2/I3 最终整组复听。全部没有真人克隆或音频后处理，确认前不会覆盖包内文件。Synced through 236626b + current working tree。
+- 补齐 `image_choice`、`tone_contrast`、`order_tokens` 三种数据驱动课程步骤，咖啡 Fixture 从 8 步扩展为 11 步、版本升至 `0.1.5`；新增内容契约、错误重试与本地 attempt 保存。声调题比较同一句带调拼音，词块必须重建目标汉字。失败测试先证明 Validator 无约束、Flutter 模型缺 `tokens`；200% 小屏测试又发现并修复音频不可用卡片 284px、最长英文选项 558px 横向溢出。模拟器发现 Journey 硬编码 `8 short steps`，现改为读取课程内容。验证：内容 validator/repository tests、移动端 analyze、57 个 Flutter tests、Debug APK、Go vet/test、repo-docs validator；Android 模拟器与 Sony 真机通过新增三步，真机继续到第 11 步完成页，返回 Journey 显示 `Completed · 11 short steps`，杀进程冷启动后仍保留；随后完成 6 项到期复习并显示 `Review done · Review is up to date`，再次冷启动仍保留。咖啡场景图随后作为 `ready` 资产接入，选项改为中文+拼音；第一版因杯子过大被否决，第二版缩小杯子、放大人物后获用户真机确认，最终 SHA-256 为 `a5fd40ea29477c59dd4aefae658044c251ae3867b50a574503f42ef921d5f011`。Synced through 236626b + current working tree。
+
 ## 2026-07-23
 
 - 17:04 +08:00：完整功能批次提交为 `610af84`，推送到 `feat/audio-playback-recording`，PR #14 在 `mobile`、`learning-core`、`api` 三项远端 CI 全部成功后以 merge commit `161c8e1` 合并到 `main`。本地 `main` 已快进到同一提交；功能分支保留。Synced through 161c8e1。

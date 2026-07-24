@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../../core/theme/app_layout.dart';
+import '../../../data/content/course_content_provider.dart';
 import '../../lesson/application/lesson_providers.dart';
 import '../../review/application/review_providers.dart';
 import '../../../shared/presentation/app_leading_row.dart';
@@ -335,6 +336,7 @@ class _CafeStopCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = ShadTheme.of(context);
     final progress = ref.watch(lessonProgressProvider('cafe-01'));
+    final coursePackage = ref.watch(coursePackageProvider);
     final status = progress.when(
       data: (entry) => entry?.status,
       loading: () => null,
@@ -353,6 +355,12 @@ class _CafeStopCard extends ConsumerWidget {
       'in_progress' => 'Start again',
       _ => 'Start',
     };
+    final stepCountLabel = coursePackage.when(
+      data: (package) =>
+          '${package.lesson('cafe-01').steps.length} short steps',
+      loading: () => 'Loading lesson',
+      error: (_, _) => 'Lesson unavailable',
+    );
     return ShadCard(
       key: const Key('journey-cafe-card'),
       width: double.infinity,
@@ -394,7 +402,7 @@ class _CafeStopCard extends ConsumerWidget {
             spacing: AppSpacing.md,
             runSpacing: AppSpacing.xxs,
             children: [
-              Text('8 short steps', style: theme.textTheme.small),
+              Text(stepCountLabel, style: theme.textTheme.small),
               Text(statusLabel, style: theme.textTheme.muted),
             ],
           ),

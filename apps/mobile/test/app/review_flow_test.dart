@@ -91,7 +91,7 @@ void main() {
               find.byKey(const Key('review-audio-player')),
             )
             .assetPath,
-        'assets/audio/kokoro/wo-yao.wav',
+        'assets/audio/cosyvoice/wo-yao.wav',
       );
       await tester.tap(find.byKey(const Key('review-reveal-answer')));
       await tester.pumpAndSettle();
@@ -409,6 +409,7 @@ String _contentWithUnavailableAudio(String source) {
   audio['status'] = 'planned';
   audio.remove('path');
   audio.remove('sha256');
+  package['status'] = 'draft';
   return jsonEncode(package);
 }
 
