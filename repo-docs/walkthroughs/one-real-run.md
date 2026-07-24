@@ -14,11 +14,11 @@ App 启动后先进入 Journey。当前页面只有一个真实地点入口，�
 
 课程页不能直接相信 JSON。Repository 先从安装包读取 Fixture，解析顶层对象，再调用纯 Dart 校验器检查稳定 ID、跨对象引用、步骤要求、拼音与汉字对齐、对话可达性和 release 资产状态。只有问题列表为空时，数据才会变成 App 使用的课程对象。
 
-当前 [点咖啡课程数据](../../content/fixtures/cafe-course.json) 包含 1 个地点、3 个知识点、1 节八步课程、1 段对话和 4 个资产。图片仍是 `planned`；三个音频资产是带 path、SHA-256、模型版本和 Apache-2.0 来源的 `ready` Kokoro TTS 开发占位，课程与复习媒体路径均可解析并播放。`ready` 只代表技术资源可用，当前音色没有获得最终听感认可，因此内容包保持 `draft`。
+当前 [点咖啡课程数据](../../content/fixtures/cafe-course.json) 包含 1 个地点、3 个知识点、1 节十一步课程、1 段对话和 4 个资产。咖啡场景图是带 path、SHA-256、内部生成许可和署名的 `ready` 资产，第二版构图已获用户真机确认；三个音频资产带 path、SHA-256、Apache-2.0 CosyVoice 来源与生成参数，课程与复习媒体路径均可解析。三条音频已通过整组人工试听、APK 打包和 Sony 真机逐条播放，因此内容包已升为 `release`。
 
 这段入口位于 [内容 Repository](../../apps/mobile/lib/data/content/course_content_repository.dart)，交叉引用规则位于 [内容校验器](../../packages/learning_core/lib/src/content_validator.dart)。无效 JSON、缺失引用或不可达对话会在 UI 建模前变成明确错误。
 
-## Step 3: 页面状态推进八个数据驱动步骤
+## Step 3: 页面状态推进十一个数据驱动步骤
 
 课程 Controller 保存当前步骤、选择结果、提示使用、自评、错误和提交中状态。页面根据每个 step 的 `type` 选择展示组件，并把用户意图交回 Controller；保存、判分和 Repository 调用不放在按钮回调里散开。
 
@@ -28,19 +28,22 @@ App 启动后先进入 Journey。当前页面只有一个真实地点入口，�
 | ---: | --- | --- | --- |
 | 1 | 接受场景任务 | `scene_intro` | 综合入口 |
 | 2—3 | 学习“我要”和“咖啡” | `teach_card` | `meaning` |
-| 4 | 临摹或脱稿写“咖啡” | `hanzi_trace` | `hanzi` |
-| 5 | 从选项中听辨整句 | `listen_choice` | `listening` |
-| 6 | 录音、自听或降级自评 | `repeat` | `tone` |
-| 7 | 先脱稿说出订单，或打开 phrase ticket 后发送回复 | `dialogue_turn` | 综合应用 |
-| 8 | 查看总结并完成课程 | `summary` | 完成入口 |
+| 4 | 查看咖啡场景图，从整行中文+拼音选项中选择“咖啡” | `image_choice` | `meaning` |
+| 5 | 临摹或脱稿写“咖啡” | `hanzi_trace` | `hanzi` |
+| 6 | 听“我要”并选择对应带调拼音 | `tone_contrast` | `tone` |
+| 7 | 从选项中听辨整句 | `listen_choice` | `listening` |
+| 8 | 把词块排成完整订单 | `order_tokens` | `meaning` |
+| 9 | 录音、自听或降级自评 | `repeat` | `tone` |
+| 10 | 先脱稿说出订单，或打开 phrase ticket 后发送回复 | `dialogue_turn` | 综合应用 |
+| 11 | 查看总结并完成课程 | `summary` | 完成入口 |
 
 [课程 Controller](../../apps/mobile/lib/features/lesson/application/lesson_providers.dart) 负责状态和提交，[课程页面](../../apps/mobile/lib/features/lesson/presentation/lesson_overview_page.dart) 负责组合对应步骤 Widget。未知 step type 会显示不可用提示，而不是静默跳过。
 
-第 7 步属于预设对话，不做 AI 语音识别。页面初始隐藏标准答案并禁用发送；用户可以先说出订单并选择 `I said it aloud`，也可以打开 `Use phrase ticket` 查看整句。完成其中一个可观察动作后，`Send reply` 才能进入总结页。
+第 10 步属于预设对话，不做 AI 语音识别。页面初始隐藏标准答案并禁用发送；用户可以先说出订单并选择 `I said it aloud`，也可以打开 `Use phrase ticket` 查看整句。完成其中一个可观察动作后，`Send reply` 才能进入总结页。
 
 ## Step 4: 每次练习先写本地事务
 
-听力、汉字和口语自评提交时，Controller 会进入提交中状态并调用进度 Repository。Repository 在同一 Drift 事务中写练习结果、更新该知识点对应维度的掌握度，并追加一条 Outbox 事件。保存失败时 Controller 保留当前步骤并显示重试文案。
+意义选择、声调对比、听力、词块排序、汉字和口语自评提交时，Controller 会进入提交中状态并调用进度 Repository。Repository 在同一 Drift 事务中写练习结果、更新该知识点对应维度的掌握度，并追加一条 Outbox 事件。保存失败时 Controller 保留当前步骤并显示重试文案。
 
 这条设计让 UI 不需要等待尚未实现的云端同步。写入模型可以压缩成：
 
@@ -84,6 +87,8 @@ dart test test/learning_core_test.dart test/repository_content_test.dart
 端到端课程测试的关键结果是 1 条 `completed` 进度、12 条掌握度、4 条复习尝试、1 条口语尝试和 6 条 Outbox 事件。若这些结果改变，应先回到 [源码证据中的反证检查](../references/source-evidence.md#会改变当前解释的检查)，再更新本 walkthrough。
 
 真机证据（2026-07-23）：Sony `XQ-DQ72` 完成八步课程后，Journey 显示 `Completed`、100% 与 `Practice again`；覆盖安装和两次冷启动后状态仍保留。设备完成 8 项必做到期复习并显示 `Review saved`，返回后只剩 2 项可选巩固；再次冷启动结果仍保留。随后开启飞行模式完整重走八步课程并返回 completed Journey，验证结束后已关闭飞行模式。
+
+十一步复验证据（2026-07-24）：同一 Sony 真机通过 `image_choice`、`tone_contrast`、`order_tokens` 三个新增步骤，随后从第 9 步无录音降级继续，经第 10 步口语回复到第 11 步完成页；返回 Journey 显示 `Completed · 11 short steps`，杀进程冷启动后状态仍保留。接着完成 6 项到期复习，Journey 显示 `Review done · Review is up to date`，再次杀进程冷启动后仍保留。第 4 步后来接入 `ready` 咖啡场景图并把英文释义选项改为中文+拼音；第一版构图因杯子过大被否决，第二版缩小杯子、放大人物后获用户真机确认。
 
 理解行为后，可用 [代码地图定位每类修改的入口](../code-map.md)，再进入内容、本地闭环或媒体模块查看机制细节。
 

@@ -99,6 +99,14 @@ final class CoursePackage {
     }
     return asset.path;
   }
+
+  String? imageAssetPath(String assetId) {
+    final asset = assetsById[assetId];
+    if (asset == null || asset.kind != 'image' || asset.status != 'ready') {
+      return null;
+    }
+    return asset.path;
+  }
 }
 
 final class CourseKnowledgeItem {
@@ -213,6 +221,8 @@ final class CourseLessonStep {
     this.assetId,
     this.text,
     this.optionItemIds = const [],
+    this.optionTexts = const [],
+    this.tokens = const [],
   });
 
   factory CourseLessonStep.fromJson(Map<String, Object?> json, String path) {
@@ -226,6 +236,8 @@ final class CourseLessonStep {
       assetId: _optionalString(json, 'assetId', path),
       text: _optionalString(json, 'text', path),
       optionItemIds: _strings(json, 'optionItemIds', path, required: false),
+      optionTexts: _strings(json, 'optionTexts', path, required: false),
+      tokens: _strings(json, 'tokens', path, required: false),
     );
   }
 
@@ -238,6 +250,8 @@ final class CourseLessonStep {
   final String? assetId;
   final String? text;
   final List<String> optionItemIds;
+  final List<String> optionTexts;
+  final List<String> tokens;
 }
 
 final class CourseDialogue {

@@ -9,8 +9,8 @@
 | 最短阅读路径是什么？ | 能 | `README -> walkthrough -> code map`，README 另给内容、本地闭环和媒体的专家快路 |
 | 真实任务和输出是什么？ | 能 | 完成 `cafe-01`；输出 completed 进度、12 条掌握度、练习记录和 Outbox |
 | 最难的部分是什么？ | 能 | 内容有效性、UI 提交状态、本地事务、四维调度和媒体降级要同时成立 |
-| 主流程分几阶段？ | 能 | Journey 入口、内容校验、八步状态流、练习事务、课程完成、到期复习 |
-| 真实边界在哪里？ | 能 | Kokoro TTS 是许可清晰但听感未获认可的开发占位；planned/缺失资产降级；保存失败不推进；UTC 与箱位有硬校验；API 尚未接入 |
+| 主流程分几阶段？ | 能 | Journey 入口、内容校验、十一步状态流、练习事务、课程完成、到期复习 |
+| 真实边界在哪里？ | 能 | CosyVoice 已有许可、路径、哈希、整组试听与真机播放证据；planned/缺失资产降级；保存失败不推进；无 SIM 来电恢复未验；UTC 与箱位有硬校验；API 尚未接入 |
 | 怎么验证理解？ | 能 | walkthrough 给出 App 端到端与 pure Dart 测试；各模块给出最近的命令 |
 
 ## 可理解性检查
@@ -26,7 +26,7 @@
 以下 falsifying check 会要求重新取证：
 
 1. `app_test.dart` 的落库数量或完成状态改变。
-2. `cafe-course.json` 不再是八步、三个知识点，或音频状态转为 ready。
+2. `cafe-course.json` 不再是十一步、三个知识点，或资产状态发生变化。
 3. `LessonProgressRepository` 拆分事务，或 Outbox 开始被真实同步消费者处理。
 4. Go API 增加课程、账号、同步或语音端点并进入 App 主流程。
 5. 真机结果与当前媒体 Controller/Widget 状态模型不一致。

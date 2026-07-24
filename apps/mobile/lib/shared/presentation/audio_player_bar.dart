@@ -115,6 +115,7 @@ class _AudioUnavailableCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ShadCard(
+      width: double.infinity,
       padding: AppLayout.compactCardPadding,
       backgroundColor: theme.colorScheme.muted.withValues(alpha: .3),
       child: Row(
@@ -125,10 +126,12 @@ class _AudioUnavailableCard extends StatelessWidget {
             color: theme.colorScheme.mutedForeground,
           ),
           const SizedBox(width: AppSpacing.sm),
-          Text(
-            'Audio unavailable',
-            style: theme.textTheme.small.copyWith(
-              color: theme.colorScheme.mutedForeground,
+          Expanded(
+            child: Text(
+              'Audio unavailable',
+              style: theme.textTheme.small.copyWith(
+                color: theme.colorScheme.mutedForeground,
+              ),
             ),
           ),
         ],

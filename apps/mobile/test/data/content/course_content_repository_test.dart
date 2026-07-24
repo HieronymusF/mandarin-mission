@@ -13,10 +13,33 @@ void main() {
       final package = await CourseContentRepository().loadPackage();
 
       expect(package.schemaVersion, 1);
-      expect(package.status, 'draft');
-      expect(package.version, '0.1.3');
+      expect(package.status, 'release');
+      expect(package.version, '0.1.7');
       expect(package.lessonsById.keys, ['cafe-01']);
-      expect(package.lesson('cafe-01').steps, hasLength(8));
+      expect(
+        package.lesson('cafe-01').steps.map((step) => step.type),
+        containsAllInOrder([
+          'scene_intro',
+          'teach_card',
+          'teach_card',
+          'image_choice',
+          'hanzi_trace',
+          'tone_contrast',
+          'listen_choice',
+          'order_tokens',
+          'repeat',
+          'dialogue_turn',
+          'summary',
+        ]),
+      );
+      expect(
+        package
+            .lesson('cafe-01')
+            .steps
+            .singleWhere((step) => step.type == 'order_tokens')
+            .tokens,
+        ['我', '要', '一杯', '咖啡'],
+      );
       expect(
         package.knowledgeItem('sentence-wo-yao-yi-bei-kafei').hanzi,
         '我要一杯咖啡。',
@@ -32,7 +55,7 @@ void main() {
       expect(package.assetsById.keys, contains('audio-kafei'));
       expect(
         package.audioAssetPathForItem('noun-kafei'),
-        'assets/audio/kokoro/kafei.wav',
+        'assets/audio/cosyvoice/kafei.wav',
       );
       final audioBytes = await rootBundle.load(
         package.audioAssetPathForItem('noun-kafei')!,
@@ -63,6 +86,40 @@ void main() {
         package.audioAssetPathForItem('noun-kafei'),
         'assets/audio/kafei.mp3',
       );
+    });
+
+    test('resolves only ready image assets to their bundled path', () async {
+      final source = await rootBundle.loadString(
+        CourseContentRepository.bundledCafeCourseAsset,
+      );
+      final content = jsonDecode(source) as Map<String, Object?>;
+      final assets = content['assets']! as List<Object?>;
+      final cafeImage = assets.cast<Map<String, Object?>>().singleWhere(
+        (asset) => asset['id'] == 'image-cafe-counter',
+      );
+      expect(cafeImage['status'], 'ready');
+
+      final readyPackage = await CourseContentRepository(
+        bundle: _StringAssetBundle(jsonEncode(content)),
+      ).loadPackage();
+      expect(
+        readyPackage.imageAssetPath('image-cafe-counter'),
+        'assets/images/cafe-counter.png',
+      );
+      final imageBytes = await rootBundle.load(
+        readyPackage.imageAssetPath('image-cafe-counter')!,
+      );
+      expect(imageBytes.lengthInBytes, greaterThan(0));
+
+      cafeImage
+        ..['status'] = 'planned'
+        ..remove('path')
+        ..remove('sha256');
+      content['status'] = 'draft';
+      final draftPackage = await CourseContentRepository(
+        bundle: _StringAssetBundle(jsonEncode(content)),
+      ).loadPackage();
+      expect(draftPackage.imageAssetPath('image-cafe-counter'), isNull);
     });
 
     test('returns a typed lesson by stable id', () async {

@@ -61,6 +61,10 @@ final class ContentValidator {
       allIds,
     );
     final assetIds = _registerIds(assets, 'assets', source, issues, allIds);
+    final itemsById = <String, Map<String, Object?>>{
+      for (final item in items)
+        if (item['id'] case final String id) id: item,
+    };
 
     _validateLocations(locations, lessonIds, dialogueIds, source, issues);
     _validateItems(items, assetIds, source, issues);
@@ -68,6 +72,7 @@ final class ContentValidator {
       lessons,
       locationIds,
       itemIds,
+      itemsById,
       lessonIds,
       dialogueIds,
       assetIds,
@@ -215,6 +220,7 @@ final class ContentValidator {
     List<Map<String, Object?>> lessons,
     Set<String> locationIds,
     Set<String> itemIds,
+    Map<String, Map<String, Object?>> itemsById,
     Set<String> lessonIds,
     Set<String> dialogueIds,
     Set<String> assetIds,
@@ -275,6 +281,7 @@ final class ContentValidator {
         }
 
         final itemId = step['itemId'];
+        final type = step['type'];
         if (step['type'] == 'hanzi_trace') {
           if (itemId == null) {
             issues.add(
@@ -289,6 +296,136 @@ final class ContentValidator {
               ContentValidationIssue(
                 '$stepPath.dimension',
                 'hanzi_trace requires hanzi dimension',
+              ),
+            );
+          }
+        }
+        if (type == 'image_choice') {
+          if (step['dimension'] != 'meaning') {
+            issues.add(
+              ContentValidationIssue(
+                '$stepPath.dimension',
+                'image_choice requires meaning dimension',
+              ),
+            );
+          }
+          if (itemId == null) {
+            issues.add(
+              ContentValidationIssue(
+                '$stepPath.itemId',
+                'image_choice requires itemId',
+              ),
+            );
+          }
+          final options = _stringListIfPresent(
+            step['optionItemIds'],
+            '$stepPath.optionItemIds',
+            issues,
+          );
+          if (options.length < 2) {
+            issues.add(
+              ContentValidationIssue(
+                '$stepPath.optionItemIds',
+                'image_choice requires at least two options',
+              ),
+            );
+          } else if (itemId is String && !options.contains(itemId)) {
+            issues.add(
+              ContentValidationIssue(
+                '$stepPath.optionItemIds',
+                'image_choice options must include itemId',
+              ),
+            );
+          }
+          if (step['assetId'] == null) {
+            issues.add(
+              ContentValidationIssue(
+                '$stepPath.assetId',
+                'image_choice requires assetId',
+              ),
+            );
+          }
+        }
+        if (type == 'tone_contrast') {
+          if (step['dimension'] != 'tone') {
+            issues.add(
+              ContentValidationIssue(
+                '$stepPath.dimension',
+                'tone_contrast requires tone dimension',
+              ),
+            );
+          }
+          if (itemId == null) {
+            issues.add(
+              ContentValidationIssue(
+                '$stepPath.itemId',
+                'tone_contrast requires itemId',
+              ),
+            );
+          }
+          final options = _stringListIfPresent(
+            step['optionTexts'],
+            '$stepPath.optionTexts',
+            issues,
+          );
+          if (options.length < 2) {
+            issues.add(
+              ContentValidationIssue(
+                '$stepPath.optionTexts',
+                'tone_contrast requires at least two options',
+              ),
+            );
+          }
+          final target = itemId is String ? itemsById[itemId] : null;
+          final targetPinyin = target?['pinyin'];
+          if (targetPinyin is String && !options.contains(targetPinyin)) {
+            issues.add(
+              ContentValidationIssue(
+                '$stepPath.optionTexts',
+                'tone_contrast options must include the target pinyin',
+              ),
+            );
+          }
+        }
+        if (type == 'order_tokens') {
+          if (step['dimension'] != 'meaning') {
+            issues.add(
+              ContentValidationIssue(
+                '$stepPath.dimension',
+                'order_tokens requires meaning dimension',
+              ),
+            );
+          }
+          if (itemId == null) {
+            issues.add(
+              ContentValidationIssue(
+                '$stepPath.itemId',
+                'order_tokens requires itemId',
+              ),
+            );
+          }
+          final tokens = _stringListIfPresent(
+            step['tokens'],
+            '$stepPath.tokens',
+            issues,
+          );
+          if (tokens.length < 2) {
+            issues.add(
+              ContentValidationIssue(
+                '$stepPath.tokens',
+                'order_tokens requires at least two tokens',
+              ),
+            );
+          }
+          final target = itemId is String ? itemsById[itemId] : null;
+          final targetHanzi = target?['hanzi'];
+          if (targetHanzi is String &&
+              _withoutSentencePunctuation(tokens.join()) !=
+                  _withoutSentencePunctuation(targetHanzi)) {
+            issues.add(
+              ContentValidationIssue(
+                '$stepPath.tokens',
+                'order_tokens must rebuild the target Hanzi',
               ),
             );
           }
@@ -520,6 +657,10 @@ final class ContentValidator {
       return (rune >= 0x3400 && rune <= 0x4DBF) ||
           (rune >= 0x4E00 && rune <= 0x9FFF);
     }).length;
+  }
+
+  String _withoutSentencePunctuation(String value) {
+    return value.replaceAll(RegExp(r'[\s。！？,.!?]'), '');
   }
 
   List<String> _stringListIfPresent(

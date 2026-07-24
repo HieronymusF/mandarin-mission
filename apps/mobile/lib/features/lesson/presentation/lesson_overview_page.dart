@@ -13,11 +13,14 @@ import '../application/lesson_providers.dart';
 import 'lesson_header.dart';
 import 'steps/dialogue_step.dart';
 import 'steps/hanzi_writing_step.dart';
+import 'steps/image_choice_step.dart';
 import 'steps/listen_choice_step.dart';
+import 'steps/order_tokens_step.dart';
 import 'steps/repeat_step.dart';
 import 'steps/scene_intro_step.dart';
 import 'steps/summary_step.dart';
 import 'steps/teach_card_step.dart';
+import 'steps/tone_contrast_step.dart';
 
 class LessonOverviewPage extends ConsumerWidget {
   const LessonOverviewPage({required this.lessonId, super.key});
@@ -356,6 +359,32 @@ class _LessonPlayerPageState extends ConsumerState<_LessonPlayerPage>
           primaryLabel: 'Got it',
           onPrimary: () async => next(),
         );
+      case 'image_choice':
+        final selected = state.selectedOptionId;
+        final correct = selected == step.itemId;
+        return _StepPresentation(
+          eyebrow: 'MEANING',
+          body: ImageChoiceStep(
+            package: package,
+            step: step,
+            selectedOptionId: selected,
+            onSelected: controller.selectOption,
+          ),
+          primaryLabel: selected == null
+              ? 'Choose an answer'
+              : correct
+              ? 'Continue'
+              : 'Try again',
+          onPrimary: selected == null
+              ? null
+              : () async {
+                  await controller.submitChoice(
+                    package: package,
+                    lesson: lesson,
+                    step: step,
+                  );
+                },
+        );
       case 'hanzi_trace':
         final item = package.knowledgeItem(step.itemId!);
         final selected = state.writingSelfCheck;
@@ -380,6 +409,34 @@ class _LessonPlayerPageState extends ConsumerState<_LessonPlayerPage>
                   );
                 },
         );
+      case 'tone_contrast':
+        final selected = state.selectedOptionId;
+        final targetPinyin = package.knowledgeItem(step.itemId!).pinyin;
+        final correct = selected == targetPinyin;
+        return _StepPresentation(
+          eyebrow: 'TONE · LISTENING',
+          body: ToneContrastStep(
+            package: package,
+            step: step,
+            selectedOptionId: selected,
+            onSelected: controller.selectOption,
+          ),
+          primaryLabel: selected == null
+              ? 'Choose the tones'
+              : correct
+              ? 'Continue'
+              : 'Try again',
+          onPrimary: selected == null
+              ? null
+              : () async {
+                  await controller.submitChoice(
+                    package: package,
+                    lesson: lesson,
+                    step: step,
+                    correctOption: targetPinyin,
+                  );
+                },
+        );
       case 'listen_choice':
         final selected = state.selectedOptionId;
         final correct = selected == step.itemId;
@@ -399,7 +456,35 @@ class _LessonPlayerPageState extends ConsumerState<_LessonPlayerPage>
           onPrimary: selected == null
               ? null
               : () async {
-                  await controller.submitListenChoice(
+                  await controller.submitChoice(
+                    package: package,
+                    lesson: lesson,
+                    step: step,
+                    markListeningHintUsedOnRetry: true,
+                  );
+                },
+        );
+      case 'order_tokens':
+        final selected = state.orderedTokenIndexes;
+        final complete = selected.length == step.tokens.length;
+        final correct =
+            complete && selected.indexed.every((entry) => entry.$1 == entry.$2);
+        return _StepPresentation(
+          eyebrow: 'BUILD THE PHRASE',
+          body: OrderTokensStep(
+            step: step,
+            orderedTokenIndexes: selected,
+            onToggleToken: controller.toggleOrderToken,
+          ),
+          primaryLabel: !complete
+              ? 'Build the sentence'
+              : correct
+              ? 'Continue'
+              : 'Try again',
+          onPrimary: !complete
+              ? null
+              : () async {
+                  await controller.submitOrderTokens(
                     package: package,
                     lesson: lesson,
                     step: step,

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "status": "draft",
-  "version": "0.1.3",
+  "status": "release",
+  "version": "0.1.7",
   "locations": [
     {
       "id": "cafe",
@@ -80,12 +80,35 @@
           "text": "Coffee completes your first order."
         },
         {
+          "id": "cafe-01-image-choice",
+          "type": "image_choice",
+          "title": "Pick the café item",
+          "dimension": "meaning",
+          "itemId": "noun-kafei",
+          "assetId": "image-cafe-counter",
+          "text": "Choose the Mandarin word for coffee.",
+          "optionItemIds": [
+            "noun-kafei",
+            "phrase-wo-yao",
+            "sentence-wo-yao-yi-bei-kafei"
+          ]
+        },
+        {
           "id": "cafe-01-write-kafei",
           "type": "hanzi_trace",
           "title": "Write 咖啡",
           "dimension": "hanzi",
           "itemId": "noun-kafei",
           "text": "Trace the characters, then write them once from memory."
+        },
+        {
+          "id": "cafe-01-tone-contrast",
+          "type": "tone_contrast",
+          "title": "Match the tones",
+          "dimension": "tone",
+          "itemId": "phrase-wo-yao",
+          "text": "Listen for the low third tone in wǒ and the falling fourth tone in yào.",
+          "optionTexts": ["wǒ yào", "wó yáo", "wǒ yáo"]
         },
         {
           "id": "cafe-01-listen",
@@ -99,6 +122,15 @@
             "phrase-wo-yao",
             "noun-kafei"
           ]
+        },
+        {
+          "id": "cafe-01-order-tokens",
+          "type": "order_tokens",
+          "title": "Build the order",
+          "dimension": "meaning",
+          "itemId": "sentence-wo-yao-yi-bei-kafei",
+          "text": "Put the pieces in the order you would say them at the counter.",
+          "tokens": ["我", "要", "一杯", "咖啡"]
         },
         {
           "id": "cafe-01-repeat",
@@ -157,36 +189,38 @@
     {
       "id": "image-cafe-counter",
       "kind": "image",
-      "status": "planned",
-      "license": "internal",
-      "credit": "Mandarin Mission"
+      "status": "ready",
+      "path": "assets/images/cafe-counter.png",
+      "sha256": "a5fd40ea29477c59dd4aefae658044c251ae3867b50a574503f42ef921d5f011",
+      "license": "internal generated asset",
+      "credit": "Mandarin Mission, generated with OpenAI image generation on 2026-07-24"
     },
     {
       "id": "audio-wo-yao",
       "kind": "audio",
       "status": "ready",
-      "path": "assets/audio/kokoro/wo-yao.wav",
-      "sha256": "b4a20639369ef7f09de091a90459db2420dac1986e566fd1996e4654c116cee0",
-      "license": "Apache-2.0 model and tooling; generated audio release candidate",
-      "credit": "Kokoro-82M v1.0 via sherpa-onnx 1.13.4, zf_xiaoxiao (sid 47), speed 0.95, generated 2026-07-22"
+      "path": "assets/audio/cosyvoice/wo-yao.wav",
+      "sha256": "631519440087c64a3bf96dff969e29c6fd3ad5d0d88f3833d2f5cb0bb429dc5e",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 我要, generated 2026-07-24; 22.05 kHz mono output converted to PCM16 for app compatibility, no voice cloning or acoustic post-processing"
     },
     {
       "id": "audio-kafei",
       "kind": "audio",
       "status": "ready",
-      "path": "assets/audio/kokoro/kafei.wav",
-      "sha256": "886eb2040b0607181ab891289ab596957f0121aea5d8d1e327447d201b787fa0",
-      "license": "Apache-2.0 model and tooling; generated audio release candidate",
-      "credit": "Kokoro-82M v1.0 via sherpa-onnx 1.13.4, zf_xiaoxiao (sid 47), speed 0.95, generated 2026-07-22"
+      "path": "assets/audio/cosyvoice/kafei.wav",
+      "sha256": "f679bac69da1f8d66c2cc4f59e402f7ffdc134988c04ba3bf858bf30a26846dd",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.89, synthesis text 喀飞 for displayed 咖啡 pronunciation control, generated 2026-07-24; 22.05 kHz mono output converted to PCM16 for app compatibility, no voice cloning or acoustic post-processing"
     },
     {
       "id": "audio-wo-yao-yi-bei-kafei",
       "kind": "audio",
       "status": "ready",
-      "path": "assets/audio/kokoro/wo-yao-yi-bei-kafei.wav",
-      "sha256": "f8f70f4ee410cab9618f26d1cc5f4e430081eaaa748819546fc95e64e51ce910",
-      "license": "Apache-2.0 model and tooling; generated audio release candidate",
-      "credit": "Kokoro-82M v1.0 via sherpa-onnx 1.13.4, zf_xiaoxiao (sid 47), speed 0.95, generated 2026-07-22; synthesis prompt uses 义杯 for yì bēi tone sandhi"
+      "path": "assets/audio/cosyvoice/wo-yao-yi-bei-kafei.wav",
+      "sha256": "2ae006096982585511a20b60829dfd39b1e683c6eec3ef5246af5e7fa8d1ecd9",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 我要一杯咖啡, generated 2026-07-24; 22.05 kHz mono output converted to PCM16 for app compatibility, no voice cloning or acoustic post-processing"
     }
   ]
 }

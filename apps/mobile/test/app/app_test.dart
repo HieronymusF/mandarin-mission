@@ -19,6 +19,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Your Mandarin journey'), findsOneWidget);
+    expect(find.text('11 short steps'), findsOneWidget);
     await tester.ensureVisible(find.byKey(const Key('open-cafe-lesson')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('open-cafe-lesson')));
@@ -26,22 +27,37 @@ void main() {
 
     expect(find.byKey(const Key('lesson-overview-page')), findsOneWidget);
     expect(find.text('Order at the counter'), findsOneWidget);
-    expect(find.text('1 / 8'), findsOneWidget);
+    expect(find.text('1 / 11'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('lesson-primary-action')));
     await tester.pumpAndSettle();
     expect(find.text('Say what you want'), findsOneWidget);
-    expect(find.text('2 / 8'), findsOneWidget);
+    expect(find.text('2 / 11'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('lesson-primary-action')));
     await tester.pumpAndSettle();
     expect(find.text('Name the drink'), findsOneWidget);
-    expect(find.text('3 / 8'), findsOneWidget);
+    expect(find.text('3 / 11'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('lesson-primary-action')));
     await tester.pumpAndSettle();
+    expect(find.text('Pick the café item'), findsOneWidget);
+    expect(find.text('4 / 11'), findsOneWidget);
+    expect(find.text('Choose an answer'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('lesson-primary-action')));
+    await tester.pumpAndSettle();
+    expect(find.text('Pick the café item'), findsOneWidget);
+    await tester.ensureVisible(
+      find.byKey(const Key('image-option-noun-kafei')),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('image-option-noun-kafei')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('lesson-primary-action')));
+    await tester.pumpAndSettle();
+
     expect(find.text('Write 咖啡'), findsOneWidget);
-    expect(find.text('4 / 8'), findsOneWidget);
+    expect(find.text('5 / 11'), findsOneWidget);
 
     await _drawOnWritingCanvas(tester);
     await tester.ensureVisible(
@@ -64,8 +80,15 @@ void main() {
     await tester.tap(find.byKey(const Key('lesson-primary-action')));
     await tester.pumpAndSettle();
 
+    expect(find.text('Match the tones'), findsOneWidget);
+    expect(find.text('6 / 11'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('tone-option-0')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('lesson-primary-action')));
+    await tester.pumpAndSettle();
+
     expect(find.text('Which phrase did you hear?'), findsOneWidget);
-    expect(find.text('5 / 8'), findsOneWidget);
+    expect(find.text('7 / 11'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('listen-option-phrase-wo-yao')));
     await tester.pumpAndSettle();
@@ -89,8 +112,21 @@ void main() {
     await tester.tap(find.byKey(const Key('lesson-primary-action')));
     await tester.pumpAndSettle();
 
+    expect(find.text('Build the order'), findsOneWidget);
+    expect(find.text('8 / 11'), findsOneWidget);
+    expect(find.text('Build the sentence'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('lesson-primary-action')));
+    await tester.pumpAndSettle();
+    expect(find.text('Build the order'), findsOneWidget);
+    for (var index = 0; index < 4; index++) {
+      await tester.tap(find.byKey(Key('order-token-$index')));
+      await tester.pumpAndSettle();
+    }
+    await tester.tap(find.byKey(const Key('lesson-primary-action')));
+    await tester.pumpAndSettle();
+
     expect(find.text('Make the tones land'), findsOneWidget);
-    expect(find.text('6 / 8'), findsOneWidget);
+    expect(find.text('9 / 11'), findsOneWidget);
     _expectCenteredIn(
       tester,
       child: find.byKey(const Key('hanzi-pinyin-line')),
@@ -114,7 +150,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Take your turn'), findsOneWidget);
-    expect(find.text('7 / 8'), findsOneWidget);
+    expect(find.text('10 / 11'), findsOneWidget);
     expect(find.byKey(const Key('dialogue-answer-card')), findsNothing);
     expect(find.text('Choose how to reply'), findsOneWidget);
     await tester.tap(find.byKey(const Key('lesson-primary-action')));
@@ -151,7 +187,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Coffee ordered!'), findsOneWidget);
-    expect(find.text('8 / 8'), findsOneWidget);
+    expect(find.text('11 / 11'), findsOneWidget);
     _expectLeadingContentAligned(
       tester,
       card: find.byKey(const Key('summary-star-understanding-card')),
@@ -193,7 +229,7 @@ void main() {
     expect(progress.status, 'completed');
     expect(progress.score, 80);
     expect(mastery, hasLength(12));
-    expect(attempts, hasLength(4));
+    expect(attempts, hasLength(7));
     final listeningAttempts = attempts
         .where((attempt) => attempt.dimension == 'listening')
         .toList();
@@ -208,7 +244,7 @@ void main() {
     expect(writingAttempt.correct, isTrue);
     expect(writingAttempt.usedHint, isFalse);
     expect(speaking, hasLength(1));
-    expect(outbox, hasLength(6));
+    expect(outbox, hasLength(9));
   });
 
   testWidgets('keeps a shared content grid across wide viewports', (

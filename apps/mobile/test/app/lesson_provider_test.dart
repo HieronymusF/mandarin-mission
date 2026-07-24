@@ -8,6 +8,92 @@ import 'package:mandarin_mission/features/lesson/application/lesson_providers.da
 import 'package:learning_core/learning_core.dart';
 
 void main() {
+  test('records an incorrect token order before allowing the retry', () async {
+    final database = AppDatabase(NativeDatabase.memory());
+    addTearDown(database.close);
+    final repository = LessonProgressRepository(database);
+    final container = ProviderContainer(
+      overrides: [
+        lessonProgressRepositoryProvider.overrideWithValue(repository),
+      ],
+    );
+    addTearDown(container.dispose);
+    final package = CoursePackage.fromJson({
+      'schemaVersion': 1,
+      'status': 'draft',
+      'version': '0.1.0',
+      'knowledgeItems': [
+        {
+          'id': 'phrase-wo-yao',
+          'kind': 'phrase',
+          'hanzi': '我要',
+          'pinyin': 'wǒ yào',
+          'pinyinSyllables': ['wǒ', 'yào'],
+          'english': 'I want',
+          'audioAssetId': 'audio-wo-yao',
+          'tags': <String>[],
+        },
+      ],
+      'lessons': [
+        {
+          'id': 'cafe-01',
+          'locationId': 'cafe',
+          'title': 'Order coffee',
+          'estimatedMinutes': 1,
+          'prerequisites': <String>[],
+          'itemIds': ['phrase-wo-yao'],
+          'steps': [
+            {
+              'id': 'cafe-order',
+              'type': 'order_tokens',
+              'dimension': 'meaning',
+              'itemId': 'phrase-wo-yao',
+              'tokens': ['我', '要'],
+            },
+            {'id': 'cafe-summary', 'type': 'summary'},
+          ],
+        },
+      ],
+      'dialogues': <Object?>[],
+    }, source: 'test');
+    final lesson = package.lesson('cafe-01');
+    final step = lesson.steps.first;
+    final provider = lessonPlayerControllerProvider(lesson.id);
+    final controller = container.read(provider.notifier);
+
+    controller.toggleOrderToken(1);
+    controller.toggleOrderToken(0);
+    expect(
+      await controller.submitOrderTokens(
+        package: package,
+        lesson: lesson,
+        step: step,
+      ),
+      isTrue,
+    );
+    expect(container.read(provider).stepIndex, 0);
+    expect(container.read(provider).orderedTokenIndexes, isEmpty);
+    expect(container.read(provider).incorrectAttempts, 1);
+
+    controller.toggleOrderToken(0);
+    controller.toggleOrderToken(1);
+    expect(
+      await controller.submitOrderTokens(
+        package: package,
+        lesson: lesson,
+        step: step,
+      ),
+      isTrue,
+    );
+    expect(container.read(provider).stepIndex, 1);
+    final attempts = await database.select(database.reviewAttempts).get();
+    expect(attempts.map((attempt) => attempt.correct), [false, true]);
+    expect(
+      attempts.map((attempt) => attempt.dimension),
+      everyElement('meaning'),
+    );
+  });
+
   test('retains the writing self-check when local saving fails', () async {
     final database = AppDatabase(NativeDatabase.memory());
     addTearDown(database.close);

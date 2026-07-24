@@ -13,6 +13,8 @@
 | 稳定 ID | 内容对象的持久标识；显示文案或排序变化时不应随意更换 | [课程内容契约](modules/course-content.md) |
 | `cafe-01` | 当前唯一完整课程的稳定 lesson ID | [一次真实课程运行](walkthroughs/one-real-run.md) |
 | `audioAssetId` | 知识点指向媒体资产的稳定引用；App 不根据 item ID 猜文件名 | [媒体能力与降级](modules/media-fallback.md) |
+| `CosyVoice-300M-SFT` | 当前三条正式课程音频的 Apache-2.0 本地 TTS 模型 | [媒体能力与降级](modules/media-fallback.md) |
+| `中文女` | CosyVoice 模型内置 speaker 标识，不代表真人克隆或真人录音 | [媒体能力与降级](modules/media-fallback.md) |
 | `usedHint: true` | 一次练习借助提示完成；听力音频缺失时使用书面降级会记录该值，避免提示后答对被当成无提示记忆 | [本地学习闭环](modules/local-learning-loop.md) |
 | 到期条件（`dueAt <= now`） | 掌握度进入本地复习队列的时间判断 | [本地学习闭环](modules/local-learning-loop.md#到期队列和当前边界) |
 | 降级路径 | 音频、录音或网络不可用时仍能完成课程的本地替代交互 | [媒体能力与降级](modules/media-fallback.md) |
