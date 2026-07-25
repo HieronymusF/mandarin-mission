@@ -2,6 +2,7 @@
 
 ## 2026-07-25
 
+- 23:15 +08:00：M2 数据驱动 Journey 入口通过 PR [#18](https://github.com/HieronymusF/mandarin-mission/pull/18) 的 `mobile`、`learning-core`、`api` 三项 CI，并以 merge commit `f02ccdc` 合并到 `main`；合并后的 `main` CI run `30162984905` 再次全绿。App 版本升至 `0.1.1+2`，发布 Pre-release [`v0.1.1`](https://github.com/HieronymusF/mandarin-mission/releases/tag/v0.1.1)，标签指向 `f02ccdc`。Release 资产 `app-release.apk` 为 62,721,119 bytes，GitHub API 状态为 `uploaded`，远端 SHA-256 `3f5a1b8a5fd9a021fbdba0311e4ef82358bfc0b9eb91dfbe85832352b1a6c4dc` 与本地一致；APK 仍由 Android Debug 证书签名，只是安装验收包，不是商店上架包。Synced through f02ccdc + current documentation patch。
 - 22:51 +08:00：启动 M2 第一个最小切片。Flutter 内容模型开始保留并按 `order` 排序 location；Journey 改为遍历 location `lessonIds` 生成课程卡，卡片标题、步骤数、进度查询和路由 ID 均来自内容包，不再写死 `cafe-01`。新增两地点/两课程 Widget 测试，确认输入顺序为 Market→Café 时仍显示 Café→Market；原咖啡 11 步流程、宽屏对齐、format、analyze、Flutter 58 tests 和 Debug APK 通过。模拟器实际 Fixture 仍只显示已发布的 Café 卡，布局与入口无回归；M2 的 3 地点、12 节正式内容尚未制作。Synced through c75de22。
 
 ## 2026-07-24
