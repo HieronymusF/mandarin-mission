@@ -16,6 +16,8 @@
 
 课程的三个 `itemIds` 在完成时各生成四个学习维度。这就是内容数据与复习数据之间最重要的契约。
 
+运行时内容模型会保留按 `order` 排序的 location，以及每个 location 的 `lessonIds`。Journey 顺着这两个字段生成课程卡，课程标题、步骤数和路由 ID 都来自对应 lesson；因此增加已有步骤类型组成的新课程时，不需要再为入口修改页面。当前正式 Fixture 仍只有一个地点和一节课；两地点测试包已经证明入口能按顺序扩展，但不代表 M2 的 3 个地点、12 节正式课程已经制作完成。
+
 ## 数据进入 App 前经过两层约束
 
 [JSON Schema](../../content/schema/course-package.schema.json) 描述字段形状、必填项和十种允许的 step type。运行时 [内容校验器](../../packages/learning_core/lib/src/content_validator.dart) 继续处理 Schema 不擅长的关系：

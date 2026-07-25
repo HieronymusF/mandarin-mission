@@ -22,6 +22,15 @@ void main() {
       'schemaVersion': 1,
       'status': 'draft',
       'version': '0.1.0',
+      'locations': [
+        {
+          'id': 'cafe',
+          'title': 'Café',
+          'order': 1,
+          'lessonIds': ['cafe-01'],
+          'challengeId': 'cafe-challenge',
+        },
+      ],
       'knowledgeItems': [
         {
           'id': 'phrase-wo-yao',
@@ -124,6 +133,15 @@ void main() {
       'schemaVersion': 1,
       'status': 'draft',
       'version': '0.1.0',
+      'locations': [
+        {
+          'id': 'cafe',
+          'title': 'Café',
+          'order': 1,
+          'lessonIds': ['cafe-01'],
+          'challengeId': 'cafe-challenge',
+        },
+      ],
       'knowledgeItems': [
         {
           'id': 'noun-kafei',

@@ -54,13 +54,13 @@ UI 规则的文字入口仍是根目录 `WIDGET_LIBRARY.md` 与 `docs/design-sys
 
 | 重要代码 | 功能 | 关键符号 | 调用方 / 使用方 |
 | --- | --- | --- | --- |
-| [Journey 页面](../apps/mobile/lib/features/journey/presentation/journey_page.dart) | 显示单地点任务、持久化课程完成状态与真实到期摘要 | `JourneyPage` | `/` 路由、课程进度 Provider |
+| [Journey 页面](../apps/mobile/lib/features/journey/presentation/journey_page.dart) | 按内容包的地点顺序和 `lessonIds` 生成课程入口，并显示每课持久化进度与真实到期摘要 | `JourneyPage`、`_LocationLessonCards` | `/` 路由、内容与课程进度 Provider |
 | [课程状态](../apps/mobile/lib/features/lesson/application/lesson_providers.dart) | 管理步骤、答题、自评、提交与完成 | `LessonPlayerController` | 课程页面 |
 | [课程页面](../apps/mobile/lib/features/lesson/presentation/lesson_overview_page.dart) | 按 step type 组合步骤 Widget | `LessonOverviewPage` | lesson 路由 |
 | [复习状态](../apps/mobile/lib/features/review/application/review_providers.dart) | 建立最多 8 项会话并处理补救、失败重试 | `ReviewSessionController` | 复习页面、Journey 摘要 |
 | [复习页面](../apps/mobile/lib/features/review/presentation/review_page.dart) | 呈现加载、空、错误、题目与完成状态 | `ReviewPage` | `/review` 路由 |
 
-课程主路径由 [课程端到端测试](../apps/mobile/test/app/app_test.dart) 覆盖，复习主路径由 [复习流程测试](../apps/mobile/test/app/review_flow_test.dart) 覆盖。
+课程主路径由 [课程端到端测试](../apps/mobile/test/app/app_test.dart) 覆盖，多地点入口由 [Journey 内容驱动测试](../apps/mobile/test/features/journey/journey_page_test.dart) 覆盖，复习主路径由 [复习流程测试](../apps/mobile/test/app/review_flow_test.dart) 覆盖。
 
 ## `apps/mobile/lib/shared/`
 

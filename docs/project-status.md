@@ -88,7 +88,7 @@
 
 #### 3.3 Journey 页 ⚠️（课程进度与复习已接线，其余动态状态待做）
 
-`journey_page.dart` 已迁移代码优先 UI。`cafe-01` 卡片现在读取 `lesson_progress_entries`：未开始、进行中和已完成分别显示真实状态，完成后显示 100% 与 `Practice again`，冷启动后仍保留。到期复习摘要也来自真实队列；连胜、地点解锁和每日任务仍是静态外壳。在这些状态接线时再引入对应 ViewModel，当前不为了形式提前建立空状态层。
+`journey_page.dart` 已迁移代码优先 UI。课程入口现在按内容包 location `order` 与 `lessonIds` 生成，标题、步骤数和路由 ID 来自对应 lesson；两地点测试包已覆盖排序和第二课程卡。当前正式 Fixture 仍只有 `cafe-01`。每张卡读取自己的 `lesson_progress_entries`：未开始、进行中和已完成分别显示真实状态，完成后显示 100% 与 `Practice again`，冷启动后仍保留。到期复习摘要也来自真实队列；连胜、地点解锁和每日任务仍是静态外壳。在这些状态接线时再引入对应 ViewModel，当前不为了形式提前建立空状态层。
 
 #### 3.4 复习功能 ✅（本地闭环）
 

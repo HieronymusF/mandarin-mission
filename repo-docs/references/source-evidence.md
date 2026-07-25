@@ -43,7 +43,7 @@
 
 | Claim | Evidence | Confidence | Caveat | Used by |
 | --- | --- | --- | --- | --- |
-| App 从 Journey 进入 `cafe-01`，课程结束后返回 Journey 并显示持久化完成状态 | [路由定义](../../apps/mobile/lib/app/router.dart)、[Journey 入口](../../apps/mobile/lib/features/journey/presentation/journey_page.dart)、[课程页面](../../apps/mobile/lib/features/lesson/presentation/lesson_overview_page.dart)、[端到端测试](../../apps/mobile/test/app/app_test.dart) | 已确认 | Journey 仍是单地点外壳；连胜、解锁和每日任务未接线 | walkthrough、code map |
+| Journey 按 location `order` 与 `lessonIds` 生成课程入口；进入 `cafe-01` 并完成后会返回并显示持久化状态 | [路由定义](../../apps/mobile/lib/app/router.dart)、[Journey 入口](../../apps/mobile/lib/features/journey/presentation/journey_page.dart)、[课程页面](../../apps/mobile/lib/features/lesson/presentation/lesson_overview_page.dart)、[多地点入口测试](../../apps/mobile/test/features/journey/journey_page_test.dart)、[端到端测试](../../apps/mobile/test/app/app_test.dart) | 已确认 | 当前正式 Fixture 仍只有一个地点；连胜、解锁和每日任务未接线 | walkthrough、code map、内容模块 |
 | 课程包在建模前读取 JSON 并执行交叉引用校验 | [内容 Repository](../../apps/mobile/lib/data/content/course_content_repository.dart)、[内容校验器](../../packages/learning_core/lib/src/content_validator.dart) | 已确认 | 运行时没有直接执行 JSON Schema；Schema 与 validator 仍有 `sha256` 差异 | walkthrough、内容模块 |
 | 当前 Fixture 有 1 地点、3 知识点、1 课程、11 步、1 对话和 4 资产 | [点咖啡课程数据](../../content/fixtures/cafe-course.json) | 已确认 | 数据包是 `release`；图片已获真机确认，CosyVoice 音频已过整组试听、APK 打包与 Sony 真机播放；新增三步已过模拟器与 Sony 真机 | README、walkthrough、内容模块 |
 | 课程答题与完成通过 Drift 事务写入本地数据和 Outbox | [进度 Repository](../../apps/mobile/lib/data/progress/lesson_progress_repository.dart)、[本地表定义](../../apps/mobile/lib/data/local/tables.dart) | 已确认 | Outbox 尚无远端消费者 | walkthrough、本地闭环模块 |

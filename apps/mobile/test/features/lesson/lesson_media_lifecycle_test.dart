@@ -21,6 +21,7 @@ void main() {
     final recordingService = _TrackingRecordingService();
     addTearDown(() async {
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await tester.pumpWidget(const SizedBox.shrink());
       await database.close();
       await audioService.dispose();
       await recordingService.dispose();
@@ -37,9 +38,9 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.byKey(const Key('open-cafe-lesson')));
+    await tester.ensureVisible(find.byKey(const Key('open-lesson-cafe-01')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('open-cafe-lesson')));
+    await tester.tap(find.byKey(const Key('open-lesson-cafe-01')));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('lesson-overview-page')), findsOneWidget);
     final container = ProviderScope.containerOf(

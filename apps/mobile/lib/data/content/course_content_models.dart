@@ -12,6 +12,7 @@ final class CoursePackage {
     required this.schemaVersion,
     required this.status,
     required this.version,
+    required this.locations,
     required this.knowledgeItemsById,
     required this.lessonsById,
     required this.dialoguesById,
@@ -22,6 +23,16 @@ final class CoursePackage {
     Map<String, Object?> json, {
     required String source,
   }) {
+    final locations =
+        _objects(json, 'locations', source).indexed
+            .map(
+              (entry) => CourseLocation.fromJson(
+                entry.$2,
+                '$source.locations[${entry.$1}]',
+              ),
+            )
+            .toList()
+          ..sort((left, right) => left.order.compareTo(right.order));
     final knowledgeItems = _objects(json, 'knowledgeItems', source).indexed.map(
       (entry) => CourseKnowledgeItem.fromJson(
         entry.$2,
@@ -46,6 +57,7 @@ final class CoursePackage {
       schemaVersion: _requiredInt(json, 'schemaVersion', source),
       status: _requiredString(json, 'status', source),
       version: _requiredString(json, 'version', source),
+      locations: List.unmodifiable(locations),
       knowledgeItemsById: _indexById(knowledgeItems, (item) => item.id),
       lessonsById: _indexById(lessons, (lesson) => lesson.id),
       dialoguesById: _indexById(dialogues, (dialogue) => dialogue.id),
@@ -56,6 +68,7 @@ final class CoursePackage {
   final int schemaVersion;
   final String status;
   final String version;
+  final List<CourseLocation> locations;
   final Map<String, CourseKnowledgeItem> knowledgeItemsById;
   final Map<String, CourseLesson> lessonsById;
   final Map<String, CourseDialogue> dialoguesById;
@@ -107,6 +120,32 @@ final class CoursePackage {
     }
     return asset.path;
   }
+}
+
+final class CourseLocation {
+  const CourseLocation({
+    required this.id,
+    required this.title,
+    required this.order,
+    required this.lessonIds,
+    required this.challengeId,
+  });
+
+  factory CourseLocation.fromJson(Map<String, Object?> json, String path) {
+    return CourseLocation(
+      id: _requiredString(json, 'id', path),
+      title: _requiredString(json, 'title', path),
+      order: _requiredInt(json, 'order', path),
+      lessonIds: _strings(json, 'lessonIds', path),
+      challengeId: _requiredString(json, 'challengeId', path),
+    );
+  }
+
+  final String id;
+  final String title;
+  final int order;
+  final List<String> lessonIds;
+  final String challengeId;
 }
 
 final class CourseKnowledgeItem {
