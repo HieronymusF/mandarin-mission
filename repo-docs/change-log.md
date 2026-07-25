@@ -1,5 +1,9 @@
 # Repo guide 变更记录
 
+## 2026-07-25
+
+- 22:51 +08:00：启动 M2 第一个最小切片。Flutter 内容模型开始保留并按 `order` 排序 location；Journey 改为遍历 location `lessonIds` 生成课程卡，卡片标题、步骤数、进度查询和路由 ID 均来自内容包，不再写死 `cafe-01`。新增两地点/两课程 Widget 测试，确认输入顺序为 Market→Café 时仍显示 Café→Market；原咖啡 11 步流程、宽屏对齐、format、analyze、Flutter 58 tests 和 Debug APK 通过。模拟器实际 Fixture 仍只显示已发布的 Café 卡，布局与入口无回归；M2 的 3 地点、12 节正式内容尚未制作。Synced through e41eb37 + current working tree。
+
 ## 2026-07-24
 
 - 23:53 +08:00：补齐 GitHub 可下载交付：发布 Pre-release [`v0.1.0+1`](https://github.com/HieronymusF/mandarin-mission/releases/tag/v0.1.0%2B1)，标签指向 `main` 提交 `ce25b64`。Release 资产 `app-release.apk` 为 62,720,887 bytes，GitHub API 返回状态 `uploaded`，远端 SHA-256 `235d7e2875d3d5c35040aab3f6078fa960ed8aeae36eed96fa017942e2819792` 与本地一致。该 APK 仍由 Android Debug 证书签名，因此标记为 Android 验收包而非商店正式包。Synced through ce25b64 + current documentation patch。

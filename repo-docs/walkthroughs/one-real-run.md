@@ -6,9 +6,9 @@
 
 ## Step 1: 用户从 Journey 打开一个任务
 
-App 启动后先进入 Journey。当前页面只有一个真实地点入口，点击后把稳定课程 ID `cafe-01` 交给课程路由。路由只负责选择页面，不在这里拼课程内容或保存进度。
+App 启动后先进入 Journey。页面按内容包中的地点顺序读取每个 `lessonIds`，为每节课生成入口；当前正式 Fixture 只有 `cafe` 和 `cafe-01`，所以运行时仍只显示一个真实地点。点击课程卡后，Journey 把对应稳定课程 ID 交给课程路由。路由只负责选择页面，不在这里拼课程内容或保存进度。
 
-[Journey 的课程入口](../../apps/mobile/lib/features/journey/presentation/journey_page.dart) 和 [App 路由](../../apps/mobile/lib/app/router.dart) 共同证明了这一步。Journey 同时读取 `cafe-01` 的持久化课程进度与本地到期摘要，因此用户完成后会看到 100% 与 `Practice again`，冷启动后仍保留，并能看到复习是否已到期。
+[Journey 的课程入口](../../apps/mobile/lib/features/journey/presentation/journey_page.dart) 和 [App 路由](../../apps/mobile/lib/app/router.dart) 共同证明了这一步。每张卡分别读取对应 lesson ID 的持久化课程进度；`cafe-01` 完成后会显示 100% 与 `Practice again`，冷启动后仍保留。Journey 也继续读取本地到期摘要。多地点 Widget 测试用顺序相反的 Café 与 Market 输入，确认页面按 `order` 显示两张课程卡，而不是继续依赖 `cafe-01` 硬编码。
 
 ## Step 2: 内容包先通过校验，再变成课程对象
 

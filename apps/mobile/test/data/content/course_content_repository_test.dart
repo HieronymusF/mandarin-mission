@@ -15,6 +15,12 @@ void main() {
       expect(package.schemaVersion, 1);
       expect(package.status, 'release');
       expect(package.version, '0.1.7');
+      expect(package.locations, hasLength(1));
+      expect(package.locations.single.id, 'cafe');
+      expect(package.locations.single.title, 'Café');
+      expect(package.locations.single.order, 1);
+      expect(package.locations.single.lessonIds, ['cafe-01']);
+      expect(package.locations.single.challengeId, 'cafe-challenge');
       expect(package.lessonsById.keys, ['cafe-01']);
       expect(
         package.lesson('cafe-01').steps.map((step) => step.type),

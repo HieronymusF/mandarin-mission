@@ -3,13 +3,18 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mandarin_mission/app/app.dart';
+import 'package:mandarin_mission/data/content/course_content_models.dart';
+import 'package:mandarin_mission/data/content/course_content_provider.dart';
 import 'package:mandarin_mission/data/local/app_database.dart';
 import 'package:mandarin_mission/data/local/app_database_provider.dart';
 
 void main() {
   testWidgets('completes the data-driven café lesson flow', (tester) async {
     final database = AppDatabase(NativeDatabase.memory());
-    addTearDown(database.close);
+    addTearDown(() async {
+      await tester.pumpWidget(const SizedBox.shrink());
+      await database.close();
+    });
     await tester.pumpWidget(
       ProviderScope(
         overrides: [appDatabaseProvider.overrideWithValue(database)],
@@ -20,9 +25,9 @@ void main() {
 
     expect(find.text('Your Mandarin journey'), findsOneWidget);
     expect(find.text('11 short steps'), findsOneWidget);
-    await tester.ensureVisible(find.byKey(const Key('open-cafe-lesson')));
+    await tester.ensureVisible(find.byKey(const Key('open-lesson-cafe-01')));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('open-cafe-lesson')));
+    await tester.tap(find.byKey(const Key('open-lesson-cafe-01')));
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('lesson-overview-page')), findsOneWidget);
@@ -253,13 +258,21 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     tester.view.devicePixelRatio = 1;
+    final coursePackage = CoursePackage.fromJson(
+      _journeyLayoutPackage,
+      source: 'journey-layout-test',
+    );
 
     for (final width in [768.0, 1024.0, 1280.0, 1440.0]) {
       tester.view.physicalSize = Size(width, 1000);
       final database = AppDatabase(NativeDatabase.memory());
       await tester.pumpWidget(
         ProviderScope(
-          overrides: [appDatabaseProvider.overrideWithValue(database)],
+          key: ValueKey(width),
+          overrides: [
+            appDatabaseProvider.overrideWithValue(database),
+            coursePackageProvider.overrideWith((ref) async => coursePackage),
+          ],
           child: const MandarinMissionApp(),
         ),
       );
@@ -273,9 +286,11 @@ void main() {
         find.byKey(const Key('today-task-row')),
       );
       final cafeCard = tester.getRect(
-        find.byKey(const Key('journey-cafe-card')),
+        find.byKey(const Key('journey-lesson-cafe-01-card')),
       );
-      final cafeBody = tester.getRect(find.byKey(const Key('cafe-card-body')));
+      final cafeBody = tester.getRect(
+        find.byKey(const Key('journey-lesson-cafe-01-body')),
+      );
 
       expect(frame.width, closeTo(640, 0.01));
       expect(frame.left, closeTo((width - 640) / 2, 0.01));
@@ -291,6 +306,35 @@ void main() {
     }
   });
 }
+
+final Map<String, Object?> _journeyLayoutPackage = {
+  'schemaVersion': 1,
+  'status': 'draft',
+  'version': '0.2.0',
+  'locations': [
+    {
+      'id': 'cafe',
+      'title': 'Café',
+      'order': 1,
+      'lessonIds': ['cafe-01'],
+      'challengeId': 'cafe-challenge',
+    },
+  ],
+  'knowledgeItems': <Object?>[],
+  'lessons': [
+    {
+      'id': 'cafe-01',
+      'locationId': 'cafe',
+      'title': 'Order one coffee',
+      'estimatedMinutes': 9,
+      'prerequisites': <Object?>[],
+      'itemIds': <Object?>[],
+      'steps': <Object?>[],
+    },
+  ],
+  'dialogues': <Object?>[],
+  'assets': <Object?>[],
+};
 
 Future<void> _drawOnWritingCanvas(WidgetTester tester) async {
   final canvas = find.byKey(const Key('hanzi-writing-canvas'));
