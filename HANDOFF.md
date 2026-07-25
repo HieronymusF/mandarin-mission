@@ -1,8 +1,8 @@
 # Mandarin Mission 项目交接
 
-> 最后更新：2026-07-25 22:51（Asia/Hong_Kong）
+> 最后更新：2026-07-25 23:15（Asia/Hong_Kong）
 > 项目：`D:\mandarin-mission\mandarin-mission`
-> Git：工作分支 `feat/data-driven-journey` 功能提交 `c75de22`；尚未推送；`main` 与 `origin/main` 保持 `e41eb37`；GitHub Pre-release `v0.1.0+1` 指向 `ce25b64`
+> Git：PR #18 已以 merge commit `f02ccdc` 合并；本地 `main` 与 `origin/main` 同步；GitHub Pre-release `v0.1.1` 指向 `f02ccdc`
 
 本文件是本项目唯一的实时交接入口。每次新对话或新任务必须先按根目录 `AGENTS.md` 的顺序读取全局协议、本文件、`AGENT_LESSONS.md` 和 `docs/handoff/ai-agent-handoff.md`，再核验仓库与 GitHub 当前状态。`AGENT_LESSONS.md` 保存去重后的项目特定复用经验；详细且相对稳定的项目基线在 `docs/handoff/ai-agent-handoff.md`。
 
@@ -10,6 +10,7 @@
 
 - 已进入 M2 可玩循环的第一个最小切片：Flutter `CoursePackage` 现在解析并按 `order` 保留 location；Journey 遍历每个 location 的 `lessonIds` 生成课程卡，课程标题、步骤数、进度查询和路由 ID 均来自内容包，不再写死 `cafe-01`。新增 Café/Market 两地点测试包，输入顺序刻意为 Market→Café，页面仍按 order 显示 Café→Market。当前正式 Fixture 未扩容，仍只有 1 地点、1 节课；不得写成 3 地点、12 节课已经完成。
 - 本切片自动验证通过：Flutter format 65 files / 0 changed、analyze 0 issues、58 tests、Debug APK。首次全量回归正确发现 3 个测试自建课程包缺少 `locations`，以及媒体生命周期测试仍使用旧入口 key；同步测试契约后目标测试与全量回归通过。Android 模拟器 `emulator-5554` 安装本轮 Debug APK，实际 Café Journey 卡的标题、步骤数、进度、按钮和布局正常；多地点显示由 Widget 测试验证，未冒充真实 3 地点内容或真机证据。
+- M2 入口切片已通过 PR [#18](https://github.com/HieronymusF/mandarin-mission/pull/18) 的 `mobile`、`learning-core`、`api` 三项 CI，并以 merge commit `f02ccdc` 合并到 `main`；合并后 `main` 的独立 CI run `30162984905` 也全绿。App 版本升至 `0.1.1+2`，GitHub 已发布 Pre-release [`v0.1.1`](https://github.com/HieronymusF/mandarin-mission/releases/tag/v0.1.1)，标签指向 `f02ccdc`。资产 `app-release.apk` 为 62,721,119 bytes，远端状态为 `uploaded`，SHA-256 `3f5a1b8a5fd9a021fbdba0311e4ef82358bfc0b9eb91dfbe85832352b1a6c4dc` 与本地一致；证书仍为 `Android Debug`，只能作为安装验收包。
 - M1 内容播放器已补齐此前缺失的 `image_choice`、`tone_contrast`、`order_tokens` 三种步骤类型；咖啡课程 Fixture 已升至 `0.1.7`，从 8 步扩展为 11 步，涵盖图片选择、声调辨析和语序重排。
 - MeloTTS 因发音不完整、跨片段音色不一致和长句电音而在三轮人工试听中被淘汰。最终三条音频使用 Apache-2.0 `CosyVoice-300M-SFT` 内置 `中文女`、seed 1986 本地生成：I1“我要”和 I3“我要一杯咖啡”速度 0.94，L2“咖啡”速度 0.89；L2 使用同音“喀飞”锁定一声和完整 `/ei/`，显示文本仍为“咖啡”。三条已通过用户整组试听，转为 22.05 kHz/16-bit/mono PCM16 后接入 `assets/audio/cosyvoice/`，并通过内容校验、Flutter 57 tests、debug APK 与 APK 资源检查。最终 APK SHA-256 为 `d19498171b60b501ba74ed16905a4ed7bb3311241bd40094b3814c5c46cea374`，内含 `release` / `0.1.7` Fixture、三条匹配元数据哈希的 CosyVoice 资产，无 MeloTTS/Kokoro 遗留资源；已于 22:42 覆盖安装到 Sony 且保留 App 数据。未使用真人克隆或声学后处理。
 - 用户提出尝试“曼波语音”。检索确认常见来源分为剪映“曼波讲故事”声音素材、第三方 GPT-SoVITS/RVC 仿声模型和真人网络梗声线：GPT-SoVITS 引擎本身为 MIT，不代表具体声线模型或训练素材获授权；未找到可供独立 App 分发的“曼波”模型许可或声音本人授权。剪映声音即使免费访问，未标商用时只限非商业用途；商用声音通常也只许可嵌入视频并分发到剪映/抖音，不允许把单独音频嵌入独立 App。因此不下载或使用未经授权的精确仿声模型。仓库外 D `zh-CN-XiaoyiNeural`（`-6%` 语速、`+8Hz` 音高）曾获用户听感认可，但用户随后否决付费或授权不清的接入路径并要求免费本地方案，因此 D 不是当前最终声线。
@@ -104,8 +105,8 @@
 ## 下一步要做什么
 
 1. **M2 内容范围**：下一步先定义 3 个地点、12 节课的课程目录、稳定 ID、先修关系和每课学习目标，再制作 `draft` 内容；正式主课程仍需英语母语编辑和国际中文教师审核，不能把 AI 草稿直接标为 `release`。
-2. **M2 入口切片交付**：当前 `feat/data-driven-journey` 已完成本地实现与验证，功能提交为 `c75de22`，尚未推送；发布 Git 变更前按用户授权执行 push、PR 和 CI。
-3. **发布边界**：GitHub Pre-release `v0.1.0+1` 已包含可下载的 `app-release.apk`，但仍使用 Android Debug 签名；若准备商店发布，必须配置独立 release keystore、安全存储和商店版构建验证。
+2. **M2 入口切片已交付**：PR #18 和合并后的 `main` CI 均通过，Pre-release `v0.1.1` 已提供 `0.1.1+2` APK；无需再次推送该功能分支。
+3. **发布边界**：GitHub Pre-release `v0.1.1` 已包含可下载的 `app-release.apk`，但仍使用 Android Debug 签名；若准备商店发布，必须配置独立 release keystore、安全存储和商店版构建验证。
 4. **延期真实来电分支**：当前设备无 SIM，未来具备可呼入设备时，再验证录音中的来电中断与返回 App 后恢复；不要用 Home 或 ADB 模拟冒充真实来电证据。
 5. **完成项目 Skill 与 Hook 的 UI 侧启用确认**：`$verify-mandarin-mission` 仍未出现在本会话 Skills 列表，Hook 也尚未由用户在 `/hooks` 中复核并信任。
 
