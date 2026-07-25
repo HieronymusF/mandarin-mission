@@ -2,7 +2,7 @@
 
 ## 2026-07-25
 
-- 22:51 +08:00：启动 M2 第一个最小切片。Flutter 内容模型开始保留并按 `order` 排序 location；Journey 改为遍历 location `lessonIds` 生成课程卡，卡片标题、步骤数、进度查询和路由 ID 均来自内容包，不再写死 `cafe-01`。新增两地点/两课程 Widget 测试，确认输入顺序为 Market→Café 时仍显示 Café→Market；原咖啡 11 步流程、宽屏对齐、format、analyze、Flutter 58 tests 和 Debug APK 通过。模拟器实际 Fixture 仍只显示已发布的 Café 卡，布局与入口无回归；M2 的 3 地点、12 节正式内容尚未制作。Synced through e41eb37 + current working tree。
+- 22:51 +08:00：启动 M2 第一个最小切片。Flutter 内容模型开始保留并按 `order` 排序 location；Journey 改为遍历 location `lessonIds` 生成课程卡，卡片标题、步骤数、进度查询和路由 ID 均来自内容包，不再写死 `cafe-01`。新增两地点/两课程 Widget 测试，确认输入顺序为 Market→Café 时仍显示 Café→Market；原咖啡 11 步流程、宽屏对齐、format、analyze、Flutter 58 tests 和 Debug APK 通过。模拟器实际 Fixture 仍只显示已发布的 Café 卡，布局与入口无回归；M2 的 3 地点、12 节正式内容尚未制作。Synced through c75de22。
 
 ## 2026-07-24
 
