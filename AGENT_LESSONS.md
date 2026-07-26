@@ -4,6 +4,16 @@
 
 涉及稳定仓库行为或行为代码变更时，按根 `AGENTS.md` 的 Repo docs sync gate 核对并最小更新 `repo-docs/`。
 
+## Lesson: 内容签核必须枚举全部发布单元并编排专业 Agent
+
+- Last confirmed: 2026-07-26
+- Pattern: M2 交接把下一步写成“取得 11 节新增课程的人工签核”，既漏掉同属 release 门禁的 3 个地点终局，又把可由专业 Agent 完成的逐条语言审核转交给用户协调。
+- Prevention rule: 从 `locations[].lessonIds` 与 `locations[].challengeId` 推导完整审核范围；主 Agent 分别编排独立英文编辑 Agent 与国际中文教学 Agent，自己负责交叉核对和集成，只把产品取舍或主观验收交给用户。不得用 lesson 数量代替完整发布范围，也不得把代理可完成的专业审核转嫁给用户。
+- Verification: 审核表覆盖 11 节新增课程和 3 个地点终局，并有两份独立 Agent 结论及主 Agent 集成记录；language lock 后的音频门禁覆盖 Café 12、Market 18、Metro 19，共 49 条 `planned` 音频。
+- Evidence: `docs/requirements/m2-curriculum.md` 第 5.2 节、`content/fixtures/m2-course-draft.json` 的 3 个 `challengeId`，以及 2026-07-26 用户明确要求调用中英文专业 Agent 完成审核。
+- Status: active
+- Promoted to: `content/AGENTS.md`
+
 ## Lesson: Release 交付必须验证远端可下载资产
 
 - Last confirmed: 2026-07-24
@@ -56,7 +66,7 @@
 
 ## Lesson: 书写画布必须在本地完整接管高频指针序列
 
-- Last confirmed: 2026-07-23
+- Last confirmed: 2026-07-26
 - Pattern: 汉字书写画布位于可滚动课程页中时，父级可能竞争竖向手势；如果每个 `PointerMoveEvent` 又从尚未重建的父组件 props 复制笔迹，同一帧内较早采样点会被覆盖，曲线被拉成稀疏直线。双字共用画布若不按字符格线断笔，还会把“咖”与“啡”跨格连接。
 - Prevention rule: 自定义书写画布应尽早接管指针序列，并在本地保存当前手势的连续采样；向父级回传副本，不以父级重建作为下一事件的数据源。多字画布跨字符格线时新开一笔，同时保留清除、重写、跳过与对照自评路径。
 - Verification: Widget 测试在不 `pump` 的情况下连续发送多个 move，确认全部采样保留；跨字符中线后确认产生两笔。再在 Android 真机分别验证横、竖、斜、曲线和跨字移动，页面不滚动、笔迹不被拉直或跨格连线。
@@ -68,9 +78,9 @@
 
 - Last confirmed: 2026-07-23
 - Pattern: `dialogue_turn` 只展示标准答案和静态麦克风图标，同时让底部主按钮直接进入下一步。页面虽然能导航，但用户没有可执行、可验证的挑战动作，终局对话退化为静态过场。
-- Prevention rule: 每个练习或挑战步骤至少提供一个与目标一致的可观察动作；在动作完成前禁用主推进按钮。P0 不具备 AI 判音时，应明确使用脱稿自报或提示卡降级，不伪装成语音识别。
-- Verification: Widget/端到端测试先点击禁用主按钮并确认仍停留当前步骤，再分别走无提示和提示路径；真机确认所有入口可见、状态反馈明确、完成后才能进入下一步。
-- Evidence: `DialogueStep`、`LessonPlayerState.dialogueReplyMethod`、`app_test.dart` 与 2026-07-23 Sony XQ-DQ72 第 7 步真机验收。
+- Prevention rule: 每个练习或挑战步骤至少提供一个与目标一致的可观察动作；在动作完成前禁用主推进按钮。P0 不具备 AI 判音时，应明确使用脱稿自报或提示卡降级，不伪装成语音识别。多轮对话必须沿 `nextNodeId` 读取真实图，不假设节点数组顺序或严格 `system → learner` 交替；连续系统节点可以同轮展示，但每个 learner 节点都要重新完成动作门禁。
+- Verification: Widget/端到端测试先点击禁用主按钮并确认仍停留当前步骤，再分别走无提示和提示路径；多轮测试覆盖连续系统节点、每轮动作重置、系统/学习者两类终止节点和离页清理，并用真实地点终局核对完整 learner 轮数。真机确认所有入口可见、状态反馈明确、完成后才能进入下一步。
+- Evidence: `DialogueStep`、`CourseDialogue.turnFrom`、`LessonPlayerState.dialogueReplyMethod`、`dialogue_flow_test.dart`、`app_test.dart`，以及 2026-07-23 Sony XQ-DQ72 第 7 步真机验收。
 - Status: active
 - Promoted to: none
 
@@ -84,15 +94,45 @@
 - Status: active
 - Promoted to: `AGENTS.md` 与 `docs/handoff/ai-agent-handoff.md` 的启动命令示例
 
+## Lesson: 真机跨进程验收不能拆成两次 `flutter test integration_test`
+
+- Last confirmed: 2026-07-26
+- Pattern: 在 Sony 真机先后运行两次 `flutter test integration_test/... -d <device>`，预期第一次写入的 App 沙箱数据库供第二次读取；实际测试框架在每次结束后卸载测试 App，包与沙箱数据一并消失，也清除了设备此前安装版本的本地数据。
+- Prevention rule: 真实磁盘冷启动使用只安装一次的专用验收入口：构建一个独立 target APK，以 `adb install -r` 安装，首次启动写入唯一命名的隔离数据库，`adb shell am force-stop <package>` 后重启同一 APK 只读复核。执行任何可能卸载 App 的测试命令前，先确认设备可丢弃或已备份；不得声称卸载后的既有用户数据仍被保留。
+- Verification: 强制停止后 `pidof` 为空；重启后的 Android PID 与数据库 marker 中的 seed PID 不同；同一数据库恢复预期记录和 Journey 状态。结束后只删除明确的隔离数据库文件，并用 `install -r` 恢复默认构建。
+- Evidence: `apps/mobile/integration_test/m2_process_persistence_app.dart`；2026-07-26 Sony `XQ-DQ72` seed PID `21038`、verify PID `21209`。
+- Status: active
+- Promoted to: none
+
+## Lesson: 真机交还状态必须匹配下一项验收
+
+- Last confirmed: 2026-07-26
+- Pattern: M2 冷启动验收完成后，为了证明源码默认 Provider 未改变而把 Sony 恢复成 Café Release 构建；但交接中的下一项工作正是 M2 人工逐页 UX，用户接手设备时只能看到第一课，误以为第二课尚未实现。
+- Prevention rule: 区分“源码默认入口”和“当前设备安装包”。验收默认兼容性后，如果下一步仍依赖 Draft/feature build，应把该验收构建重新装回设备并停留在用户需要检查的入口；不要为了证明默认值而把设备留在与下一步相反的状态。
+- Verification: 交还前用 UI hierarchy 检查下一步需要的课程/按钮实际可见，并在 `HANDOFF.md` 明确记录 build flag、设备当前页面和源码默认值，两者不得混写。
+- Evidence: 2026-07-26 Sony 重新安装 `MM_USE_M2_DRAFT=true` 后，层级中出现 `Choose hot or iced`、Market 与 Metro 终局，设备进入 Café 02 `Step 2 of 10`。
+- Status: active
+- Promoted to: none
+
 ## Lesson: UI 工程验证不能替代视觉失败证据
 
-- Last confirmed: 2026-07-22
+- Last confirmed: 2026-07-26
 - Pattern: 面对 UI 对齐问题时，先增加通用 token、布局组件和几何断言，并以 analyze、Widget tests、APK 构建通过作为结果；这些检查可能全部为绿，但没有复现用户看到的具体页面状态，也没有修复前后截图，无法证明视觉问题真正解决。仅被测试和文档引用的新布局组件也可能成为未验证抽象。
 - Prevention rule: UI Bug 先记录入口、状态、viewport、文字缩放并保存修复前截图；写出根因假设和视觉成功标准；优先修改现有父容器或共享根因；修复后在同条件截图对比。只有两个真实生产调用点才允许新增共享组件。
 - Verification: 同一场景有修复前/后视觉证据；相关尺寸与 200% 字号无溢出；每个改动行可追溯到根因；analyze/test/build 作为回归门禁单独通过。
-- Evidence: 2026-07-22 Widget 库任务中自动测试与 APK 构建通过，但无连接设备、无新增页面截图，交付只能证明工程回归，不能证明具体视觉缺陷已修复。
+- Evidence: 2026-07-22 Widget 库任务中自动测试与 APK 构建通过，但无连接设备、无新增页面截图，交付只能证明工程回归，不能证明具体视觉缺陷已修复；2026-07-26 M2 自动链路全绿后，Sony 人工逐页检查仍在 Café 02 Step 4 发现长汉字/拼音行溢出 78 px，随后以同页前后截图和窄卡片失败测试闭环。
 - Status: active
 - Promoted to: `AGENTS.md`“AI 开发行为约束”与根目录 `WIDGET_LIBRARY.md`
+
+## Lesson: 共享课程组件不能从课程全局数据推断本步语义
+
+- Last confirmed: 2026-07-26
+- Pattern: 共享 `teach_card` 读取课程前两个知识点后，在每张教学卡生成同一个 `Build the order`；听辨、排序和总结组件又写死 Café 01 的“完整订单”“咖啡回复”和“明日复习”。`scene_intro` 同样写死 Café 地点与问候，首次改动又从 location 标题推导出不自然且与 Metro 01 矛盾的 `At the metro`。单课冒烟可看似合理，跨课后会教错组合、虚构答题结果、承诺错误时间或制造错误场景。
+- Prevention rule: 共享步骤只呈现本步显式字段和题型稳定语义；不从 lesson 级列表推断组合，也不从 location 标题生成完整场景句；不在共享组件写场景名、固定答案含义或日历承诺。需要场景结果时由内容包提供 outcome/support text。
+- Verification: 至少用两个语义不同的课程 fixture 覆盖共享组件；断言不会出现第一课专用文案、推断卡或地点派生句。learner-facing 文案变更按 language lock 提升版本，并让受影响范围重新进行中英文双审。
+- Evidence: 2026-07-26 Sony Café 02—04 逐页 UX、`teach_card_step.dart`、`scene_intro_step.dart`、`listen_choice_step.dart`、`order_tokens_step.dart`、`dialogue_step.dart`、`summary_step.dart` 及对应 Widget tests。
+- Status: active
+- Promoted to: `docs/content-authoring.md`
 
 ## Lesson: Riverpod 生命周期清理不能在卸载后读取 ref
 
@@ -114,12 +154,12 @@
 - Status: active
 - Promoted to: none
 
-## Lesson: 极短 TTS 资产必须先做首尾完整性试听
+## Lesson: 极短 TTS 资产必须先做首尾完整性与对话韵律试听
 
-- Last confirmed: 2026-07-24
-- Pattern: 对“我要”“咖啡”这类两三个音节直接单独合成时，模型可能吞掉开头主体、把结尾压短或让音节含混；格式、哈希、波形峰值和文本前端声调全部正确，也不能证明听感可用。
-- Prevention rule: 同一课程的一组极短 TTS 优先在一次推理中合成为一条母带，再按静音边界切成独立文件；若模型对独立短词仍压缩音节，先合成同词重复的上下文试听，选中清楚的一次后再精确裁切。每个音节的声母、韵母和声调必须分别检查：`ei`、`ao`、`ou` 等复合韵母要核对滑动是否完整，一声要确认高平调没有弱化成轻声；不能把“整体还可以”直接等同于发音放行。必要时用合法同音字作为合成文本，但必须记录显示文本与合成文本的差异。分别调用模型或分别归一化可能造成声纹漂移。固定随机参数若引入声码器电音或金属感，应淘汰该模型/模式，不以“音色统一”为理由继续调参。写入 Fixture、标记最终候选或构建 APK 前，由人工连续对比全部片段，确认首音、末音、每个音节、声调、音量、音色一致性和无声码器伪影。
-- Verification: 连续播放整组最终裁剪文件，听清完整 `wǒ yào`、`kā fēi` 等目标音节，并确认片段间是同一音色；自动校验只负责格式、哈希、响度和打包，不替代这一步。
-- Evidence: 2026-07-24 MeloTTS 首版 `wo-yao.wav` 吞掉“我”的主体、`kafei.wav` 两个音节含混；第二轮重复合成后截取中间 take 虽改善边界，但用户确认两条音色不一致；第三轮固定随机参数的一次母带解决一致性后，长句出现明显电音。MeloTTS 因连续三轮人工试听失败被淘汰。同日 CosyVoice 初版 `咖啡` 只有约 0.44 秒并被用户否决；降速 J 组虽获“都还可以”的初步反馈，放回整组后仍被听成 `kāfi`；同音“咖飞”K 组修正 `/ei/` 后，`kā` 又被用户指出偏轻声。说明时长和单一音素修正都不能替代逐音节检查。
+- Last confirmed: 2026-07-26
+- Pattern: 对“我要”“咖啡”这类两三个音节直接单独合成时，模型可能吞掉开头主体、把结尾压短或让音节含混；较长句子也可能在句内压缩某个分句，让前后语速明显不均。对话回复即使字音正确，也可能把信息焦点重读错位，或使用像后面仍有话的未完句语气。同一命名声线在不同 seed、文本或推理结果中仍可能产生明显的说话人身份与音色漂移，不能把 Provider 的 speaker 标签当作听感一致性证据。格式、哈希、波形峰值和文本前端声调全部正确，不能证明听感或语用韵律可用。
+- Prevention rule: 同一课程的一组极短 TTS 优先在一次推理中合成为一条母带，再按静音边界切成独立文件；若模型对独立短词仍压缩音节，先合成同词重复的上下文试听，选中清楚的一次后再精确裁切。每个音节的声母、韵母和声调必须分别检查：`ei`、`ao`、`ou` 等复合韵母要核对滑动是否完整，一声要确认高平调没有弱化成轻声；长句还要逐分句比较语速，不能只听整句总时长。用户指出过快或吞音后，新一轮候选必须围绕该缺陷做技术预筛；与被拒版本时长、边界或节奏仍接近的候选不再全部转交用户，但时长只能用于淘汰明显无改进版本，不能替代人工逐音节签核。若只有一个分句过快，优先尝试自然韵律边界；仍无法改善时可只放慢该分句再拼接，但必须连续试听拼接点、音色、重音和整句问答语气。任何 seed、文本边界或分段合成变化都使既有说话人听感批准失效；新候选先与至少一条用户已接受的同声线参考连续对比，可用基频和频谱特征只淘汰明显离群项，但不得据此断言性别或替代人工确认说话人身份与音色一致性。对话音频还必须放回前后轮次，按角色意图检查信息焦点、对比重音和句末完整性，例如回答“要袋子吗？”时，“要袋子。”的肯定焦点应落在“要”。必要时用合法同音字作为合成文本，但必须记录显示文本与合成文本的差异。分别调用模型或分别归一化可能造成声纹漂移。固定随机参数若引入声码器电音或金属感，应淘汰该模型/模式，不以“音色统一”为理由继续调参。写入 Fixture、标记最终候选或构建 APK 前，由人工连续对比全部片段，确认首音、末音、每个音节、声调、停顿、分句语速、重音、句末语气、音量、音色一致性和无声码器伪影。
+- Verification: 连续播放整组最终裁剪文件，听清完整 `wǒ yào`、`kā fēi` 等目标音节，并确认片段间是同一音色；长句逐分句比较语速，拼接方案还要确认边界连续、音色一致且没有不自然停顿；对话回复再与前一轮问题连续播放，确认重音表达正确的信息焦点、句末语气符合该轮是否结束。自动校验只负责格式、哈希、响度和打包，不替代这些人工判断。
+- Evidence: 2026-07-24 MeloTTS 首版 `wo-yao.wav` 吞掉“我”的主体、`kafei.wav` 两个音节含混；第二轮重复合成后截取中间 take 虽改善边界，但用户确认两条音色不一致；第三轮固定随机参数的一次母带解决一致性后，长句出现明显电音。MeloTTS 因连续三轮人工试听失败被淘汰。同日 CosyVoice 初版 `咖啡` 只有约 0.44 秒并被用户否决；降速 J 组虽获“都还可以”的初步反馈，放回整组后仍被听成 `kāfi`；同音“咖飞”K 组修正 `/ei/` 后，`kā` 又被用户指出偏轻声。2026-07-26 Market 验收又发现“不要这个。”句尾像仍有后文，而作为“要袋子吗？”肯定回答的“要袋子。”应重读“要”；Metro 原版“火车站”约 0.476 秒，被用户指出过快且三个音节均未念完整，重生成后只将明显延长至约 0.69 秒的两个版本送审；同组长句“去火车站坐几号线？”又出现前半句过快而后半句正常的句内语速不均。其替换 round 12 中，A 的句内节奏最好却被用户明确听成男声，自动测得中位基频仅约 87 Hz；B/C/D 虽未出现同样的低音高离群，但都因重音奇怪被否决。说明词音、speaker 标签和格式正确不能替代逐音节、逐分句、说话人身份与对话语用韵律检查，也不能把未针对反馈改善的候选继续转交用户。
 - Status: active
 - Promoted to: `docs/content-authoring.md` 的 TTS 课程音频门禁

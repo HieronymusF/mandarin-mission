@@ -1,13 +1,40 @@
 # Mandarin Mission 项目交接
 
-> 最后更新：2026-07-25 23:15（Asia/Hong_Kong）
+> 最后更新：2026-07-26 23:08（Asia/Hong_Kong）
 > 项目：`D:\mandarin-mission\mandarin-mission`
-> Git：PR #18 已以 merge commit `f02ccdc` 合并；本地 `main` 与 `origin/main` 同步；GitHub Pre-release `v0.1.1` 指向 `f02ccdc`
+> Git：本地分支 `feat/m2-course-draft` 基于 `91f9b75`，有未提交的 M2 内容与文档改动；`origin/main` 仍为 `91f9b75`，GitHub Pre-release `v0.1.1` 仍指向 `f02ccdc`
 
 本文件是本项目唯一的实时交接入口。每次新对话或新任务必须先按根目录 `AGENTS.md` 的顺序读取全局协议、本文件、`AGENT_LESSONS.md` 和 `docs/handoff/ai-agent-handoff.md`，再核验仓库与 GitHub 当前状态。`AGENT_LESSONS.md` 保存去重后的项目特定复用经验；详细且相对稳定的项目基线在 `docs/handoff/ai-agent-handoff.md`。
 
 ## 当前正在做什么
 
+- 用户已批准“展示完整 M2，并成为正式 Release”。`content/fixtures/m2-course.json` 现为 `0.2.7` / `release`，固化 Café → Market → Metro 3 个地点、12 节课、52 个知识点、15 段对话和 53 个 `ready` 资产；`CourseContentRepository` 默认直接加载该包，`MM_USE_M2_DRAFT` 开关和 Draft asset 名称已移除。`cafe-course.json` 只保留作 M1 回归基线。App 版本已升至 `0.2.0+3`。本轮内容校验 2 包、learning core format 9 files / analyze 0 issues / 23 tests、Flutter format 67 files / analyze 0 issues / 68 tests全部通过；Release APK 为 64,512,944 bytes，SHA-256 `98e5a187567147899205a29986ff0b533e188820dffb81ec1636f7d61fb3e601`。当前 Release 仍使用 debug key 签名，且本轮 `adb devices` 无已连接真机，因此没有把默认 Release APK 的新一轮真机安装冒充为已完成。GitHub 发布正在执行，最终 PR、`main` SHA、tag、远端资产与 CI 仍需写回。
+- M2 地点终局与单线解锁的最小实现已完成：运行时把未内嵌的 location `challengeId` 合成为 `dialogue_turn + summary` 两步课程；`journeyProgressProvider` 汇总课程与终局的 `lesson_progress_entries`，按先修课逐节开放、四课后开放终局、终局完成后开放下一地点。M1 的 `cafe-challenge` 已内嵌在 `cafe-01`，不会出现重复挑战卡。Journey Widget 测试跑通 Café 四课 → Café 终局 → Market，并在重新创建 ProviderScope 后确认解锁持久化；真实 M2 Repository 测试核对三个终局都能合成课程。
+- 新增 `apps/mobile/integration_test/m2_device_acceptance_test.dart`，已在 Sony `XQ-DQ72`（Android 15，`QV770PBLJ4`）通过：49/49 条新增 M2 音频逐条经过真实 `AudioServiceImpl` 并从 `playing` 到 `stopped`；真实 M2 包的 12 课、3 个终局、15 条完成进度、208 条掌握度状态、一次到期复习和 Provider 重载全部通过。测试把播放器音量设为 0，并使用隔离内存数据库，不污染手机正式学习数据；它证明真机技术链路，不冒充人工逐页 UX 或真实进程冷启动。
+- 新增 `apps/mobile/integration_test/m2_process_persistence_app.dart` 作为只安装一次的磁盘冷启动验收入口。Sony 首次进程 PID `21038` 把 15 条课程/终局完成记录、208 条掌握度和 1 次复习写入独立 106,496-byte Drift 文件；ADB 强制停止后确认 PID 为空，第二次进程 PID `21209` 从同一文件恢复全部记录、解锁和真实 Journey，日志为 `M2_DISK_VERIFY_PASS`。UI hierarchy 列出 12 课与 3 个终局均为 `Completed`，首屏显示 `Practice again`；截图为 `m2-disk-seed.png` 与 `m2-disk-verify.png`。验收后只删除该明确测试数据库文件，并用 `install -r` 恢复默认 Café Debug。本轮移动端门禁为 format 67 files / 0 changed、analyze 0 issues、62 tests。
+- 早期用户指出设备上只能看到第一课时，原因是当时为了恢复源码默认状态而装回了 Café Release 构建；随后曾用 `--dart-define=MM_USE_M2_DRAFT=true` 的验收包确认完整 M2 入口和线性锁定。该轮人工检查还发现 Café 02 Step 4 的长句溢出，新增失败测试后用 `FittedBox.scaleDown` 修复，并由 Sony 截图 `m2-cafe-02-step4-fixed.png` 确认。首次尝试用 `flutter test integration_test` 分两次验收时，测试框架卸载 App 并清除了此前沙箱数据；不能再声称旧设备数据被保留。此段只记录历史验收过程；当前默认入口与 Release 状态以本节首条为准。
+- Café 02 Step 4—10 与 Café 03 Step 1—10 已在 Sony `XQ-DQ72` 完成人工逐页 UX。走查发现共享 `teach_card` 把课程前两个知识点错误推断成每张教学卡的 `Build the order`、`listen_choice`/`order_tokens`/`summary` 写死 Café 01 语义、无音频对话仍写 `Listen`，且 phrase ticket/终止态残留原提示。最小修复移除推断卡片、按知识点种类显示 `WORD/PHRASE/SENTENCE`，使用题型通用反馈，让对话支持语随状态收敛，并让总结页读取本课 outcome；learner-facing 英文变化按 language lock 把 Draft 升至 `0.2.6`。英文编辑与中文教学 Agent 最终复核均为 15/15 通过。最终门禁为内容校验 2 包、learning core format 9 files / analyze 0 issues / 23 tests、Flutter format 67 files / analyze 0 issues / 65 tests、M2 Debug APK；最终 APK 已 `install -r` 到 Sony，设备停在 Café 03 Step 10 总结页。录音页只走 `Continue without recording`，未采集环境音。下一页走查从 Café 04 开始。
+- Café 04 Step 1—10 已在同一 Sony 完成人工逐页 UX。Step 1 复现共享 `scene_intro` 写死 Café 01 的 `CAFÉ`、`你好！` 和“完整订单”提示；组件现只读取 location 标题作为 Badge，并显示本步 authored `step.text`，不再推导 `At the ...` 场景句。首次英文/中文复核共同拦截不自然且语义矛盾的 `At the metro`，删除后最终复核均为 15/15 通过；Market 与 Metro 回归测试覆盖不再出现 Café/Metro 推断句。Draft 按 language lock 升至 `0.2.7`。最终 M2 Debug APK 为 172,244,759 bytes，SHA-256 `0548f49eaa1071e46e5f7270c4b012ebcb0325459a840e2fb4d9c0cd14606a9e`，已 `install -r` 到 Sony；Café 04 修复前后证据为 `36-cafe04-step1.png` 与 `54-cafe04-step1-final.png`。录音页仍只走无录音自评，未采集环境音。设备当前停在 Café final challenge Step 1。
+- Café final challenge 已在 Sony 完成人工逐页 UX：5 个 learner 回合均通过 phrase ticket 动作门禁，发送后按 `nextNodeId` 推进并在下一 learner 回合重新锁定；Step 2 总结页无溢出。点击 `Back to journey` 后 Café 终局显示 `Completed`，Market 01 显示 `Ready to start`，说明终局完成记录已持久化并正确开放下一地点。证据为 `56-cafe-final-ticket1.png`—`65-cafe-final-complete-dialogue.png`、`66-journey-after-cafe-final.png` 与 `69-market01-step1.png`。本段未录音、未改代码，也未重跑此前已经通过的自动化门禁。
+- Market 01 Step 1—11 已在 Sony `XQ-DQ72` 完成人工逐页 UX。五张教学卡与长句“这个多少钱？”均无溢出；Step 7 初始主按钮禁用，正确听辨后显示通用成功反馈；Step 8 按 `这个 → 多少 → 钱` 完成；Step 9 只走 `Continue without recording` 与 `Sounded close` 自评，未采集环境音；Step 10 两个 learner 回合分别通过 phrase ticket，动作门禁在“三块。”后重新锁定，并以学习者“谢谢。”结束。Step 11 完成页无溢出；返回 Journey 后 Market 01 显示 `Completed`，Market 02 显示 `Ready to start`，Market 03 仍为 `Locked`，线性解锁正确。当前进程自 21:10 起的 logcat 无 `RenderFlex overflowed`、Flutter rendering exception 或 fatal exception。设备已进入 Market 02 `Step 1 of 10`；证据为 `market01-step1-start.png`、`market01-step02.png`—`market01-step11.png`、`journey-after-market01-market-cards2.png` 与 `market02-step1-ready.png`。本段未改代码，也未重跑此前自动化门禁。
+- Market 02 Step 1—10 已在同一 Sony 完成人工逐页 UX。四张教学卡的汉字、拼音、英文与长句“我要两个苹果。”完整且无溢出，四个示例音频均触发 Android 播放链；Step 6 正确听辨“要几个？”，Step 7 按 `我 → 要 → 两个 → 苹果` 完成，Step 8 只走无录音自评，未采集环境音。Step 9 用 phrase ticket 核对“我要两个苹果。”，发送后以系统“好的。”终止；Step 10 完成页无溢出。返回 Journey 后 Market 02 显示 `Completed`，Market 03 显示 `Ready to start`，Market 04 与 Market final challenge 保持 `Locked`；当前 PID `26678` 的 logcat 无 Flutter rendering 或 fatal exception。设备已进入 Market 03 `Step 1 of 11`；证据为 `market02-step01.png`—`market02-step10.png`、`journey-after-market02-market2.png` 与 `market03-step01-ready.png`。本段未改代码，也未重跑此前自动化门禁。
+- Market 03 Step 1—11 已在同一 Sony 完成人工逐页 UX。五张教学卡的汉字、拼音、英文与长句“我要那个大的。”完整且无溢出；5 条教学音频、听辨音频与跟读示例共触发 7 次 Android AudioTrack。Step 7 正确听辨“这个可以吗？”，Step 8 按 `我 → 要 → 那个 → 大的` 完成，Step 9 只走无录音自评，未采集环境音。Step 10 两个 learner 回合分别通过 phrase ticket 核对“不要这个。”与“我要那个大的。”，动作门禁在“那个呢？”后重新锁定，并以系统“好的。”终止；Step 11 完成页无溢出。返回 Journey 后 Market 03 显示 `Completed`，Market 04 显示 `Ready to start`，Market final challenge 保持 `Locked`；当前 PID `26678` 的 logcat 无 Flutter rendering 或 fatal exception。设备已进入 Market 04 `Step 1 of 10`；证据为 `market03-step01.png`—`market03-step11.png`、`journey-after-market03-market.png` 与 `market04-step01-ready.png`。本段未改代码，也未重跑此前自动化门禁。
+- Market 04 Step 1—10 已在同一 Sony 完成人工逐页 UX。四张教学卡的汉字、拼音和英文完整且无溢出；4 条教学音频、听辨音频与跟读示例共触发 6 次 Android AudioTrack。Step 6 正确听辨“要袋子吗？”，Step 7 按 `不 → 要 → 袋子` 完成，Step 8 只走 `Continue without recording` 与 `Sounded close` 自评，未采集环境音。Step 9 两个 learner 回合分别通过 phrase ticket 核对“不要袋子。”与“谢谢。”，动作门禁在“一共十二块。”后重新锁定，并在学习者终止节点直接进入 Step 10；完成页无溢出。返回 Journey 后 Market 04 显示 `Completed`，Market final challenge 显示 `Ready to start`，Metro 01 保持 `Locked`；PID `26678` 的 logcat 无 Flutter rendering 或 fatal exception。设备已进入 Market final challenge `Step 1 of 2`；证据为 `market04-step01.png`—`market04-step10.png`、`journey-after-market04-market.png` 与 `market-final-step01-ready.png`。本段未改代码，也未重跑此前自动化门禁。
+- Market final challenge 已在同一 Sony 完成人工逐页 UX。6 个 learner 回合均以 phrase ticket 通过动作门禁；每次推进到新 learner 节点都会重新锁定，且“这个可以吗？”作为连续第二个 system 节点能在同一轮按顺序出现。学习者以“谢谢。”结束后进入 `Market challenge complete`，返回 Journey 后 Market 终局显示 `Completed`，Metro 01 正确开放。证据为 `market-final-turn01*.png`—`market-final-turn06*.png`、`market-final-step02.png` 与 `journey-after-market-final.png`。
+- Metro 01—04 共 43 个步骤已在同一 Sony 完成人工逐页 UX。四课全部教学卡、听辨、词块排序、跟读无录音自评、对话和总结均通过；27 个教学/听辨/跟读音频入口已逐项触发，四个跟读页均使用 `Continue without recording` 与 `Sounded close`，未采集环境音。四课对话分别完成 2、2、3、3 个 learner 回合，系统终止、学习者终止、动作门禁重置与逐课线性解锁均正确；长句卡片和完成页无溢出。证据为 `metro01-step01.png`—`metro04-step10.png`、各课 dialogue turn 截图和 `journey-after-metro01.png`—`journey-after-metro04.png`。
+- Metro final challenge 已在同一 Sony 完成人工逐页 UX。8 个 learner 回合覆盖询路、购票、问线路与请求重复，phrase ticket 动作门禁在每个 learner 节点均重新锁定；“明白了。”结束后进入 `Metro challenge complete`。最终 Journey 的 M2 12 课与 3 个地点终局全部显示 `Completed`，新增范围 14/14 单元人工逐页 UX 至此全部关闭。最终截图为 `journey-all-m2-complete.png`；清空日志后按 PID 检查，`RIGHT OVERFLOWED`、`RenderFlex overflowed`、rendering exception、`FlutterError` 与 fatal exception 均为 0。本段未录音、未改代码，也未重跑此前自动化门禁。
+- 用户明确要求由主 Agent 调用对应中英文专业 Agent 完成内容审核，无需用户参与逐条审校。英文编辑 Agent `/root/m2_english_editor` 与中文教学 Agent `/root/m2_chinese_teacher` 已独立覆盖 Café 02—04、Market 01—04、Metro 01—04 和 3 个地点终局共 14 个单元；首次分别为 8/14、9/14 通过，主 Agent 集成修订后，两名原 Agent 对 Draft `0.2.4` 复核均为 14/14 通过。两名专业 Agent 都明确以 AI 身份审核，不冒充真人、母语者或持证教师。
+- Draft `0.2.4` 已修正英文自然度和语义对齐；Metro 01 改为“请问，地铁站在哪里？”，Metro 03 改为“去火车站坐几号线？”；Market 终局重排选品、询价和数量顺序，Metro 终局补齐询路、购票、问线路与换乘角色。课程文本已于 2026-07-26 language lock；后续修改汉字、拼音、英文、步骤文案或对话顺序时，必须提升 patch 版本并让受影响单元重新双审。
+- M2 的 49 条新增音频已从各轮用户通过版本中收敛为唯一选择：Café 12、Market 18、Metro 19 与 Draft asset ID、文件名一一对应，其中 9 条使用后续试听轮默认替换，其余保留已通过的原候选。全部文件已复制到 `apps/mobile/assets/audio/cosyvoice/`，按 22.05 kHz/16-bit/mono PCM16 复核并重算 SHA-256；Draft `0.2.5` 已写回 path、SHA-256、Apache-2.0 license 和逐项生成参数，49 条均提升为 `ready`。Flutter 测试能解析并从 asset bundle 加载 49 条 WAV，Debug APK 内 49 条文件的哈希也与 Draft 一致。Draft 已进入内容 package，地点终局和线性解锁也可在 M2 验收构建中运行；默认 Provider 未切换，包继续保持 `draft`。
+- `dialogue_turn` 多轮播放器已完成最小实现：`CourseDialogue.turnFrom` 沿 `nextNodeId` 聚合当前轮的系统节点，`LessonPlayerState.dialogueNodeId` 保存位置，`advanceDialogue` 在每个 learner 动作后推进；每轮都会重新禁用主按钮直到选择 `I said it aloud` 或 phrase ticket。系统终止节点先显示收尾再 Continue，学习者终止节点完成动作后结束步骤，离页后 `autoDispose` 回到首轮。真实 Draft 测试完整遍历 Café、Market、Metro 三个地点终局的 5/6/8 个 learner 轮次，并覆盖 Market 连续两个 system 节点；Fixture 和 language lock 文本未修改。
+- 多轮实现先用 Widget 失败测试证明发送首轮后仍不出现下一轮，随后目标测试与 M1 App 流程 4 tests 通过。移动端门禁为 format 66 files / 0 changed、analyze 0 issues、61 tests、Debug APK；APK 为 199,407,528 bytes，SHA-256 `3d7d05e3a547368e74a6f30765db9257072b7dc1eef30928b245032ed857cd9d`。本轮只有自动测试和构建证据，没有模拟器/真机对话视觉验收，也没有 M2 真实入口或音频播放证据。
+- Repository 显式选择 M2 的最小切片已完成：新增测试先因缺少 `bundledM2CourseAsset` 编译失败，接线后从 Flutter asset bundle 读取 Draft `0.2.5`，核对 3 locations、12 lessons、15 dialogues、53 ready assets，并加载 49 条新增 WAV。内容校验 2 包、learning core format 9 files / 0 changed、analyze 0 issues、23 tests、Flutter format 66 files / 0 changed、analyze 0 issues、61 tests 与 Debug APK 均通过；APK 为 199,407,541 bytes，SHA-256 `d36a5138527506f8f068095218d54e090279d4043a15e9c5be76e3b55d166dd3`，同时包含 Café Release 与 M2 Draft。随后增加 `MM_USE_M2_DRAFT` 验收构建入口；默认 Provider 仍未改变。
+- 2026-07-26 用户听感形成的关键选择已用于最终接入：Metro“去”（`audio-qu`）保留原候选；“不要袋子。”选 B `feedback-round-2\market-B-alt-seed-094.wav`；“热的”选第三轮 B `feedback-round-3\re-de-B-direct-seed-271828.wav`。这些选择现已按稳定目标文件名复制到 App，原始轮次文件继续作为试听证据，不是运行时路径。
+- Café 12 条已全部接入，清单位于 `m2-audio-candidates\cafe-review-round-4\manifest.json`。Batch 1/2 共八条保留通过版，batch 3 的“二十五块。”保留原版；“好的。”默认选 D `cafe-feedback-round-5\hao-de-d-seed-161803-speed-094.wav`，“谢谢。”默认选 C `cafe-feedback-round-5\xiexie-c-seed-20260726-speed-089.wav`。复制后的 12 条文件已按 Draft 路径和哈希复核为 `ready`。
+- Market 18 条已全部接入，清单位于 `m2-audio-candidates\market-review-round-6\manifest.json`。最终替换为“苹果”round 7 D、“不要这个。”round 8 A、“要袋子。”round 9 D 和“不要袋子。”round 2 B；其余保留已通过原候选。复制后的 18 条文件已按 Draft 路径和哈希复核为 `ready`。
+- Metro 19 条已全部接入，清单位于 `m2-audio-candidates\metro-review-round-10\manifest.json`。Metro 01、Metro 04 及“去”保留通过原候选；“火车站”使用 round 11 A，“去火车站坐几号线？”使用 round 13 B，其余采用已通过版本。复制后的 19 条文件已按 Draft 路径和哈希复核为 `ready`。
+- 两次 Market 语用韵律纠正已去重并入 `AGENT_LESSONS.md` 的极短 TTS 经验与 `docs/content-authoring.md` 的 TTS 门禁：对话音频除了逐音节审核，还必须与前后轮次连续试听，确认信息焦点、对比重音和句末完整性符合角色意图。
+- M2 资产接入后的验证通过：49/49 asset ID 与目标文件名唯一，52 条包内音频的实际 SHA-256 与 Draft 一致；learning core format 9 files / 0 changed、analyze 0 issues、23 tests，内容校验 2 个包；Flutter format 65 files / 0 changed、analyze 0 issues、59 tests、Debug APK。APK 为 170,823,244 bytes，SHA-256 `0462cd1e7e2dc8d98ae1ee8dbd955a7fb68956255c4447ffbab64aabdab0a745`，包内 49 条新增 WAV 的哈希全部匹配。独立 JSON Schema 首次因 Windows GBK 解码 UTF-8 中文失败，设置 `PYTHONUTF8=1` 后通过；这是工具环境失败，不是内容失败。后续已补地点终局、线性解锁和 draft-only 入口；这些自动证据仍不能代替完整设备实走与 49 条逐条运行时播放。
 - 已进入 M2 可玩循环的第一个最小切片：Flutter `CoursePackage` 现在解析并按 `order` 保留 location；Journey 遍历每个 location 的 `lessonIds` 生成课程卡，课程标题、步骤数、进度查询和路由 ID 均来自内容包，不再写死 `cafe-01`。新增 Café/Market 两地点测试包，输入顺序刻意为 Market→Café，页面仍按 order 显示 Café→Market。当前正式 Fixture 未扩容，仍只有 1 地点、1 节课；不得写成 3 地点、12 节课已经完成。
 - 本切片自动验证通过：Flutter format 65 files / 0 changed、analyze 0 issues、58 tests、Debug APK。首次全量回归正确发现 3 个测试自建课程包缺少 `locations`，以及媒体生命周期测试仍使用旧入口 key；同步测试契约后目标测试与全量回归通过。Android 模拟器 `emulator-5554` 安装本轮 Debug APK，实际 Café Journey 卡的标题、步骤数、进度、按钮和布局正常；多地点显示由 Widget 测试验证，未冒充真实 3 地点内容或真机证据。
 - M2 入口切片已通过 PR [#18](https://github.com/HieronymusF/mandarin-mission/pull/18) 的 `mobile`、`learning-core`、`api` 三项 CI，并以 merge commit `f02ccdc` 合并到 `main`；合并后 `main` 的独立 CI run `30162984905` 也全绿。App 版本升至 `0.1.1+2`，GitHub 已发布 Pre-release [`v0.1.1`](https://github.com/HieronymusF/mandarin-mission/releases/tag/v0.1.1)，标签指向 `f02ccdc`。资产 `app-release.apk` 为 62,721,119 bytes，远端状态为 `uploaded`，SHA-256 `3f5a1b8a5fd9a021fbdba0311e4ef82358bfc0b9eb91dfbe85832352b1a6c4dc` 与本地一致；证书仍为 `Android Debug`，只能作为安装验收包。
@@ -91,6 +118,7 @@
 ## 卡在了哪里
 
 - 无代码构建阻塞。
+- M2 文本、49 条音频听感与资产门禁、Sony 真机技术播放、12 课、3 个终局、一次到期复习、Provider 重载、真实磁盘/不同 Android 进程冷启动恢复、新增范围 14/14 单元人工逐页 UX、默认入口和内容包 `release` 决策均已关闭。
 - 新 11 步课程的三种新增步骤、完整完成页、6 项复习与两次冷启动持久化已在 Sony 真机通过；当前没有代码或设备闭环阻塞。
 - 项目级 Codex Hook 已写入仓库但尚未由用户在新会话的 `/hooks` 中复核并信任；在完成信任前不得声称 Hook 已自动生效。项目 Skill 需要新会话/刷新后才能从选择器验证实际发现状态。
 - 最终 CosyVoice 三条音频已获用户整组听感认可，并有许可、来源、参数、文件、哈希、自动校验、APK 打包和 Sony 真机播放证据；内容包已为 `release`。后续任何 TTS Provider、声线、参数或文件变更都要重新核验许可、哈希、普通话听感和真机播放。
@@ -104,11 +132,12 @@
 
 ## 下一步要做什么
 
-1. **M2 内容范围**：下一步先定义 3 个地点、12 节课的课程目录、稳定 ID、先修关系和每课学习目标，再制作 `draft` 内容；正式主课程仍需英语母语编辑和国际中文教师审核，不能把 AI 草稿直接标为 `release`。
-2. **M2 入口切片已交付**：PR #18 和合并后的 `main` CI 均通过，Pre-release `v0.1.1` 已提供 `0.1.1+2` APK；无需再次推送该功能分支。
-3. **发布边界**：GitHub Pre-release `v0.1.1` 已包含可下载的 `app-release.apk`，但仍使用 Android Debug 签名；若准备商店发布，必须配置独立 release keystore、安全存储和商店版构建验证。
-4. **延期真实来电分支**：当前设备无 SIM，未来具备可呼入设备时，再验证录音中的来电中断与返回 App 后恢复；不要用 Home 或 ADB 模拟冒充真实来电证据。
-5. **完成项目 Skill 与 Hook 的 UI 侧启用确认**：`$verify-mandarin-mission` 仍未出现在本会话 Skills 列表，Hook 也尚未由用户在 `/hooks` 中复核并信任。
+1. **默认 Release 真机复验**：连接 Sony 后安装不带任何 `dart-define` 的当前 APK，确认初始 Journey 展示 3 个地点、12 节课和 3 个地点终局；本轮设备未连接，因此该项仍是独立验收边界。
+2. **保持 language lock**：修改任何汉字、拼音、英文、步骤文案或对话顺序时提升 Release patch 版本，重跑内容门禁，并只让受影响单元交回英文、中文专业 Agent 复核。
+3. **M2 入口切片已交付**：PR #18 和合并后的 `main` CI 均通过，Pre-release `v0.1.1` 已提供 `0.1.1+2` APK；无需再次推送该功能分支。
+4. **发布边界**：本轮只完成本地内容 Release、默认入口和 Release 模式 APK；未获用户明确授权，不提交、不推送、不创建 GitHub Release。Android 仍使用 Debug 签名；若准备商店发布，必须配置独立 release keystore、安全存储和商店版构建验证。
+5. **延期真实来电分支**：当前设备无 SIM，未来具备可呼入设备时，再验证录音中的来电中断与返回 App 后恢复；不要用 Home 或 ADB 模拟冒充真实来电证据。
+6. **完成项目 Skill 与 Hook 的 UI 侧启用确认**：`$verify-mandarin-mission` 仍未出现在本会话 Skills 列表，Hook 也尚未由用户在 `/hooks` 中复核并信任。
 
 ## 哪些坑不要再踩
 
@@ -125,4 +154,5 @@
 - UI 任务必须先读根目录 `WIDGET_LIBRARY.md`；错位先修父容器、Flex/constraints 和统一 token，不用逐元素 margin、translate 或固定坐标修补截图。
 - 不把新组件、更多代码或绿测试当成用户问题已解决。UI Bug 必须先有同状态修复前截图，后有同条件修复后截图；无视觉证据只能标记未验证。
 - 每一行改动必须能追溯到当前需求或失败证据；不顺手改相邻代码，不为单次使用建立共享抽象。
+- 对话图按 `nextNodeId` 遍历，不能按 JSON 节点数组顺序，也不能假设严格 `system → learner` 交替；Market 终局包含连续两个 system 节点。
 - 不覆盖用户改动，不批量删除，不使用破坏性 Git 命令，不强制推送。

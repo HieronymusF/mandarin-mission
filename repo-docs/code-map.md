@@ -9,8 +9,9 @@
 | `apps/mobile/lib/data/` | 读取内容、包装媒体、持久化进度、查询复习 | `CourseContentRepository`、`LessonProgressRepository`、`ReviewQueueRepository` | 是课程数据与本地事务的边界 |
 | `apps/mobile/lib/features/` | 按 Journey、lesson、review 组织状态与页面 | `LessonPlayerController`、`ReviewSessionController` | 推进 walkthrough 中的用户可见状态 |
 | `apps/mobile/lib/shared/` | 提供已复用或正在验证的跨功能 Widget | `AudioPlayerBar`、`RecordingControls`、`AppLeadingRow` | 支撑媒体交互和统一布局 |
+| `apps/mobile/integration_test/` | 在真实 Android 设备验证跨层课程、媒体和磁盘恢复 | `m2_device_acceptance_test.dart`、`m2_process_persistence_app.dart` | 逐条播放 M2 音频、跑通课程链路，并用不同 Android 进程读取同一 Drift 文件 |
 | `packages/learning_core/lib/` | 保存不依赖 Flutter 的学习规则与内容校验 | `ReviewScheduler`、`ContentValidator` | 决定内容能否进入 App、复习何时到期 |
-| `content/` | 保存版本化课程 Fixture、Schema 与 Flutter asset 常量 | `cafe-course.json`、`course-package.schema.json` | 是当前“点咖啡”课程的输入 |
+| `content/` | 保存版本化课程 Fixture、Schema 与 Flutter asset 常量 | `m2-course.json`、`cafe-course.json`、`course-package.schema.json` | 提供默认 M2 Release 与 M1 回归基线 |
 | `services/api/` | 提供 Go 容器与最小 HTTP 骨架 | `main`、`httpapi.New` | 当前不进入本地学习闭环，只提供运维端点 |
 | `.agents/skills/` | 保存仓库可共享的 Codex 重复工作流 | `verify-mandarin-mission` | 根据 diff 选择风险匹配验证 |
 | `.codex/` | 保存可信仓库内的 Codex 配置与工具前护栏 | `config.toml`、`pre_tool_use_policy.py` | 在执行前阻止已知批量删除方式 |
@@ -40,8 +41,8 @@ UI 规则的文字入口仍是根目录 `WIDGET_LIBRARY.md` 与 `docs/design-sys
 
 | 重要代码 | 功能 | 关键符号 | 调用方 / 使用方 |
 | --- | --- | --- | --- |
-| [内容读取](../apps/mobile/lib/data/content/course_content_repository.dart) | 读取、解析、校验并缓存课程包 | `CourseContentRepository` | lesson/review providers |
-| [内容模型](../apps/mobile/lib/data/content/course_content_models.dart) | 建立按稳定 ID 查询的课程对象并解析 ready 音频 | `CoursePackage` | 课程与复习 UI |
+| [内容读取](../apps/mobile/lib/data/content/course_content_repository.dart) | 读取、解析、校验并缓存课程包；默认直接选择 M2 Release，也允许测试显式选择 M1 Café 基线 | `CourseContentRepository`、`bundledM2CourseAsset`、`bundledCafeCourseAsset` | lesson/review providers |
+| [内容模型](../apps/mobile/lib/data/content/course_content_models.dart) | 建立按稳定 ID 查询的课程对象、解析 ready 音频、合成独立地点终局，并从当前节点聚合一个可播放对话轮次 | `CoursePackage.locationChallenge`、`CourseDialogue.turnFrom` | Journey、课程与复习 UI |
 | [本地数据库](../apps/mobile/lib/data/local/app_database.dart) | 打开 Drift 数据库并声明 schema v1 | `AppDatabase` | data providers、Repositories |
 | [本地表契约](../apps/mobile/lib/data/local/tables.dart) | 约束进度、掌握度、尝试、口语与 Outbox | `MasteryStates`、`SyncOutboxEvents` | Drift 生成代码、Repositories |
 | [进度写入](../apps/mobile/lib/data/progress/lesson_progress_repository.dart) | 在事务内保存练习、课程完成和 Outbox | `LessonProgressRepository` | lesson/review controllers |
@@ -54,13 +55,15 @@ UI 规则的文字入口仍是根目录 `WIDGET_LIBRARY.md` 与 `docs/design-sys
 
 | 重要代码 | 功能 | 关键符号 | 调用方 / 使用方 |
 | --- | --- | --- | --- |
-| [Journey 页面](../apps/mobile/lib/features/journey/presentation/journey_page.dart) | 按内容包的地点顺序和 `lessonIds` 生成课程入口，并显示每课持久化进度与真实到期摘要 | `JourneyPage`、`_LocationLessonCards` | `/` 路由、内容与课程进度 Provider |
-| [课程状态](../apps/mobile/lib/features/lesson/application/lesson_providers.dart) | 管理步骤、答题、自评、提交与完成 | `LessonPlayerController` | 课程页面 |
-| [课程页面](../apps/mobile/lib/features/lesson/presentation/lesson_overview_page.dart) | 按 step type 组合步骤 Widget | `LessonOverviewPage` | lesson 路由 |
+| [Journey 进度](../apps/mobile/lib/features/journey/application/journey_progress.dart) | 汇总课程与地点终局进度，计算先修课程、终局和下一地点是否开放 | `journeyProgressProvider`、`JourneyProgress` | Journey 页面、`lesson_progress_entries` |
+| [Journey 页面](../apps/mobile/lib/features/journey/presentation/journey_page.dart) | 按内容包生成普通课程和独立终局卡，并显示锁定、进行中与完成状态 | `JourneyPage`、`_LocationLessonCards` | `/` 路由、Journey 进度 Provider |
+| [课程状态](../apps/mobile/lib/features/lesson/application/lesson_providers.dart) | 管理步骤、答题、自评、对话当前节点、提交与完成 | `LessonPlayerController`、`advanceDialogue` | 课程页面 |
+| [课程页面](../apps/mobile/lib/features/lesson/presentation/lesson_overview_page.dart) | 按 step type 组合步骤 Widget，并为 `dialogue_turn` 选择发送或终止动作 | `LessonOverviewPage` | lesson 路由 |
+| [对话步骤](../apps/mobile/lib/features/lesson/presentation/steps/dialogue_step.dart) | 顺序显示一个或多个系统节点，并为当前 learner 节点提供脱稿自报与 phrase ticket | `DialogueStep` | 课程页面 |
 | [复习状态](../apps/mobile/lib/features/review/application/review_providers.dart) | 建立最多 8 项会话并处理补救、失败重试 | `ReviewSessionController` | 复习页面、Journey 摘要 |
 | [复习页面](../apps/mobile/lib/features/review/presentation/review_page.dart) | 呈现加载、空、错误、题目与完成状态 | `ReviewPage` | `/review` 路由 |
 
-课程主路径由 [课程端到端测试](../apps/mobile/test/app/app_test.dart) 覆盖，多地点入口由 [Journey 内容驱动测试](../apps/mobile/test/features/journey/journey_page_test.dart) 覆盖，复习主路径由 [复习流程测试](../apps/mobile/test/app/review_flow_test.dart) 覆盖。
+课程主路径由 [课程端到端测试](../apps/mobile/test/app/app_test.dart) 覆盖，多轮对话由 [对话流程测试](../apps/mobile/test/features/lesson/presentation/dialogue_flow_test.dart) 覆盖，多地点入口由 [Journey 内容驱动测试](../apps/mobile/test/features/journey/journey_page_test.dart) 覆盖，复习主路径由 [复习流程测试](../apps/mobile/test/app/review_flow_test.dart) 覆盖。
 
 ## `apps/mobile/lib/shared/`
 
@@ -72,6 +75,15 @@ UI 规则的文字入口仍是根目录 `WIDGET_LIBRARY.md` 与 `docs/design-sys
 | [布局候选](../apps/mobile/lib/shared/presentation/app_page_layout.dart) | 提供内容框、滚动页与 Section | `AppContentFrame`、`AppPageScrollView` | 当前主要由测试和文档引用 |
 
 `app_page_layout.dart` 尚缺两个真实生产调用点，继续抽象前先核对根目录交接；媒体组件的近期验证入口是 `apps/mobile/test/shared/`。
+
+## `apps/mobile/integration_test/`
+
+| 重要代码 | 功能 | 关键符号 | 调用方 / 使用方 |
+| --- | --- | --- | --- |
+| [M2 真机验收](../apps/mobile/integration_test/m2_device_acceptance_test.dart) | 使用实际 M2 包和 Android 插件执行跨层验收 | `_playToCompletion`、`_completeThroughController` | Sony `XQ-DQ72`，隔离内存数据库 |
+| [M2 磁盘冷启动验收](../apps/mobile/integration_test/m2_process_persistence_app.dart) | 只安装一次验收 APK，首次启动写入隔离 Drift 文件，强制停止后由新进程恢复 | `_bootstrap`、`_seed`、`_verifyDiskState` | Sony `XQ-DQ72`，ADB `force-stop` 与不同 PID |
+
+两个入口都不修改手机的正式学习数据库：前者验证真实设备技术链路，后者验证真实磁盘与进程边界。人工逐页 UX 仍是独立发布门槛。理解课程状态如何写入数据库，可继续阅读[本地学习闭环](modules/local-learning-loop.md)。
 
 ## `packages/learning_core/lib/`
 
@@ -87,7 +99,8 @@ UI 规则的文字入口仍是根目录 `WIDGET_LIBRARY.md` 与 `docs/design-sys
 
 | 重要代码 | 功能 | 关键符号 | 调用方 / 使用方 |
 | --- | --- | --- | --- |
-| [课程 Fixture](../content/fixtures/cafe-course.json) | 定义当前地点、知识点、步骤、对话和资产 | `cafe-01`、稳定 ID | App 内容 Repository、validator tests |
+| [M2 Release Fixture](../content/fixtures/m2-course.json) | 定义当前 App 默认加载的 3 地点、12 课、线性先修关系和 53 个 ready 资产 | `cafe-01`—`metro-04`、3 个地点终局 | App 内容 Repository、ContentValidator 与 Journey 测试 |
+| [M1 Café Fixture](../content/fixtures/cafe-course.json) | 保留“点咖啡”单课正式基线 | `cafe-01`、稳定 ID | 专项流程与回归测试 |
 | [课程 Schema](../content/schema/course-package.schema.json) | 声明课程包结构和允许的 step type | `$defs.lessonStep` | 内容作者、CI 辅助检查 |
 | [Flutter asset 常量](../content/lib/mandarin_mission_content.dart) | 提供包内 Fixture 路径 | `MandarinMissionContentAssets` | App 内容 Repository |
 

@@ -26,7 +26,9 @@ App 的核心不变量是离线可学。用户动作先写本地事务，UI 在�
 
 课程完成也使用同一原则：初始化缺失掌握度、更新 `lesson_progress_entries`、追加课程事件。已完成课程再次提交会直接返回，避免重复初始化。
 
-Journey 的 `cafe-01` 卡片通过 FutureProvider 读取这条持久化进度；完成事务成功后课程页显式失效查询，再返回 Journey。这样返回页和冷启动都会从数据库得到 `completed`，而不是继续显示硬编码的 0%。Sony `XQ-DQ72` 已验证完成状态跨 APK 覆盖与冷启动保留，并完成 8 项必做到期复习；飞行模式下完整课程也通过。
+Journey 通过 `journeyProgressProvider` 汇总每节课和独立地点终局的持久化进度。普通 lesson 只有在所属地点已开放且 `prerequisites` 全部完成时可进入；一个地点的四节课完成后开放终局，终局的 `lesson_progress_entries` 变为 `completed` 后才开放下一个地点。已完成项目始终可再次练习。Journey Widget 测试用 Café 四课和一个真实可路由终局验证这条状态链，并在重新创建 ProviderScope 后确认 Market 仍保持开放。
+
+正式 Café Fixture 没有独立终局卡，因此现有 M1 行为不变：`cafe-01` 完成后返回 Journey 显示 `completed`，冷启动从数据库恢复。Sony `XQ-DQ72` 已验证该完成状态跨 APK 覆盖与冷启动保留，并完成 8 项必做到期复习；飞行模式下完整课程也通过。M2 真机集成测试先用隔离内存数据库完成 12 课、3 个终局和一次到期复习，再重建 ProviderContainer 恢复全部状态。随后[磁盘冷启动验收入口](../../apps/mobile/integration_test/m2_process_persistence_app.dart)把 15 条完成记录、208 条掌握度和一次复习写入独立 Drift 文件；ADB 强制停止后，第二个 Android PID 从同一文件恢复全部记录与 Journey 解锁，并渲染真实完成页面。两种测试都不写生产数据库；前者验证控制器链路，后者验证跨进程磁盘恢复。
 
 ## 四维状态与 0—5 箱
 
@@ -55,6 +57,7 @@ dart test test/learning_core_test.dart
 Set-Location ../../apps/mobile
 flutter test test/data/progress/lesson_progress_repository_test.dart test/data/review/review_queue_repository_test.dart
 flutter test test/app/app_test.dart test/app/review_flow_test.dart
+flutter test test/features/journey/journey_page_test.dart
 ```
 
 要理解课程输入如何决定这 12 条状态，返回 [课程内容契约](course-content.md)；要定位所有实现文件，使用 [代码地图](../code-map.md)。

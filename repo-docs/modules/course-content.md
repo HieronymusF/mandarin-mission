@@ -4,19 +4,25 @@
 
 ## 一份真实输入长什么样
 
-当前 Fixture 的代表性形状是：
+当前 App 默认加载的 M2 Release Fixture 形状是：
 
 | 对象 | 数量 | 代表 ID | 进入运行时后的用途 |
 | --- | ---: | --- | --- |
-| location | 1 | `cafe` | Journey 的地点概念 |
-| knowledge item | 3 | `phrase-wo-yao` | 四维掌握度与练习目标 |
-| lesson | 1 | `cafe-01` | 十一步课程播放器输入 |
-| dialogue | 1 | `cafe-challenge` | 预设对话步骤 |
-| asset | 4 | `audio-wo-yao` | 图片或音频来源与许可状态 |
+| location | 3 | `cafe` | Journey 的地点顺序与跨地点解锁 |
+| knowledge item | 52 | `phrase-wo-yao` | 四维掌握度与练习目标 |
+| lesson | 12 | `cafe-01` | 课程播放器输入 |
+| dialogue | 15 | `cafe-challenge` | 课内对话与地点终局 |
+| asset | 53 | `audio-wo-yao` | 图片或音频来源与许可状态 |
 
-课程的三个 `itemIds` 在完成时各生成四个学习维度。这就是内容数据与复习数据之间最重要的契约。
+每节课程的 `itemIds` 在完成时各生成四个学习维度。这就是内容数据与复习数据之间最重要的契约；`cafe-01` 仍是最小可读案例，它的三个知识点会生成 12 条掌握度。
 
-运行时内容模型会保留按 `order` 排序的 location，以及每个 location 的 `lessonIds`。Journey 顺着这两个字段生成课程卡，课程标题、步骤数和路由 ID 都来自对应 lesson；因此增加已有步骤类型组成的新课程时，不需要再为入口修改页面。当前正式 Fixture 仍只有一个地点和一节课；两地点测试包已经证明入口能按顺序扩展，但不代表 M2 的 3 个地点、12 节正式课程已经制作完成。
+运行时内容模型会保留按 `order` 排序的 location，以及每个 location 的 `lessonIds`。Journey 顺着这两个字段生成课程卡，课程标题、步骤数和路由 ID 都来自对应 lesson；因此增加已有步骤类型组成的新课程时，不需要再为入口修改页面。若 location 的 `challengeId` 指向一段未被普通 lesson 内嵌的对话，运行时会把它合成为两步终局课程：完整 `dialogue_turn` 加完成页。
+
+[M2 Release Fixture](../../content/fixtures/m2-course.json) 的 `0.2.7` 文本已由独立英文编辑 Agent、中文教学 Agent 双审并 language lock；两名专业 Agent 都明确以 AI 身份审核，不冒充真人或母语者。[场景引入页面](../../apps/mobile/lib/features/lesson/presentation/steps/scene_intro_step.dart) 只呈现 location Badge 与本步 authored `step.text`，不再写死 Café 01 内容，也不从地点名推导场景句。49 条新增普通话音频已完成用户试听、唯一选择、App asset 复制、path/SHA-256/credit 写回、Flutter 资源加载测试和 APK 内哈希核对。默认 Repository 直接加载该 Fixture，不再使用 Draft 编译开关。Journey 按 `prerequisites` 逐课解锁，四课完成后开放地点终局，终局完成记录复用 `lesson_progress_entries` 并解锁下一个地点。M1 的 `cafe-challenge` 已内嵌在 `cafe-01`，不会重复生成第二张挑战卡。
+
+当前 [对话步骤页面](../../apps/mobile/lib/features/lesson/presentation/steps/dialogue_step.dart) 会从当前系统节点沿 `nextNodeId` 读取一个完整话轮：连续的系统节点会按顺序共同显示，到达 learner 节点后暂停。学习者每一轮都要重新选择脱稿自报或 phrase ticket，完成可观察动作后才能发送；系统终止节点会先显示收尾再允许继续，学习者终止节点则在该次动作后结束步骤。[课程状态](../../apps/mobile/lib/features/lesson/application/lesson_providers.dart) 保存当前节点，离开课程页后由 `autoDispose` 清理。
+
+[多轮对话测试](../../apps/mobile/test/features/lesson/presentation/dialogue_flow_test.dart) 覆盖连续系统节点、每轮门禁重置、两类终止节点和离页清理，并直接遍历 M2 的 Café、Market、Metro 三个终局，分别完成 5、6、8 个 learner 轮次。Repository 测试证明三个 `challengeId` 都能合成为可路由课程；Journey 测试再覆盖“四课完成 → Café 终局开放 → 完成终局 → Market 开放”，并在重新创建 ProviderScope 后确认解锁仍由数据库恢复。[M2 真机集成测试](../../apps/mobile/integration_test/m2_device_acceptance_test.dart) 在 Sony `XQ-DQ72` 上通过真实课程控制器完成 12 课与 3 个终局，并核对 15 条完成进度、208 条掌握度状态、一次到期复习和 Provider 重载。独立验收还补齐了真实进程冷启动和新增范围 14/14 单元人工逐页 UX。用户已批准内容发布；本轮无设备连接，因此默认 Release APK 的重新安装仍需单独复验。
 
 ## 数据进入 App 前经过两层约束
 
