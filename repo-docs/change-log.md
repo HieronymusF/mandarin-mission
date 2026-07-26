@@ -1,5 +1,9 @@
 # Repo guide 变更记录
 
+## 2026-07-27
+
+- 00:00 +08:00：完整 M2 通过 PR [#20](https://github.com/HieronymusF/mandarin-mission/pull/20) 的 `mobile`、`learning-core`、`api` 三项 CI，并以 merge commit `07154a1` 合并到 `main`；合并后的 `main` CI run [`30209138974`](https://github.com/HieronymusF/mandarin-mission/actions/runs/30209138974) 再次全绿。App 版本为 `0.2.0+3`，内容包保持 `0.2.7` / `release`，GitHub 发布 Pre-release [`v0.2.0`](https://github.com/HieronymusF/mandarin-mission/releases/tag/v0.2.0)，tag 指向 `07154a1`。Release 资产 `app-release.apk` 为 64,512,944 bytes，远端状态 `uploaded`，SHA-256 `98e5a187567147899205a29986ff0b533e188820dffb81ec1636f7d61fb3e601` 与本地一致。内容包是正式 Release；APK 仍由 Android Debug 证书签名，因此只作为安装验收包并标记 Pre-release，不是商店签名包。本轮无连接真机，默认 Release APK 的新一轮安装复验仍单列为后续边界。repo-docs Sync Gate 为 `foreground patch`。Synced through 07154a1 + current documentation patch。
+
 ## 2026-07-26
 
 - 23:08 +08:00：用户批准完整 M2 成为默认正式 Release。将内容包改名为 `m2-course.json` 并把状态提升为 `release`，默认 Repository 直接加载 M2，移除 `MM_USE_M2_DRAFT` 入口；App 版本升至 `0.2.0+3`，同步 README、walkthrough、代码地图、课程内容模块、术语表和源码证据。验证通过：内容校验 2 包、learning core 23 tests、Flutter 68 tests、Release APK 64,512,944 bytes / SHA-256 `98e5a187567147899205a29986ff0b533e188820dffb81ec1636f7d61fb3e601`。APK 仍为 debug key 签名，本轮无连接真机；GitHub 发布正在执行，最终 PR、`main` SHA、tag、远端资产与 CI 待发布后写回。repo-docs Sync Gate 为 `foreground patch`。Synced through 91f9b75 + current `feat/m2-course-draft` working tree。
@@ -66,6 +70,6 @@
 - 验证：移动端 format、analyze、46 tests 和 debug APK 通过；`validate_repo_docs.py` 为 0 errors。代码地图因每个目录按规则重复“重要代码”表头保留 1 条 broad-value warning。
 - 当时基线为 8ebcb77；同时核对 2026-07-22 当前 `feat/audio-playback-recording` 未提交工作树。
 
-当前同步锚点：Synced through 91f9b75 + current `feat/m2-course-draft` working tree。
+当前同步锚点：Synced through 07154a1 + current documentation patch。
 
 后续只记录会改变读者模型、阅读路径或证据范围的更新；临时调试状态继续放在根目录 `HANDOFF.md`。
