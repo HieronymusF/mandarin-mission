@@ -2,4 +2,6 @@
 abstract final class MandarinMissionContentAssets {
   static const cafeCourse =
       'packages/mandarin_mission_content/fixtures/cafe-course.json';
+  static const m2Course =
+      'packages/mandarin_mission_content/fixtures/m2-course.json';
 }

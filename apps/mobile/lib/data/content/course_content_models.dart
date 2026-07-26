@@ -84,6 +84,82 @@ final class CoursePackage {
     return lesson;
   }
 
+  CourseLocation location(String locationId) {
+    for (final location in locations) {
+      if (location.id == locationId) {
+        return location;
+      }
+    }
+    throw CourseContentException(
+      'Location $locationId does not exist in content version $version.',
+    );
+  }
+
+  bool hasStandaloneChallenge(CourseLocation location) {
+    if (!dialoguesById.containsKey(location.challengeId)) {
+      return false;
+    }
+    for (final lessonId in location.lessonIds) {
+      final embedsChallenge = lesson(
+        lessonId,
+      ).steps.any((step) => step.dialogueId == location.challengeId);
+      if (embedsChallenge) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  CourseLesson lessonOrChallenge(String lessonId) {
+    final lesson = lessonsById[lessonId];
+    if (lesson != null) {
+      return lesson;
+    }
+    for (final location in locations) {
+      if (location.challengeId == lessonId &&
+          hasStandaloneChallenge(location)) {
+        return locationChallenge(location);
+      }
+    }
+    throw CourseContentException(
+      'Lesson or challenge $lessonId does not exist in content version $version.',
+    );
+  }
+
+  CourseLesson locationChallenge(CourseLocation location) {
+    if (!hasStandaloneChallenge(location)) {
+      throw CourseContentException(
+        'Location ${location.id} does not define a standalone challenge.',
+      );
+    }
+    final itemIds = <String>{
+      for (final lessonId in location.lessonIds) ...lesson(lessonId).itemIds,
+    };
+    return CourseLesson(
+      id: location.challengeId,
+      locationId: location.id,
+      title: '${location.title} final challenge',
+      estimatedMinutes: 5,
+      prerequisites: location.lessonIds,
+      itemIds: List.unmodifiable(itemIds),
+      steps: List.unmodifiable([
+        CourseLessonStep(
+          id: '${location.challengeId}-dialogue',
+          type: 'dialogue_turn',
+          title: '${location.title} final challenge',
+          dialogueId: location.challengeId,
+          text: 'Finish the full exchange one turn at a time.',
+        ),
+        CourseLessonStep(
+          id: '${location.challengeId}-summary',
+          type: 'summary',
+          title: '${location.title} challenge complete',
+          text: 'You completed the final challenge for this city stop.',
+        ),
+      ]),
+    );
+  }
+
   CourseKnowledgeItem knowledgeItem(String itemId) {
     final item = knowledgeItemsById[itemId];
     if (item == null) {
@@ -324,6 +400,20 @@ final class CourseDialogue {
       );
     }
     return node;
+  }
+
+  ({List<CourseDialogueNode> systemNodes, CourseDialogueNode? learnerNode})
+  turnFrom(String nodeId) {
+    final systemNodes = <CourseDialogueNode>[];
+    var current = node(nodeId);
+    while (current.speaker == 'system') {
+      systemNodes.add(current);
+      if (current.terminal) {
+        return (systemNodes: List.unmodifiable(systemNodes), learnerNode: null);
+      }
+      current = node(current.nextNodeId!);
+    }
+    return (systemNodes: List.unmodifiable(systemNodes), learnerNode: current);
   }
 }
 

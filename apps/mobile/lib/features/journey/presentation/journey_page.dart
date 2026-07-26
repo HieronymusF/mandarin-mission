@@ -6,7 +6,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../../../core/theme/app_layout.dart';
 import '../../../data/content/course_content_models.dart';
 import '../../../data/content/course_content_provider.dart';
-import '../../lesson/application/lesson_providers.dart';
+import '../application/journey_progress.dart';
 import '../../review/application/review_providers.dart';
 import '../../../shared/presentation/app_leading_row.dart';
 
@@ -17,7 +17,7 @@ class JourneyPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = ShadTheme.of(context);
     final reviewSummary = ref.watch(dueReviewSummaryProvider);
-    final coursePackage = ref.watch(coursePackageProvider);
+    final journeyProgress = ref.watch(journeyProgressProvider);
 
     return Scaffold(
       body: SafeArea(
@@ -77,7 +77,7 @@ class JourneyPage extends ConsumerWidget {
                   style: theme.textTheme.muted,
                 ),
                 const SizedBox(height: AppSpacing.md),
-                coursePackage.when(
+                journeyProgress.when(
                   loading: () => const _JourneyContentStatus(
                     key: Key('journey-content-loading'),
                     icon: LucideIcons.loaderCircle,
@@ -90,9 +90,12 @@ class JourneyPage extends ConsumerWidget {
                     title: 'Lessons unavailable',
                     message: 'Try loading the bundled course again.',
                     actionLabel: 'Retry',
-                    onAction: () => ref.invalidate(coursePackageProvider),
+                    onAction: () {
+                      ref.invalidate(coursePackageProvider);
+                      ref.invalidate(journeyProgressProvider);
+                    },
                   ),
-                  data: (package) => _LocationLessonCards(package: package),
+                  data: (progress) => _LocationLessonCards(progress: progress),
                 ),
               ],
             ),
@@ -403,72 +406,115 @@ class _JourneyContentStatus extends StatelessWidget {
 }
 
 class _LocationLessonCards extends StatelessWidget {
-  const _LocationLessonCards({required this.package});
+  const _LocationLessonCards({required this.progress});
 
-  final CoursePackage package;
+  final JourneyProgress progress;
 
   @override
   Widget build(BuildContext context) {
-    final entries = [
-      for (final location in package.locations)
-        for (final lessonId in location.lessonIds)
-          (location: location, lesson: package.lesson(lessonId)),
-    ];
+    final cards = <Widget>[];
 
-    return Column(
-      children: [
-        for (final entry in entries.indexed) ...[
-          if (entry.$1 > 0) const SizedBox(height: AppSpacing.md),
-          _LessonStopCard(location: entry.$2.location, lesson: entry.$2.lesson),
-        ],
-      ],
-    );
+    void addCard(Widget card) {
+      if (cards.isNotEmpty) {
+        cards.add(const SizedBox(height: AppSpacing.md));
+      }
+      cards.add(card);
+    }
+
+    for (final location in progress.package.locations) {
+      for (final lessonId in location.lessonIds) {
+        final lesson = progress.package.lesson(lessonId);
+        addCard(
+          _LessonStopCard(
+            location: location,
+            lesson: lesson,
+            status: progress.statusFor(lesson.id),
+            unlocked: progress.isLessonUnlocked(location, lesson),
+          ),
+        );
+      }
+      if (progress.package.hasStandaloneChallenge(location)) {
+        final challenge = progress.package.locationChallenge(location);
+        addCard(
+          _LessonStopCard(
+            location: location,
+            lesson: challenge,
+            status: progress.statusFor(challenge.id),
+            unlocked: progress.isChallengeUnlocked(location),
+            isChallenge: true,
+          ),
+        );
+      }
+    }
+
+    return Column(children: cards);
   }
 }
 
-class _LessonStopCard extends ConsumerWidget {
-  const _LessonStopCard({required this.location, required this.lesson});
+class _LessonStopCard extends StatelessWidget {
+  const _LessonStopCard({
+    required this.location,
+    required this.lesson,
+    required this.status,
+    required this.unlocked,
+    this.isChallenge = false,
+  });
 
   final CourseLocation location;
   final CourseLesson lesson;
+  final String? status;
+  final bool unlocked;
+  final bool isChallenge;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
-    final progress = ref.watch(lessonProgressProvider(lesson.id));
-    final status = progress.when(
-      data: (entry) => entry?.status,
-      loading: () => null,
-      error: (_, _) => null,
-    );
     final isCompleted = status == 'completed';
     final isInProgress = status == 'in_progress';
-    final statusLabel = switch (status) {
-      'completed' => 'Completed',
-      'in_progress' => 'In progress',
-      _ when progress.isLoading => 'Loading progress',
-      _ => 'Ready to start',
-    };
-    final actionLabel = switch (status) {
-      'completed' => 'Practice again',
-      'in_progress' => 'Start again',
-      _ => 'Start',
-    };
-    final stepCountLabel = '${lesson.steps.length} short steps';
+    final statusLabel = !unlocked
+        ? 'Locked'
+        : switch (status) {
+            'completed' => 'Completed',
+            'in_progress' => 'In progress',
+            _ => 'Ready to start',
+          };
+    final actionLabel = !unlocked
+        ? 'Locked'
+        : isChallenge && isCompleted
+        ? 'Practice challenge again'
+        : isChallenge
+        ? 'Start challenge'
+        : switch (status) {
+            'completed' => 'Practice again',
+            'in_progress' => 'Start again',
+            _ => 'Start',
+          };
+    final stepCountLabel = isChallenge
+        ? '${lesson.steps.length} challenge steps'
+        : '${lesson.steps.length} short steps';
+    final keyType = isChallenge ? 'challenge' : 'lesson';
     return ShadCard(
-      key: Key('journey-lesson-${lesson.id}-card'),
+      key: Key('journey-$keyType-${lesson.id}-card'),
       width: double.infinity,
       padding: AppLayout.cardPadding,
       child: Column(
-        key: Key('journey-lesson-${lesson.id}-body'),
+        key: Key('journey-$keyType-${lesson.id}-body'),
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           AppLeadingRow(
-            key: Key('journey-lesson-${lesson.id}-header'),
+            key: Key('journey-$keyType-${lesson.id}-header'),
             leading: AppIconTile(
-              icon: LucideIcons.mapPin,
-              backgroundColor: theme.colorScheme.accent,
-              foregroundColor: theme.colorScheme.accentForeground,
+              icon: !unlocked
+                  ? LucideIcons.lockKeyhole
+                  : isChallenge
+                  ? LucideIcons.trophy
+                  : LucideIcons.mapPin,
+              backgroundColor: unlocked
+                  ? theme.colorScheme.accent
+                  : theme.colorScheme.muted,
+              foregroundColor: unlocked
+                  ? theme.colorScheme.accentForeground
+                  : theme.colorScheme.mutedForeground,
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -477,7 +523,9 @@ class _LessonStopCard extends ConsumerWidget {
                 Text(lesson.title, style: theme.textTheme.h3),
                 const SizedBox(height: AppSpacing.xxs),
                 Text(
-                  'Stop ${location.order} · ${location.title}',
+                  isChallenge
+                      ? 'Stop ${location.order} · ${location.title} · Final challenge'
+                      : 'Stop ${location.order} · ${location.title}',
                   style: theme.textTheme.muted,
                 ),
               ],
@@ -488,9 +536,14 @@ class _LessonStopCard extends ConsumerWidget {
             spacing: AppSpacing.xs,
             runSpacing: AppSpacing.xs,
             children: [
-              const ShadBadge.outline(child: Text('Meaning')),
-              const ShadBadge.outline(child: Text('Listening')),
-              const ShadBadge.outline(child: Text('Speaking')),
+              if (isChallenge) ...[
+                const ShadBadge.outline(child: Text('Role-play')),
+                const ShadBadge.outline(child: Text('Speaking')),
+              ] else ...[
+                const ShadBadge.outline(child: Text('Meaning')),
+                const ShadBadge.outline(child: Text('Listening')),
+                const ShadBadge.outline(child: Text('Speaking')),
+              ],
             ],
           ),
           const SizedBox(height: AppSpacing.md),
@@ -510,20 +563,28 @@ class _LessonStopCard extends ConsumerWidget {
             semanticsLabel: '${lesson.title} progress',
             semanticsValue: isCompleted
                 ? 'Completed'
+                : !unlocked
+                ? 'Locked'
                 : isInProgress
                 ? 'In progress'
                 : 'Not started',
           ),
           const SizedBox(height: AppSpacing.lg),
           ShadButton(
-            key: Key('open-lesson-${lesson.id}'),
-            onPressed: () => context.goNamed(
-              'lesson',
-              pathParameters: {'lessonId': lesson.id},
-            ),
+            key: Key('open-$keyType-${lesson.id}'),
+            enabled: unlocked,
+            onPressed: unlocked
+                ? () => context.goNamed(
+                    'lesson',
+                    pathParameters: {'lessonId': lesson.id},
+                  )
+                : null,
             width: double.infinity,
             height: AppLayout.controlHeight,
-            leading: const Icon(LucideIcons.play, size: 16),
+            leading: Icon(
+              unlocked ? LucideIcons.play : LucideIcons.lockKeyhole,
+              size: 16,
+            ),
             child: Text(actionLabel),
           ),
         ],

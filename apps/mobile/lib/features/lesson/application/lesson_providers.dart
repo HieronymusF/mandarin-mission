@@ -24,7 +24,7 @@ final lessonContentProvider = FutureProvider.family<LessonContent, String>((
   lessonId,
 ) async {
   final package = await ref.watch(coursePackageProvider.future);
-  final lesson = package.lesson(lessonId);
+  final lesson = package.lessonOrChallenge(lessonId);
   await ref
       .read(lessonProgressRepositoryProvider)
       .startLesson(
@@ -60,6 +60,7 @@ final class LessonPlayerState {
     this.usedWritingHint = false,
     this.writingNeedsPractice = false,
     this.dialogueReplyMethod,
+    this.dialogueNodeId,
     this.orderedTokenIndexes = const [],
     this.isSubmitting = false,
     this.errorMessage,
@@ -77,6 +78,7 @@ final class LessonPlayerState {
   final bool usedWritingHint;
   final bool writingNeedsPractice;
   final String? dialogueReplyMethod;
+  final String? dialogueNodeId;
   final List<int> orderedTokenIndexes;
   final bool isSubmitting;
   final String? errorMessage;
@@ -96,6 +98,7 @@ final class LessonPlayerState {
     bool? usedWritingHint,
     bool? writingNeedsPractice,
     Object? dialogueReplyMethod = _unset,
+    Object? dialogueNodeId = _unset,
     List<int>? orderedTokenIndexes,
     bool? isSubmitting,
     Object? errorMessage = _unset,
@@ -122,6 +125,9 @@ final class LessonPlayerState {
       dialogueReplyMethod: identical(dialogueReplyMethod, _unset)
           ? this.dialogueReplyMethod
           : dialogueReplyMethod as String?,
+      dialogueNodeId: identical(dialogueNodeId, _unset)
+          ? this.dialogueNodeId
+          : dialogueNodeId as String?,
       orderedTokenIndexes: orderedTokenIndexes ?? this.orderedTokenIndexes,
       isSubmitting: isSubmitting ?? this.isSubmitting,
       errorMessage: identical(errorMessage, _unset)
@@ -213,6 +219,29 @@ final class LessonPlayerController extends Notifier<LessonPlayerState> {
   void selectDialogueReplyMethod(String value) {
     if (state.isSubmitting) return;
     state = state.copyWith(dialogueReplyMethod: value, errorMessage: null);
+  }
+
+  void advanceDialogue({
+    required CourseDialogue dialogue,
+    required int stepCount,
+  }) {
+    if (state.dialogueReplyMethod == null || state.isSubmitting) return;
+
+    final turn = dialogue.turnFrom(
+      state.dialogueNodeId ?? dialogue.startNodeId,
+    );
+    final learnerNode = turn.learnerNode!;
+    if (learnerNode.terminal) {
+      next(stepCount);
+      return;
+    }
+
+    state = state.copyWith(
+      dialogueNodeId: learnerNode.nextNodeId,
+      dialogueReplyMethod: null,
+      errorMessage: null,
+      stepEnteredAt: DateTime.now().toUtc(),
+    );
   }
 
   void toggleOrderToken(int index) {

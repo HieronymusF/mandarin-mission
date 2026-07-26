@@ -9,10 +9,11 @@ import 'course_content_models.dart';
 final class CourseContentRepository {
   CourseContentRepository({
     AssetBundle? bundle,
-    this.assetPath = bundledCafeCourseAsset,
+    this.assetPath = bundledM2CourseAsset,
   }) : _bundle = bundle ?? rootBundle;
 
   static const bundledCafeCourseAsset = MandarinMissionContentAssets.cafeCourse;
+  static const bundledM2CourseAsset = MandarinMissionContentAssets.m2Course;
 
   final AssetBundle _bundle;
   final String assetPath;

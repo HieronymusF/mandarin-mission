@@ -9,14 +9,12 @@ import '../../../../shared/presentation/hanzi_pinyin_text.dart';
 class TeachCardStep extends StatelessWidget {
   const TeachCardStep({
     required this.item,
-    required this.lessonItems,
     required this.supportText,
     required this.audioAssetPath,
     super.key,
   });
 
   final CourseKnowledgeItem item;
-  final List<CourseKnowledgeItem> lessonItems;
   final String? supportText;
   final String? audioAssetPath;
 
@@ -36,7 +34,11 @@ class TeachCardStep extends StatelessWidget {
               Align(
                 alignment: Alignment.centerLeft,
                 child: ShadBadge.secondary(
-                  child: Text(item.kind == 'phrase' ? 'PHRASE' : 'WORD'),
+                  child: Text(switch (item.kind) {
+                    'sentence' => 'SENTENCE',
+                    'phrase' => 'PHRASE',
+                    _ => 'WORD',
+                  }),
                 ),
               ),
               const SizedBox(height: AppSpacing.xl),
@@ -62,25 +64,8 @@ class TeachCardStep extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: AppSpacing.md),
-        ShadCard(
-          width: double.infinity,
-          padding: AppLayout.compactCardPadding,
-          backgroundColor: theme.colorScheme.muted,
-          border: ShadBorder.none,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Build the order', style: theme.textTheme.h3),
-              const SizedBox(height: AppSpacing.xxs),
-              Text(
-                lessonItems.map((entry) => entry.hanzi).join('  +  '),
-                style: theme.textTheme.large,
-              ),
-            ],
-          ),
-        ),
-        if ((supportText ?? '').isNotEmpty) ...[
+        if ((supportText ?? '').isNotEmpty &&
+            supportText!.trim() != item.english.trim()) ...[
           const SizedBox(height: AppSpacing.md),
           Text(supportText!, style: theme.textTheme.muted),
         ],

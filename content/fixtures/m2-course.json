@@ -1,0 +1,3693 @@
+{
+  "schemaVersion": 1,
+  "status": "release",
+  "version": "0.2.7",
+  "locations": [
+    {
+      "id": "cafe",
+      "title": "Café",
+      "order": 1,
+      "lessonIds": [
+        "cafe-01",
+        "cafe-02",
+        "cafe-03",
+        "cafe-04"
+      ],
+      "challengeId": "cafe-final-challenge"
+    },
+    {
+      "id": "market",
+      "title": "Market",
+      "order": 2,
+      "lessonIds": [
+        "market-01",
+        "market-02",
+        "market-03",
+        "market-04"
+      ],
+      "challengeId": "market-final-challenge"
+    },
+    {
+      "id": "metro",
+      "title": "Metro",
+      "order": 3,
+      "lessonIds": [
+        "metro-01",
+        "metro-02",
+        "metro-03",
+        "metro-04"
+      ],
+      "challengeId": "metro-final-challenge"
+    }
+  ],
+  "knowledgeItems": [
+    {
+      "id": "phrase-wo-yao",
+      "kind": "phrase",
+      "hanzi": "我要",
+      "pinyin": "wǒ yào",
+      "pinyinSyllables": [
+        "wǒ",
+        "yào"
+      ],
+      "english": "I want",
+      "audioAssetId": "audio-wo-yao",
+      "tags": [
+        "cafe",
+        "ordering"
+      ]
+    },
+    {
+      "id": "noun-kafei",
+      "kind": "word",
+      "hanzi": "咖啡",
+      "pinyin": "kāfēi",
+      "pinyinSyllables": [
+        "kā",
+        "fēi"
+      ],
+      "english": "coffee",
+      "audioAssetId": "audio-kafei",
+      "tags": [
+        "cafe",
+        "drink"
+      ]
+    },
+    {
+      "id": "sentence-wo-yao-yi-bei-kafei",
+      "kind": "sentence",
+      "hanzi": "我要一杯咖啡。",
+      "pinyin": "wǒ yào yì bēi kāfēi",
+      "pinyinSyllables": [
+        "wǒ",
+        "yào",
+        "yì",
+        "bēi",
+        "kā",
+        "fēi"
+      ],
+      "english": "I would like a cup of coffee.",
+      "audioAssetId": "audio-wo-yao-yi-bei-kafei",
+      "tags": [
+        "cafe",
+        "ordering",
+        "counter-word"
+      ]
+    },
+    {
+      "id": "phrase-re-de",
+      "kind": "phrase",
+      "hanzi": "热的",
+      "pinyin": "rè de",
+      "pinyinSyllables": [
+        "rè",
+        "de"
+      ],
+      "english": "hot",
+      "audioAssetId": "audio-re-de",
+      "tags": [
+        "cafe",
+        "temperature"
+      ]
+    },
+    {
+      "id": "phrase-bing-de",
+      "kind": "phrase",
+      "hanzi": "冰的",
+      "pinyin": "bīng de",
+      "pinyinSyllables": [
+        "bīng",
+        "de"
+      ],
+      "english": "iced",
+      "audioAssetId": "audio-bing-de",
+      "tags": [
+        "cafe",
+        "temperature"
+      ]
+    },
+    {
+      "id": "question-re-de-haishi-bing-de",
+      "kind": "sentence",
+      "hanzi": "热的还是冰的？",
+      "pinyin": "rè de háishì bīng de",
+      "pinyinSyllables": [
+        "rè",
+        "de",
+        "hái",
+        "shì",
+        "bīng",
+        "de"
+      ],
+      "english": "Hot or iced?",
+      "audioAssetId": "audio-re-de-haishi-bing-de",
+      "tags": [
+        "cafe",
+        "temperature",
+        "choice"
+      ]
+    },
+    {
+      "id": "sentence-wo-yao-bing-de",
+      "kind": "sentence",
+      "hanzi": "我要冰的。",
+      "pinyin": "wǒ yào bīng de",
+      "pinyinSyllables": [
+        "wǒ",
+        "yào",
+        "bīng",
+        "de"
+      ],
+      "english": "I'll have it iced.",
+      "audioAssetId": "audio-wo-yao-bing-de",
+      "tags": [
+        "cafe",
+        "temperature",
+        "ordering"
+      ]
+    },
+    {
+      "id": "phrase-da-bei",
+      "kind": "phrase",
+      "hanzi": "大杯",
+      "pinyin": "dà bēi",
+      "pinyinSyllables": [
+        "dà",
+        "bēi"
+      ],
+      "english": "large cup",
+      "audioAssetId": "audio-da-bei",
+      "tags": [
+        "cafe",
+        "size"
+      ]
+    },
+    {
+      "id": "phrase-xiao-bei",
+      "kind": "phrase",
+      "hanzi": "小杯",
+      "pinyin": "xiǎo bēi",
+      "pinyinSyllables": [
+        "xiǎo",
+        "bēi"
+      ],
+      "english": "small cup",
+      "audioAssetId": "audio-xiao-bei",
+      "tags": [
+        "cafe",
+        "size"
+      ]
+    },
+    {
+      "id": "question-da-bei-haishi-xiao-bei",
+      "kind": "sentence",
+      "hanzi": "大杯还是小杯？",
+      "pinyin": "dà bēi háishì xiǎo bēi",
+      "pinyinSyllables": [
+        "dà",
+        "bēi",
+        "hái",
+        "shì",
+        "xiǎo",
+        "bēi"
+      ],
+      "english": "Large or small?",
+      "audioAssetId": "audio-da-bei-haishi-xiao-bei",
+      "tags": [
+        "cafe",
+        "size",
+        "choice"
+      ]
+    },
+    {
+      "id": "sentence-wo-yao-da-bei",
+      "kind": "sentence",
+      "hanzi": "我要大杯。",
+      "pinyin": "wǒ yào dà bēi",
+      "pinyinSyllables": [
+        "wǒ",
+        "yào",
+        "dà",
+        "bēi"
+      ],
+      "english": "I'll have a large.",
+      "audioAssetId": "audio-wo-yao-da-bei",
+      "tags": [
+        "cafe",
+        "size",
+        "ordering"
+      ]
+    },
+    {
+      "id": "question-yi-gong-duoshao-qian",
+      "kind": "sentence",
+      "hanzi": "一共多少钱？",
+      "pinyin": "yígòng duōshao qián",
+      "pinyinSyllables": [
+        "yí",
+        "gòng",
+        "duō",
+        "shao",
+        "qián"
+      ],
+      "english": "How much is it altogether?",
+      "audioAssetId": "audio-yi-gong-duoshao-qian",
+      "tags": [
+        "cafe",
+        "price"
+      ]
+    },
+    {
+      "id": "amount-er-shi-wu-kuai",
+      "kind": "phrase",
+      "hanzi": "二十五块。",
+      "pinyin": "èrshíwǔ kuài",
+      "pinyinSyllables": [
+        "èr",
+        "shí",
+        "wǔ",
+        "kuài"
+      ],
+      "english": "Twenty-five yuan.",
+      "audioAssetId": "audio-er-shi-wu-kuai",
+      "tags": [
+        "cafe",
+        "price",
+        "number"
+      ]
+    },
+    {
+      "id": "phrase-hao-de",
+      "kind": "phrase",
+      "hanzi": "好的。",
+      "pinyin": "hǎo de",
+      "pinyinSyllables": [
+        "hǎo",
+        "de"
+      ],
+      "english": "Okay.",
+      "audioAssetId": "audio-hao-de",
+      "tags": [
+        "politeness",
+        "response"
+      ]
+    },
+    {
+      "id": "phrase-xiexie",
+      "kind": "phrase",
+      "hanzi": "谢谢。",
+      "pinyin": "xièxie",
+      "pinyinSyllables": [
+        "xiè",
+        "xie"
+      ],
+      "english": "Thank you.",
+      "audioAssetId": "audio-xiexie",
+      "tags": [
+        "politeness",
+        "closing"
+      ]
+    },
+    {
+      "id": "demonstrative-zhe-ge",
+      "kind": "word",
+      "hanzi": "这个",
+      "pinyin": "zhège",
+      "pinyinSyllables": [
+        "zhè",
+        "ge"
+      ],
+      "english": "this one",
+      "audioAssetId": "audio-zhe-ge",
+      "tags": [
+        "market",
+        "demonstrative"
+      ]
+    },
+    {
+      "id": "demonstrative-na-ge",
+      "kind": "word",
+      "hanzi": "那个",
+      "pinyin": "nàge",
+      "pinyinSyllables": [
+        "nà",
+        "ge"
+      ],
+      "english": "that one",
+      "audioAssetId": "audio-na-ge",
+      "tags": [
+        "market",
+        "demonstrative"
+      ]
+    },
+    {
+      "id": "noun-pingguo",
+      "kind": "word",
+      "hanzi": "苹果",
+      "pinyin": "píngguǒ",
+      "pinyinSyllables": [
+        "píng",
+        "guǒ"
+      ],
+      "english": "apple",
+      "audioAssetId": "audio-pingguo",
+      "tags": [
+        "market",
+        "fruit"
+      ]
+    },
+    {
+      "id": "noun-xiangjiao",
+      "kind": "word",
+      "hanzi": "香蕉",
+      "pinyin": "xiāngjiāo",
+      "pinyinSyllables": [
+        "xiāng",
+        "jiāo"
+      ],
+      "english": "banana",
+      "audioAssetId": "audio-xiangjiao",
+      "tags": [
+        "market",
+        "fruit"
+      ]
+    },
+    {
+      "id": "question-zhe-ge-duoshao-qian",
+      "kind": "sentence",
+      "hanzi": "这个多少钱？",
+      "pinyin": "zhège duōshao qián",
+      "pinyinSyllables": [
+        "zhè",
+        "ge",
+        "duō",
+        "shao",
+        "qián"
+      ],
+      "english": "How much is this?",
+      "audioAssetId": "audio-zhe-ge-duoshao-qian",
+      "tags": [
+        "market",
+        "price"
+      ]
+    },
+    {
+      "id": "question-yao-ji-ge",
+      "kind": "sentence",
+      "hanzi": "要几个？",
+      "pinyin": "yào jǐ ge",
+      "pinyinSyllables": [
+        "yào",
+        "jǐ",
+        "ge"
+      ],
+      "english": "How many do you want?",
+      "audioAssetId": "audio-yao-ji-ge",
+      "tags": [
+        "market",
+        "quantity"
+      ]
+    },
+    {
+      "id": "quantity-liang-ge",
+      "kind": "phrase",
+      "hanzi": "两个",
+      "pinyin": "liǎng ge",
+      "pinyinSyllables": [
+        "liǎng",
+        "ge"
+      ],
+      "english": "two",
+      "audioAssetId": "audio-liang-ge",
+      "tags": [
+        "market",
+        "quantity"
+      ]
+    },
+    {
+      "id": "quantity-san-ge",
+      "kind": "phrase",
+      "hanzi": "三个",
+      "pinyin": "sān ge",
+      "pinyinSyllables": [
+        "sān",
+        "ge"
+      ],
+      "english": "three",
+      "audioAssetId": "audio-san-ge",
+      "tags": [
+        "market",
+        "quantity"
+      ]
+    },
+    {
+      "id": "sentence-wo-yao-liang-ge-pingguo",
+      "kind": "sentence",
+      "hanzi": "我要两个苹果。",
+      "pinyin": "wǒ yào liǎng ge píngguǒ",
+      "pinyinSyllables": [
+        "wǒ",
+        "yào",
+        "liǎng",
+        "ge",
+        "píng",
+        "guǒ"
+      ],
+      "english": "I'll have two apples.",
+      "audioAssetId": "audio-wo-yao-liang-ge-pingguo",
+      "tags": [
+        "market",
+        "quantity",
+        "ordering"
+      ]
+    },
+    {
+      "id": "phrase-da-de",
+      "kind": "phrase",
+      "hanzi": "大的",
+      "pinyin": "dà de",
+      "pinyinSyllables": [
+        "dà",
+        "de"
+      ],
+      "english": "the big one",
+      "audioAssetId": "audio-da-de",
+      "tags": [
+        "market",
+        "size"
+      ]
+    },
+    {
+      "id": "phrase-xiao-de",
+      "kind": "phrase",
+      "hanzi": "小的",
+      "pinyin": "xiǎo de",
+      "pinyinSyllables": [
+        "xiǎo",
+        "de"
+      ],
+      "english": "the small one",
+      "audioAssetId": "audio-xiao-de",
+      "tags": [
+        "market",
+        "size"
+      ]
+    },
+    {
+      "id": "sentence-bu-yao-zhe-ge",
+      "kind": "sentence",
+      "hanzi": "不要这个。",
+      "pinyin": "bú yào zhège",
+      "pinyinSyllables": [
+        "bú",
+        "yào",
+        "zhè",
+        "ge"
+      ],
+      "english": "I don't want this one.",
+      "audioAssetId": "audio-bu-yao-zhe-ge",
+      "tags": [
+        "market",
+        "choice",
+        "negation"
+      ]
+    },
+    {
+      "id": "sentence-wo-yao-na-ge-da-de",
+      "kind": "sentence",
+      "hanzi": "我要那个大的。",
+      "pinyin": "wǒ yào nàge dà de",
+      "pinyinSyllables": [
+        "wǒ",
+        "yào",
+        "nà",
+        "ge",
+        "dà",
+        "de"
+      ],
+      "english": "I'll have that big one.",
+      "audioAssetId": "audio-wo-yao-na-ge-da-de",
+      "tags": [
+        "market",
+        "choice",
+        "size"
+      ]
+    },
+    {
+      "id": "question-zhe-ge-ke-yi-ma",
+      "kind": "sentence",
+      "hanzi": "这个可以吗？",
+      "pinyin": "zhège kěyǐ ma",
+      "pinyinSyllables": [
+        "zhè",
+        "ge",
+        "kě",
+        "yǐ",
+        "ma"
+      ],
+      "english": "Is this one okay?",
+      "audioAssetId": "audio-zhe-ge-ke-yi-ma",
+      "tags": [
+        "market",
+        "choice"
+      ]
+    },
+    {
+      "id": "question-yao-dai-zi-ma",
+      "kind": "sentence",
+      "hanzi": "要袋子吗？",
+      "pinyin": "yào dàizi ma",
+      "pinyinSyllables": [
+        "yào",
+        "dài",
+        "zi",
+        "ma"
+      ],
+      "english": "Do you need a bag?",
+      "audioAssetId": "audio-yao-dai-zi-ma",
+      "tags": [
+        "market",
+        "checkout"
+      ]
+    },
+    {
+      "id": "phrase-yao-dai-zi",
+      "kind": "phrase",
+      "hanzi": "要袋子。",
+      "pinyin": "yào dàizi",
+      "pinyinSyllables": [
+        "yào",
+        "dài",
+        "zi"
+      ],
+      "english": "I need a bag.",
+      "audioAssetId": "audio-yao-dai-zi",
+      "tags": [
+        "market",
+        "checkout"
+      ]
+    },
+    {
+      "id": "phrase-bu-yao-dai-zi",
+      "kind": "phrase",
+      "hanzi": "不要袋子。",
+      "pinyin": "bú yào dàizi",
+      "pinyinSyllables": [
+        "bú",
+        "yào",
+        "dài",
+        "zi"
+      ],
+      "english": "I do not need a bag.",
+      "audioAssetId": "audio-bu-yao-dai-zi",
+      "tags": [
+        "market",
+        "checkout",
+        "negation"
+      ]
+    },
+    {
+      "id": "amount-yi-gong-shi-er-kuai",
+      "kind": "phrase",
+      "hanzi": "一共十二块。",
+      "pinyin": "yígòng shí'èr kuài",
+      "pinyinSyllables": [
+        "yí",
+        "gòng",
+        "shí",
+        "èr",
+        "kuài"
+      ],
+      "english": "Twelve yuan altogether.",
+      "audioAssetId": "audio-yi-gong-shi-er-kuai",
+      "tags": [
+        "market",
+        "checkout",
+        "price"
+      ]
+    },
+    {
+      "id": "phrase-qing-wen",
+      "kind": "phrase",
+      "hanzi": "请问",
+      "pinyin": "qǐngwèn",
+      "pinyinSyllables": [
+        "qǐng",
+        "wèn"
+      ],
+      "english": "Excuse me, may I ask...",
+      "audioAssetId": "audio-qing-wen",
+      "tags": [
+        "metro",
+        "politeness"
+      ]
+    },
+    {
+      "id": "noun-ditie-zhan",
+      "kind": "phrase",
+      "hanzi": "地铁站",
+      "pinyin": "dìtiě zhàn",
+      "pinyinSyllables": [
+        "dì",
+        "tiě",
+        "zhàn"
+      ],
+      "english": "metro station",
+      "audioAssetId": "audio-ditie-zhan",
+      "tags": [
+        "metro",
+        "place"
+      ]
+    },
+    {
+      "id": "question-ditie-zhan-zai-nar",
+      "kind": "sentence",
+      "hanzi": "请问，地铁站在哪里？",
+      "pinyin": "qǐngwèn, dìtiě zhàn zài nǎlǐ",
+      "pinyinSyllables": [
+        "qǐng",
+        "wèn",
+        "dì",
+        "tiě",
+        "zhàn",
+        "zài",
+        "nǎ",
+        "lǐ"
+      ],
+      "english": "Excuse me, where is the metro station?",
+      "audioAssetId": "audio-ditie-zhan-zai-nar",
+      "tags": [
+        "metro",
+        "direction"
+      ]
+    },
+    {
+      "id": "direction-yi-zhi-zou",
+      "kind": "phrase",
+      "hanzi": "一直走",
+      "pinyin": "yìzhí zǒu",
+      "pinyinSyllables": [
+        "yì",
+        "zhí",
+        "zǒu"
+      ],
+      "english": "go straight",
+      "audioAssetId": "audio-yi-zhi-zou",
+      "tags": [
+        "metro",
+        "direction"
+      ]
+    },
+    {
+      "id": "verb-qu",
+      "kind": "word",
+      "hanzi": "去",
+      "pinyin": "qù",
+      "pinyinSyllables": [
+        "qù"
+      ],
+      "english": "to go",
+      "audioAssetId": "audio-qu",
+      "tags": [
+        "metro",
+        "movement"
+      ]
+    },
+    {
+      "id": "noun-huoche-zhan",
+      "kind": "phrase",
+      "hanzi": "火车站",
+      "pinyin": "huǒchē zhàn",
+      "pinyinSyllables": [
+        "huǒ",
+        "chē",
+        "zhàn"
+      ],
+      "english": "railway station",
+      "audioAssetId": "audio-huoche-zhan",
+      "tags": [
+        "metro",
+        "destination"
+      ]
+    },
+    {
+      "id": "quantity-yi-zhang-piao",
+      "kind": "phrase",
+      "hanzi": "一张票",
+      "pinyin": "yì zhāng piào",
+      "pinyinSyllables": [
+        "yì",
+        "zhāng",
+        "piào"
+      ],
+      "english": "one ticket",
+      "audioAssetId": "audio-yi-zhang-piao",
+      "tags": [
+        "metro",
+        "ticket"
+      ]
+    },
+    {
+      "id": "sentence-wo-yao-qu-huoche-zhan",
+      "kind": "sentence",
+      "hanzi": "我要去火车站。",
+      "pinyin": "wǒ yào qù huǒchē zhàn",
+      "pinyinSyllables": [
+        "wǒ",
+        "yào",
+        "qù",
+        "huǒ",
+        "chē",
+        "zhàn"
+      ],
+      "english": "I want to go to the railway station.",
+      "audioAssetId": "audio-wo-yao-qu-huoche-zhan",
+      "tags": [
+        "metro",
+        "destination"
+      ]
+    },
+    {
+      "id": "sentence-wo-yao-yi-zhang-piao",
+      "kind": "sentence",
+      "hanzi": "我要一张票。",
+      "pinyin": "wǒ yào yì zhāng piào",
+      "pinyinSyllables": [
+        "wǒ",
+        "yào",
+        "yì",
+        "zhāng",
+        "piào"
+      ],
+      "english": "I'll have one ticket.",
+      "audioAssetId": "audio-wo-yao-yi-zhang-piao",
+      "tags": [
+        "metro",
+        "ticket"
+      ]
+    },
+    {
+      "id": "question-ji-hao-xian",
+      "kind": "sentence",
+      "hanzi": "去火车站坐几号线？",
+      "pinyin": "qù huǒchē zhàn zuò jǐ hào xiàn",
+      "pinyinSyllables": [
+        "qù",
+        "huǒ",
+        "chē",
+        "zhàn",
+        "zuò",
+        "jǐ",
+        "hào",
+        "xiàn"
+      ],
+      "english": "Which metro line should I take to the railway station?",
+      "audioAssetId": "audio-ji-hao-xian",
+      "tags": [
+        "metro",
+        "line"
+      ]
+    },
+    {
+      "id": "noun-yi-hao-xian",
+      "kind": "phrase",
+      "hanzi": "一号线",
+      "pinyin": "yí hào xiàn",
+      "pinyinSyllables": [
+        "yí",
+        "hào",
+        "xiàn"
+      ],
+      "english": "Line 1",
+      "audioAssetId": "audio-yi-hao-xian",
+      "tags": [
+        "metro",
+        "line"
+      ]
+    },
+    {
+      "id": "direction-zuo-bian",
+      "kind": "phrase",
+      "hanzi": "左边",
+      "pinyin": "zuǒbian",
+      "pinyinSyllables": [
+        "zuǒ",
+        "bian"
+      ],
+      "english": "on the left",
+      "audioAssetId": "audio-zuo-bian",
+      "tags": [
+        "metro",
+        "direction"
+      ]
+    },
+    {
+      "id": "direction-you-bian",
+      "kind": "phrase",
+      "hanzi": "右边",
+      "pinyin": "yòubian",
+      "pinyinSyllables": [
+        "yòu",
+        "bian"
+      ],
+      "english": "on the right",
+      "audioAssetId": "audio-you-bian",
+      "tags": [
+        "metro",
+        "direction"
+      ]
+    },
+    {
+      "id": "verb-huan-cheng",
+      "kind": "phrase",
+      "hanzi": "换乘",
+      "pinyin": "huànchéng",
+      "pinyinSyllables": [
+        "huàn",
+        "chéng"
+      ],
+      "english": "transfer",
+      "audioAssetId": "audio-huan-cheng",
+      "tags": [
+        "metro",
+        "transfer"
+      ]
+    },
+    {
+      "id": "sentence-zai-you-bian-huan-cheng-er-hao-xian",
+      "kind": "sentence",
+      "hanzi": "在右边换乘二号线。",
+      "pinyin": "zài yòubian huànchéng èr hào xiàn",
+      "pinyinSyllables": [
+        "zài",
+        "yòu",
+        "bian",
+        "huàn",
+        "chéng",
+        "èr",
+        "hào",
+        "xiàn"
+      ],
+      "english": "Transfer to Line 2 on your right.",
+      "audioAssetId": "audio-zai-you-bian-huan-cheng-er-hao-xian",
+      "tags": [
+        "metro",
+        "transfer",
+        "direction"
+      ]
+    },
+    {
+      "id": "phrase-qing-zai-shuo-yi-bian",
+      "kind": "sentence",
+      "hanzi": "请再说一遍。",
+      "pinyin": "qǐng zài shuō yí biàn",
+      "pinyinSyllables": [
+        "qǐng",
+        "zài",
+        "shuō",
+        "yí",
+        "biàn"
+      ],
+      "english": "Please say it again.",
+      "audioAssetId": "audio-qing-zai-shuo-yi-bian",
+      "tags": [
+        "metro",
+        "repair"
+      ]
+    },
+    {
+      "id": "phrase-qing-man-yi-dian",
+      "kind": "sentence",
+      "hanzi": "请慢一点。",
+      "pinyin": "qǐng màn yìdiǎn",
+      "pinyinSyllables": [
+        "qǐng",
+        "màn",
+        "yì",
+        "diǎn"
+      ],
+      "english": "Please speak more slowly.",
+      "audioAssetId": "audio-qing-man-yi-dian",
+      "tags": [
+        "metro",
+        "repair"
+      ]
+    },
+    {
+      "id": "sentence-wo-ting-bu-dong",
+      "kind": "sentence",
+      "hanzi": "我听不懂。",
+      "pinyin": "wǒ tīng bu dǒng",
+      "pinyinSyllables": [
+        "wǒ",
+        "tīng",
+        "bu",
+        "dǒng"
+      ],
+      "english": "I don't understand.",
+      "audioAssetId": "audio-wo-ting-bu-dong",
+      "tags": [
+        "metro",
+        "repair"
+      ]
+    },
+    {
+      "id": "phrase-ming-bai-le",
+      "kind": "phrase",
+      "hanzi": "明白了。",
+      "pinyin": "míngbai le",
+      "pinyinSyllables": [
+        "míng",
+        "bai",
+        "le"
+      ],
+      "english": "I understand now.",
+      "audioAssetId": "audio-ming-bai-le",
+      "tags": [
+        "metro",
+        "repair"
+      ]
+    }
+  ],
+  "lessons": [
+    {
+      "id": "cafe-01",
+      "locationId": "cafe",
+      "title": "Order one coffee",
+      "estimatedMinutes": 9,
+      "prerequisites": [],
+      "itemIds": [
+        "phrase-wo-yao",
+        "noun-kafei",
+        "sentence-wo-yao-yi-bei-kafei"
+      ],
+      "steps": [
+        {
+          "id": "cafe-01-intro",
+          "type": "scene_intro",
+          "title": "Order at the counter",
+          "assetId": "image-cafe-counter",
+          "text": "You step into a café. The barista is ready."
+        },
+        {
+          "id": "cafe-01-teach-wo-yao",
+          "type": "teach_card",
+          "title": "Say what you want",
+          "dimension": "meaning",
+          "itemId": "phrase-wo-yao",
+          "text": "Next, add the thing you want."
+        },
+        {
+          "id": "cafe-01-teach-kafei",
+          "type": "teach_card",
+          "title": "Name the drink",
+          "dimension": "meaning",
+          "itemId": "noun-kafei",
+          "text": "Coffee completes your first order."
+        },
+        {
+          "id": "cafe-01-image-choice",
+          "type": "image_choice",
+          "title": "Pick the café item",
+          "dimension": "meaning",
+          "itemId": "noun-kafei",
+          "assetId": "image-cafe-counter",
+          "text": "Choose the Mandarin word for coffee.",
+          "optionItemIds": [
+            "noun-kafei",
+            "phrase-wo-yao",
+            "sentence-wo-yao-yi-bei-kafei"
+          ]
+        },
+        {
+          "id": "cafe-01-write-kafei",
+          "type": "hanzi_trace",
+          "title": "Write 咖啡",
+          "dimension": "hanzi",
+          "itemId": "noun-kafei",
+          "text": "Trace the characters, then write them once from memory."
+        },
+        {
+          "id": "cafe-01-tone-contrast",
+          "type": "tone_contrast",
+          "title": "Match the tones",
+          "dimension": "tone",
+          "itemId": "phrase-wo-yao",
+          "text": "Listen for the low third tone in wǒ and the falling fourth tone in yào.",
+          "optionTexts": [
+            "wǒ yào",
+            "wó yáo",
+            "wǒ yáo"
+          ]
+        },
+        {
+          "id": "cafe-01-listen",
+          "type": "listen_choice",
+          "title": "Which phrase did you hear?",
+          "dimension": "listening",
+          "itemId": "sentence-wo-yao-yi-bei-kafei",
+          "text": "Choose the full order.",
+          "optionItemIds": [
+            "sentence-wo-yao-yi-bei-kafei",
+            "phrase-wo-yao",
+            "noun-kafei"
+          ]
+        },
+        {
+          "id": "cafe-01-order-tokens",
+          "type": "order_tokens",
+          "title": "Build the order",
+          "dimension": "meaning",
+          "itemId": "sentence-wo-yao-yi-bei-kafei",
+          "text": "Put the pieces in the order you would say them at the counter.",
+          "tokens": [
+            "我",
+            "要",
+            "一杯",
+            "咖啡"
+          ]
+        },
+        {
+          "id": "cafe-01-repeat",
+          "type": "repeat",
+          "title": "Make the tones land",
+          "dimension": "tone",
+          "itemId": "sentence-wo-yao-yi-bei-kafei",
+          "text": "Keep wǒ low, then let yào fall clearly."
+        },
+        {
+          "id": "cafe-01-dialogue",
+          "type": "dialogue_turn",
+          "title": "Take your turn",
+          "dialogueId": "cafe-challenge",
+          "text": "Say it aloud, or use the phrase ticket if you need support."
+        },
+        {
+          "id": "cafe-01-summary",
+          "type": "summary",
+          "title": "Coffee ordered!",
+          "text": "Next: review this phrase when it becomes due."
+        }
+      ]
+    },
+    {
+      "id": "cafe-02",
+      "locationId": "cafe",
+      "title": "Choose hot or iced",
+      "estimatedMinutes": 9,
+      "prerequisites": [
+        "cafe-01"
+      ],
+      "itemIds": [
+        "phrase-wo-yao",
+        "phrase-re-de",
+        "phrase-bing-de",
+        "question-re-de-haishi-bing-de",
+        "sentence-wo-yao-bing-de"
+      ],
+      "steps": [
+        {
+          "id": "cafe-02-intro",
+          "type": "scene_intro",
+          "title": "Choose hot or iced",
+          "text": "The barista asks how you want your drink."
+        },
+        {
+          "id": "cafe-02-teach-re-de",
+          "type": "teach_card",
+          "title": "Learn: 热的",
+          "dimension": "meaning",
+          "itemId": "phrase-re-de",
+          "text": "hot"
+        },
+        {
+          "id": "cafe-02-teach-bing-de",
+          "type": "teach_card",
+          "title": "Learn: 冰的",
+          "dimension": "meaning",
+          "itemId": "phrase-bing-de",
+          "text": "iced"
+        },
+        {
+          "id": "cafe-02-teach-re-de-haishi-bing-de",
+          "type": "teach_card",
+          "title": "Learn: 热的还是冰的",
+          "dimension": "meaning",
+          "itemId": "question-re-de-haishi-bing-de",
+          "text": "Hot or iced?"
+        },
+        {
+          "id": "cafe-02-teach-wo-yao-bing-de",
+          "type": "teach_card",
+          "title": "Learn: 我要冰的",
+          "dimension": "meaning",
+          "itemId": "sentence-wo-yao-bing-de",
+          "text": "I'll have it iced."
+        },
+        {
+          "id": "cafe-02-listen",
+          "type": "listen_choice",
+          "title": "Listen and choose",
+          "dimension": "listening",
+          "itemId": "question-re-de-haishi-bing-de",
+          "text": "Choose the expression you hear.",
+          "optionItemIds": [
+            "question-re-de-haishi-bing-de",
+            "phrase-re-de",
+            "phrase-bing-de"
+          ]
+        },
+        {
+          "id": "cafe-02-order-tokens",
+          "type": "order_tokens",
+          "title": "Build the phrase",
+          "dimension": "meaning",
+          "itemId": "sentence-wo-yao-bing-de",
+          "text": "Put the Mandarin pieces in the right order.",
+          "tokens": [
+            "我",
+            "要",
+            "冰的"
+          ]
+        },
+        {
+          "id": "cafe-02-repeat",
+          "type": "repeat",
+          "title": "Say it aloud",
+          "dimension": "tone",
+          "itemId": "sentence-wo-yao-bing-de",
+          "text": "Listen once, then say the full expression."
+        },
+        {
+          "id": "cafe-02-dialogue",
+          "type": "dialogue_turn",
+          "title": "Use it in the scene",
+          "dialogueId": "cafe-02-exchange",
+          "text": "Complete the exchange without keeping the full phrase visible."
+        },
+        {
+          "id": "cafe-02-summary",
+          "type": "summary",
+          "title": "Task complete",
+          "text": "You can now choose a hot or iced drink."
+        }
+      ]
+    },
+    {
+      "id": "cafe-03",
+      "locationId": "cafe",
+      "title": "Pick a cup size",
+      "estimatedMinutes": 9,
+      "prerequisites": [
+        "cafe-02"
+      ],
+      "itemIds": [
+        "phrase-wo-yao",
+        "phrase-da-bei",
+        "phrase-xiao-bei",
+        "question-da-bei-haishi-xiao-bei",
+        "sentence-wo-yao-da-bei"
+      ],
+      "steps": [
+        {
+          "id": "cafe-03-intro",
+          "type": "scene_intro",
+          "title": "Pick a cup size",
+          "text": "The barista asks what size you would like."
+        },
+        {
+          "id": "cafe-03-teach-da-bei",
+          "type": "teach_card",
+          "title": "Learn: 大杯",
+          "dimension": "meaning",
+          "itemId": "phrase-da-bei",
+          "text": "large cup"
+        },
+        {
+          "id": "cafe-03-teach-xiao-bei",
+          "type": "teach_card",
+          "title": "Learn: 小杯",
+          "dimension": "meaning",
+          "itemId": "phrase-xiao-bei",
+          "text": "small cup"
+        },
+        {
+          "id": "cafe-03-teach-da-bei-haishi-xiao-bei",
+          "type": "teach_card",
+          "title": "Learn: 大杯还是小杯",
+          "dimension": "meaning",
+          "itemId": "question-da-bei-haishi-xiao-bei",
+          "text": "Large or small?"
+        },
+        {
+          "id": "cafe-03-teach-wo-yao-da-bei",
+          "type": "teach_card",
+          "title": "Learn: 我要大杯",
+          "dimension": "meaning",
+          "itemId": "sentence-wo-yao-da-bei",
+          "text": "I'll have a large."
+        },
+        {
+          "id": "cafe-03-listen",
+          "type": "listen_choice",
+          "title": "Listen and choose",
+          "dimension": "listening",
+          "itemId": "question-da-bei-haishi-xiao-bei",
+          "text": "Choose the expression you hear.",
+          "optionItemIds": [
+            "question-da-bei-haishi-xiao-bei",
+            "phrase-da-bei",
+            "phrase-xiao-bei"
+          ]
+        },
+        {
+          "id": "cafe-03-order-tokens",
+          "type": "order_tokens",
+          "title": "Build the phrase",
+          "dimension": "meaning",
+          "itemId": "sentence-wo-yao-da-bei",
+          "text": "Put the Mandarin pieces in the right order.",
+          "tokens": [
+            "我",
+            "要",
+            "大杯"
+          ]
+        },
+        {
+          "id": "cafe-03-repeat",
+          "type": "repeat",
+          "title": "Say it aloud",
+          "dimension": "tone",
+          "itemId": "sentence-wo-yao-da-bei",
+          "text": "Listen once, then say the full expression."
+        },
+        {
+          "id": "cafe-03-dialogue",
+          "type": "dialogue_turn",
+          "title": "Use it in the scene",
+          "dialogueId": "cafe-03-exchange",
+          "text": "Complete the exchange without keeping the full phrase visible."
+        },
+        {
+          "id": "cafe-03-summary",
+          "type": "summary",
+          "title": "Task complete",
+          "text": "You can now choose a cup size."
+        }
+      ]
+    },
+    {
+      "id": "cafe-04",
+      "locationId": "cafe",
+      "title": "Ask for the total",
+      "estimatedMinutes": 9,
+      "prerequisites": [
+        "cafe-03"
+      ],
+      "itemIds": [
+        "question-yi-gong-duoshao-qian",
+        "amount-er-shi-wu-kuai",
+        "phrase-hao-de",
+        "phrase-xiexie"
+      ],
+      "steps": [
+        {
+          "id": "cafe-04-intro",
+          "type": "scene_intro",
+          "title": "Ask for the total",
+          "text": "It is time to pay. Ask for the total, then say thank you."
+        },
+        {
+          "id": "cafe-04-teach-yi-gong-duoshao-qian",
+          "type": "teach_card",
+          "title": "Learn: 一共多少钱",
+          "dimension": "meaning",
+          "itemId": "question-yi-gong-duoshao-qian",
+          "text": "How much is it altogether?"
+        },
+        {
+          "id": "cafe-04-teach-er-shi-wu-kuai",
+          "type": "teach_card",
+          "title": "Learn: 二十五块",
+          "dimension": "meaning",
+          "itemId": "amount-er-shi-wu-kuai",
+          "text": "Twenty-five yuan."
+        },
+        {
+          "id": "cafe-04-teach-hao-de",
+          "type": "teach_card",
+          "title": "Learn: 好的",
+          "dimension": "meaning",
+          "itemId": "phrase-hao-de",
+          "text": "Okay."
+        },
+        {
+          "id": "cafe-04-teach-xiexie",
+          "type": "teach_card",
+          "title": "Learn: 谢谢",
+          "dimension": "meaning",
+          "itemId": "phrase-xiexie",
+          "text": "Thank you."
+        },
+        {
+          "id": "cafe-04-listen",
+          "type": "listen_choice",
+          "title": "Listen and choose",
+          "dimension": "listening",
+          "itemId": "amount-er-shi-wu-kuai",
+          "text": "Choose the expression you hear.",
+          "optionItemIds": [
+            "amount-er-shi-wu-kuai",
+            "question-yi-gong-duoshao-qian",
+            "phrase-hao-de"
+          ]
+        },
+        {
+          "id": "cafe-04-order-tokens",
+          "type": "order_tokens",
+          "title": "Build the phrase",
+          "dimension": "meaning",
+          "itemId": "question-yi-gong-duoshao-qian",
+          "text": "Put the Mandarin pieces in the right order.",
+          "tokens": [
+            "一共",
+            "多少",
+            "钱"
+          ]
+        },
+        {
+          "id": "cafe-04-repeat",
+          "type": "repeat",
+          "title": "Say it aloud",
+          "dimension": "tone",
+          "itemId": "question-yi-gong-duoshao-qian",
+          "text": "Listen once, then say the full expression."
+        },
+        {
+          "id": "cafe-04-dialogue",
+          "type": "dialogue_turn",
+          "title": "Use it in the scene",
+          "dialogueId": "cafe-04-exchange",
+          "text": "Complete the exchange without keeping the full phrase visible."
+        },
+        {
+          "id": "cafe-04-summary",
+          "type": "summary",
+          "title": "Task complete",
+          "text": "You can now ask for the total and say thank you."
+        }
+      ]
+    },
+    {
+      "id": "market-01",
+      "locationId": "market",
+      "title": "Ask about this item",
+      "estimatedMinutes": 9,
+      "prerequisites": [
+        "cafe-04"
+      ],
+      "itemIds": [
+        "demonstrative-zhe-ge",
+        "demonstrative-na-ge",
+        "noun-pingguo",
+        "noun-xiangjiao",
+        "question-zhe-ge-duoshao-qian",
+        "phrase-xiexie"
+      ],
+      "steps": [
+        {
+          "id": "market-01-intro",
+          "type": "scene_intro",
+          "title": "Ask about this item",
+          "text": "Point to a piece of fruit and ask how much it costs."
+        },
+        {
+          "id": "market-01-teach-zhe-ge",
+          "type": "teach_card",
+          "title": "Learn: 这个",
+          "dimension": "meaning",
+          "itemId": "demonstrative-zhe-ge",
+          "text": "this one"
+        },
+        {
+          "id": "market-01-teach-na-ge",
+          "type": "teach_card",
+          "title": "Learn: 那个",
+          "dimension": "meaning",
+          "itemId": "demonstrative-na-ge",
+          "text": "that one"
+        },
+        {
+          "id": "market-01-teach-pingguo",
+          "type": "teach_card",
+          "title": "Learn: 苹果",
+          "dimension": "meaning",
+          "itemId": "noun-pingguo",
+          "text": "apple"
+        },
+        {
+          "id": "market-01-teach-xiangjiao",
+          "type": "teach_card",
+          "title": "Learn: 香蕉",
+          "dimension": "meaning",
+          "itemId": "noun-xiangjiao",
+          "text": "banana"
+        },
+        {
+          "id": "market-01-teach-zhe-ge-duoshao-qian",
+          "type": "teach_card",
+          "title": "Learn: 这个多少钱",
+          "dimension": "meaning",
+          "itemId": "question-zhe-ge-duoshao-qian",
+          "text": "How much is this?"
+        },
+        {
+          "id": "market-01-listen",
+          "type": "listen_choice",
+          "title": "Listen and choose",
+          "dimension": "listening",
+          "itemId": "question-zhe-ge-duoshao-qian",
+          "text": "Choose the expression you hear.",
+          "optionItemIds": [
+            "question-zhe-ge-duoshao-qian",
+            "demonstrative-zhe-ge",
+            "demonstrative-na-ge"
+          ]
+        },
+        {
+          "id": "market-01-order-tokens",
+          "type": "order_tokens",
+          "title": "Build the phrase",
+          "dimension": "meaning",
+          "itemId": "question-zhe-ge-duoshao-qian",
+          "text": "Put the Mandarin pieces in the right order.",
+          "tokens": [
+            "这个",
+            "多少",
+            "钱"
+          ]
+        },
+        {
+          "id": "market-01-repeat",
+          "type": "repeat",
+          "title": "Say it aloud",
+          "dimension": "tone",
+          "itemId": "question-zhe-ge-duoshao-qian",
+          "text": "Listen once, then say the full expression."
+        },
+        {
+          "id": "market-01-dialogue",
+          "type": "dialogue_turn",
+          "title": "Use it in the scene",
+          "dialogueId": "market-01-exchange",
+          "text": "Complete the exchange without keeping the full phrase visible."
+        },
+        {
+          "id": "market-01-summary",
+          "type": "summary",
+          "title": "Task complete",
+          "text": "You can now point to an item and ask its price."
+        }
+      ]
+    },
+    {
+      "id": "market-02",
+      "locationId": "market",
+      "title": "Buy two apples",
+      "estimatedMinutes": 9,
+      "prerequisites": [
+        "market-01"
+      ],
+      "itemIds": [
+        "phrase-wo-yao",
+        "noun-pingguo",
+        "question-yao-ji-ge",
+        "quantity-liang-ge",
+        "quantity-san-ge",
+        "sentence-wo-yao-liang-ge-pingguo"
+      ],
+      "steps": [
+        {
+          "id": "market-02-intro",
+          "type": "scene_intro",
+          "title": "Buy two apples",
+          "text": "The seller asks how many apples you want."
+        },
+        {
+          "id": "market-02-teach-yao-ji-ge",
+          "type": "teach_card",
+          "title": "Learn: 要几个",
+          "dimension": "meaning",
+          "itemId": "question-yao-ji-ge",
+          "text": "How many do you want?"
+        },
+        {
+          "id": "market-02-teach-liang-ge",
+          "type": "teach_card",
+          "title": "Learn: 两个",
+          "dimension": "meaning",
+          "itemId": "quantity-liang-ge",
+          "text": "two"
+        },
+        {
+          "id": "market-02-teach-san-ge",
+          "type": "teach_card",
+          "title": "Learn: 三个",
+          "dimension": "meaning",
+          "itemId": "quantity-san-ge",
+          "text": "three"
+        },
+        {
+          "id": "market-02-teach-wo-yao-liang-ge-pingguo",
+          "type": "teach_card",
+          "title": "Learn: 我要两个苹果",
+          "dimension": "meaning",
+          "itemId": "sentence-wo-yao-liang-ge-pingguo",
+          "text": "I'll have two apples."
+        },
+        {
+          "id": "market-02-listen",
+          "type": "listen_choice",
+          "title": "Listen and choose",
+          "dimension": "listening",
+          "itemId": "question-yao-ji-ge",
+          "text": "Choose the expression you hear.",
+          "optionItemIds": [
+            "question-yao-ji-ge",
+            "quantity-liang-ge",
+            "quantity-san-ge"
+          ]
+        },
+        {
+          "id": "market-02-order-tokens",
+          "type": "order_tokens",
+          "title": "Build the phrase",
+          "dimension": "meaning",
+          "itemId": "sentence-wo-yao-liang-ge-pingguo",
+          "text": "Put the Mandarin pieces in the right order.",
+          "tokens": [
+            "我",
+            "要",
+            "两个",
+            "苹果"
+          ]
+        },
+        {
+          "id": "market-02-repeat",
+          "type": "repeat",
+          "title": "Say it aloud",
+          "dimension": "tone",
+          "itemId": "sentence-wo-yao-liang-ge-pingguo",
+          "text": "Listen once, then say the full expression."
+        },
+        {
+          "id": "market-02-dialogue",
+          "type": "dialogue_turn",
+          "title": "Use it in the scene",
+          "dialogueId": "market-02-exchange",
+          "text": "Complete the exchange without keeping the full phrase visible."
+        },
+        {
+          "id": "market-02-summary",
+          "type": "summary",
+          "title": "Task complete",
+          "text": "You can now ask for two apples."
+        }
+      ]
+    },
+    {
+      "id": "market-03",
+      "locationId": "market",
+      "title": "Choose a different one",
+      "estimatedMinutes": 9,
+      "prerequisites": [
+        "market-02"
+      ],
+      "itemIds": [
+        "demonstrative-zhe-ge",
+        "demonstrative-na-ge",
+        "phrase-da-de",
+        "phrase-xiao-de",
+        "sentence-bu-yao-zhe-ge",
+        "sentence-wo-yao-na-ge-da-de",
+        "question-zhe-ge-ke-yi-ma"
+      ],
+      "steps": [
+        {
+          "id": "market-03-intro",
+          "type": "scene_intro",
+          "title": "Choose a different one",
+          "text": "Say no to one item and choose another by size."
+        },
+        {
+          "id": "market-03-teach-da-de",
+          "type": "teach_card",
+          "title": "Learn: 大的",
+          "dimension": "meaning",
+          "itemId": "phrase-da-de",
+          "text": "the big one"
+        },
+        {
+          "id": "market-03-teach-xiao-de",
+          "type": "teach_card",
+          "title": "Learn: 小的",
+          "dimension": "meaning",
+          "itemId": "phrase-xiao-de",
+          "text": "the small one"
+        },
+        {
+          "id": "market-03-teach-bu-yao-zhe-ge",
+          "type": "teach_card",
+          "title": "Learn: 不要这个",
+          "dimension": "meaning",
+          "itemId": "sentence-bu-yao-zhe-ge",
+          "text": "I don't want this one."
+        },
+        {
+          "id": "market-03-teach-wo-yao-na-ge-da-de",
+          "type": "teach_card",
+          "title": "Learn: 我要那个大的",
+          "dimension": "meaning",
+          "itemId": "sentence-wo-yao-na-ge-da-de",
+          "text": "I'll have that big one."
+        },
+        {
+          "id": "market-03-teach-zhe-ge-ke-yi-ma",
+          "type": "teach_card",
+          "title": "Learn: 这个可以吗",
+          "dimension": "meaning",
+          "itemId": "question-zhe-ge-ke-yi-ma",
+          "text": "Is this one okay?"
+        },
+        {
+          "id": "market-03-listen",
+          "type": "listen_choice",
+          "title": "Listen and choose",
+          "dimension": "listening",
+          "itemId": "question-zhe-ge-ke-yi-ma",
+          "text": "Choose the expression you hear.",
+          "optionItemIds": [
+            "question-zhe-ge-ke-yi-ma",
+            "phrase-da-de",
+            "phrase-xiao-de"
+          ]
+        },
+        {
+          "id": "market-03-order-tokens",
+          "type": "order_tokens",
+          "title": "Build the phrase",
+          "dimension": "meaning",
+          "itemId": "sentence-wo-yao-na-ge-da-de",
+          "text": "Put the Mandarin pieces in the right order.",
+          "tokens": [
+            "我",
+            "要",
+            "那个",
+            "大的"
+          ]
+        },
+        {
+          "id": "market-03-repeat",
+          "type": "repeat",
+          "title": "Say it aloud",
+          "dimension": "tone",
+          "itemId": "sentence-wo-yao-na-ge-da-de",
+          "text": "Listen once, then say the full expression."
+        },
+        {
+          "id": "market-03-dialogue",
+          "type": "dialogue_turn",
+          "title": "Use it in the scene",
+          "dialogueId": "market-03-exchange",
+          "text": "Complete the exchange without keeping the full phrase visible."
+        },
+        {
+          "id": "market-03-summary",
+          "type": "summary",
+          "title": "Task complete",
+          "text": "You can now say no to one item and choose a different one."
+        }
+      ]
+    },
+    {
+      "id": "market-04",
+      "locationId": "market",
+      "title": "Finish at checkout",
+      "estimatedMinutes": 9,
+      "prerequisites": [
+        "market-03"
+      ],
+      "itemIds": [
+        "question-yao-dai-zi-ma",
+        "phrase-yao-dai-zi",
+        "phrase-bu-yao-dai-zi",
+        "amount-yi-gong-shi-er-kuai",
+        "phrase-hao-de",
+        "phrase-xiexie"
+      ],
+      "steps": [
+        {
+          "id": "market-04-intro",
+          "type": "scene_intro",
+          "title": "Finish at checkout",
+          "text": "The seller asks if you need a bag, then gives the total."
+        },
+        {
+          "id": "market-04-teach-yao-dai-zi-ma",
+          "type": "teach_card",
+          "title": "Learn: 要袋子吗",
+          "dimension": "meaning",
+          "itemId": "question-yao-dai-zi-ma",
+          "text": "Do you need a bag?"
+        },
+        {
+          "id": "market-04-teach-yao-dai-zi",
+          "type": "teach_card",
+          "title": "Learn: 要袋子",
+          "dimension": "meaning",
+          "itemId": "phrase-yao-dai-zi",
+          "text": "I need a bag."
+        },
+        {
+          "id": "market-04-teach-bu-yao-dai-zi",
+          "type": "teach_card",
+          "title": "Learn: 不要袋子",
+          "dimension": "meaning",
+          "itemId": "phrase-bu-yao-dai-zi",
+          "text": "I do not need a bag."
+        },
+        {
+          "id": "market-04-teach-yi-gong-shi-er-kuai",
+          "type": "teach_card",
+          "title": "Learn: 一共十二块",
+          "dimension": "meaning",
+          "itemId": "amount-yi-gong-shi-er-kuai",
+          "text": "Twelve yuan altogether."
+        },
+        {
+          "id": "market-04-listen",
+          "type": "listen_choice",
+          "title": "Listen and choose",
+          "dimension": "listening",
+          "itemId": "question-yao-dai-zi-ma",
+          "text": "Choose the expression you hear.",
+          "optionItemIds": [
+            "question-yao-dai-zi-ma",
+            "phrase-yao-dai-zi",
+            "phrase-bu-yao-dai-zi"
+          ]
+        },
+        {
+          "id": "market-04-order-tokens",
+          "type": "order_tokens",
+          "title": "Build the phrase",
+          "dimension": "meaning",
+          "itemId": "phrase-bu-yao-dai-zi",
+          "text": "Put the Mandarin pieces in the right order.",
+          "tokens": [
+            "不",
+            "要",
+            "袋子"
+          ]
+        },
+        {
+          "id": "market-04-repeat",
+          "type": "repeat",
+          "title": "Say it aloud",
+          "dimension": "tone",
+          "itemId": "phrase-bu-yao-dai-zi",
+          "text": "Listen once, then say the full expression."
+        },
+        {
+          "id": "market-04-dialogue",
+          "type": "dialogue_turn",
+          "title": "Use it in the scene",
+          "dialogueId": "market-04-exchange",
+          "text": "Complete the exchange without keeping the full phrase visible."
+        },
+        {
+          "id": "market-04-summary",
+          "type": "summary",
+          "title": "Task complete",
+          "text": "You can now answer the bag question and understand the total."
+        }
+      ]
+    },
+    {
+      "id": "metro-01",
+      "locationId": "metro",
+      "title": "Find the metro station",
+      "estimatedMinutes": 9,
+      "prerequisites": [
+        "market-04"
+      ],
+      "itemIds": [
+        "phrase-qing-wen",
+        "noun-ditie-zhan",
+        "question-ditie-zhan-zai-nar",
+        "direction-yi-zhi-zou",
+        "phrase-xiexie"
+      ],
+      "steps": [
+        {
+          "id": "metro-01-intro",
+          "type": "scene_intro",
+          "title": "Find the metro station",
+          "text": "Ask a passer-by where the metro station is."
+        },
+        {
+          "id": "metro-01-teach-qing-wen",
+          "type": "teach_card",
+          "title": "Learn: 请问",
+          "dimension": "meaning",
+          "itemId": "phrase-qing-wen",
+          "text": "Excuse me, may I ask..."
+        },
+        {
+          "id": "metro-01-teach-ditie-zhan",
+          "type": "teach_card",
+          "title": "Learn: 地铁站",
+          "dimension": "meaning",
+          "itemId": "noun-ditie-zhan",
+          "text": "metro station"
+        },
+        {
+          "id": "metro-01-teach-ditie-zhan-zai-nar",
+          "type": "teach_card",
+          "title": "Learn: 请问，地铁站在哪里",
+          "dimension": "meaning",
+          "itemId": "question-ditie-zhan-zai-nar",
+          "text": "Excuse me, where is the metro station?"
+        },
+        {
+          "id": "metro-01-teach-yi-zhi-zou",
+          "type": "teach_card",
+          "title": "Learn: 一直走",
+          "dimension": "meaning",
+          "itemId": "direction-yi-zhi-zou",
+          "text": "go straight"
+        },
+        {
+          "id": "metro-01-listen",
+          "type": "listen_choice",
+          "title": "Listen and choose",
+          "dimension": "listening",
+          "itemId": "direction-yi-zhi-zou",
+          "text": "Choose the expression you hear.",
+          "optionItemIds": [
+            "direction-yi-zhi-zou",
+            "noun-ditie-zhan",
+            "question-ditie-zhan-zai-nar"
+          ]
+        },
+        {
+          "id": "metro-01-order-tokens",
+          "type": "order_tokens",
+          "title": "Build the phrase",
+          "dimension": "meaning",
+          "itemId": "question-ditie-zhan-zai-nar",
+          "text": "Put the Mandarin pieces in the right order.",
+          "tokens": [
+            "请问，",
+            "地铁站",
+            "在",
+            "哪里"
+          ]
+        },
+        {
+          "id": "metro-01-repeat",
+          "type": "repeat",
+          "title": "Say it aloud",
+          "dimension": "tone",
+          "itemId": "question-ditie-zhan-zai-nar",
+          "text": "Listen once, then say the full expression."
+        },
+        {
+          "id": "metro-01-dialogue",
+          "type": "dialogue_turn",
+          "title": "Use it in the scene",
+          "dialogueId": "metro-01-exchange",
+          "text": "Complete the exchange without keeping the full phrase visible."
+        },
+        {
+          "id": "metro-01-summary",
+          "type": "summary",
+          "title": "Task complete",
+          "text": "You can now ask where the metro station is and understand 'go straight'."
+        }
+      ]
+    },
+    {
+      "id": "metro-02",
+      "locationId": "metro",
+      "title": "Say where you are going",
+      "estimatedMinutes": 9,
+      "prerequisites": [
+        "metro-01"
+      ],
+      "itemIds": [
+        "phrase-wo-yao",
+        "verb-qu",
+        "noun-huoche-zhan",
+        "quantity-yi-zhang-piao",
+        "sentence-wo-yao-qu-huoche-zhan",
+        "sentence-wo-yao-yi-zhang-piao"
+      ],
+      "steps": [
+        {
+          "id": "metro-02-intro",
+          "type": "scene_intro",
+          "title": "Say where you are going",
+          "text": "Tell the attendant your destination and ask for one ticket."
+        },
+        {
+          "id": "metro-02-teach-qu",
+          "type": "teach_card",
+          "title": "Learn: 去",
+          "dimension": "meaning",
+          "itemId": "verb-qu",
+          "text": "to go"
+        },
+        {
+          "id": "metro-02-teach-huoche-zhan",
+          "type": "teach_card",
+          "title": "Learn: 火车站",
+          "dimension": "meaning",
+          "itemId": "noun-huoche-zhan",
+          "text": "railway station"
+        },
+        {
+          "id": "metro-02-teach-yi-zhang-piao",
+          "type": "teach_card",
+          "title": "Learn: 一张票",
+          "dimension": "meaning",
+          "itemId": "quantity-yi-zhang-piao",
+          "text": "one ticket"
+        },
+        {
+          "id": "metro-02-teach-wo-yao-qu-huoche-zhan",
+          "type": "teach_card",
+          "title": "Learn: 我要去火车站",
+          "dimension": "meaning",
+          "itemId": "sentence-wo-yao-qu-huoche-zhan",
+          "text": "I want to go to the railway station."
+        },
+        {
+          "id": "metro-02-teach-wo-yao-yi-zhang-piao",
+          "type": "teach_card",
+          "title": "Learn: 我要一张票",
+          "dimension": "meaning",
+          "itemId": "sentence-wo-yao-yi-zhang-piao",
+          "text": "I'll have one ticket."
+        },
+        {
+          "id": "metro-02-listen",
+          "type": "listen_choice",
+          "title": "Listen and choose",
+          "dimension": "listening",
+          "itemId": "sentence-wo-yao-qu-huoche-zhan",
+          "text": "Choose the expression you hear.",
+          "optionItemIds": [
+            "sentence-wo-yao-qu-huoche-zhan",
+            "sentence-wo-yao-yi-zhang-piao",
+            "noun-huoche-zhan"
+          ]
+        },
+        {
+          "id": "metro-02-order-tokens",
+          "type": "order_tokens",
+          "title": "Build the phrase",
+          "dimension": "meaning",
+          "itemId": "sentence-wo-yao-qu-huoche-zhan",
+          "text": "Put the Mandarin pieces in the right order.",
+          "tokens": [
+            "我",
+            "要",
+            "去",
+            "火车站"
+          ]
+        },
+        {
+          "id": "metro-02-repeat",
+          "type": "repeat",
+          "title": "Say it aloud",
+          "dimension": "tone",
+          "itemId": "sentence-wo-yao-qu-huoche-zhan",
+          "text": "Listen once, then say the full expression."
+        },
+        {
+          "id": "metro-02-dialogue",
+          "type": "dialogue_turn",
+          "title": "Use it in the scene",
+          "dialogueId": "metro-02-exchange",
+          "text": "Complete the exchange without keeping the full phrase visible."
+        },
+        {
+          "id": "metro-02-summary",
+          "type": "summary",
+          "title": "Task complete",
+          "text": "You can now say your destination and ask for one ticket."
+        }
+      ]
+    },
+    {
+      "id": "metro-03",
+      "locationId": "metro",
+      "title": "Ask which metro line to take",
+      "estimatedMinutes": 10,
+      "prerequisites": [
+        "metro-02"
+      ],
+      "itemIds": [
+        "question-ji-hao-xian",
+        "noun-yi-hao-xian",
+        "direction-zuo-bian",
+        "direction-you-bian",
+        "verb-huan-cheng",
+        "sentence-zai-you-bian-huan-cheng-er-hao-xian",
+        "phrase-hao-de"
+      ],
+      "steps": [
+        {
+          "id": "metro-03-intro",
+          "type": "scene_intro",
+          "title": "Ask which metro line to take",
+          "text": "Ask which metro line to take and follow one transfer instruction."
+        },
+        {
+          "id": "metro-03-teach-ji-hao-xian",
+          "type": "teach_card",
+          "title": "Learn: 去火车站坐几号线",
+          "dimension": "meaning",
+          "itemId": "question-ji-hao-xian",
+          "text": "Which metro line should I take to the railway station?"
+        },
+        {
+          "id": "metro-03-teach-yi-hao-xian",
+          "type": "teach_card",
+          "title": "Learn: 一号线",
+          "dimension": "meaning",
+          "itemId": "noun-yi-hao-xian",
+          "text": "Line 1"
+        },
+        {
+          "id": "metro-03-teach-zuo-bian",
+          "type": "teach_card",
+          "title": "Learn: 左边",
+          "dimension": "meaning",
+          "itemId": "direction-zuo-bian",
+          "text": "on the left"
+        },
+        {
+          "id": "metro-03-teach-you-bian",
+          "type": "teach_card",
+          "title": "Learn: 右边",
+          "dimension": "meaning",
+          "itemId": "direction-you-bian",
+          "text": "on the right"
+        },
+        {
+          "id": "metro-03-teach-huan-cheng",
+          "type": "teach_card",
+          "title": "Learn: 换乘",
+          "dimension": "meaning",
+          "itemId": "verb-huan-cheng",
+          "text": "transfer"
+        },
+        {
+          "id": "metro-03-teach-zai-you-bian-huan-cheng-er-hao-xian",
+          "type": "teach_card",
+          "title": "Learn: 在右边换乘二号线",
+          "dimension": "meaning",
+          "itemId": "sentence-zai-you-bian-huan-cheng-er-hao-xian",
+          "text": "Transfer to Line 2 on your right."
+        },
+        {
+          "id": "metro-03-listen",
+          "type": "listen_choice",
+          "title": "Listen and choose",
+          "dimension": "listening",
+          "itemId": "sentence-zai-you-bian-huan-cheng-er-hao-xian",
+          "text": "Choose the expression you hear.",
+          "optionItemIds": [
+            "sentence-zai-you-bian-huan-cheng-er-hao-xian",
+            "noun-yi-hao-xian",
+            "direction-you-bian"
+          ]
+        },
+        {
+          "id": "metro-03-order-tokens",
+          "type": "order_tokens",
+          "title": "Build the phrase",
+          "dimension": "meaning",
+          "itemId": "sentence-zai-you-bian-huan-cheng-er-hao-xian",
+          "text": "Put the Mandarin pieces in the right order.",
+          "tokens": [
+            "在",
+            "右边",
+            "换乘",
+            "二号线"
+          ]
+        },
+        {
+          "id": "metro-03-repeat",
+          "type": "repeat",
+          "title": "Say it aloud",
+          "dimension": "tone",
+          "itemId": "sentence-zai-you-bian-huan-cheng-er-hao-xian",
+          "text": "Listen once, then say the full expression."
+        },
+        {
+          "id": "metro-03-dialogue",
+          "type": "dialogue_turn",
+          "title": "Use it in the scene",
+          "dialogueId": "metro-03-exchange",
+          "text": "Complete the exchange without keeping the full phrase visible."
+        },
+        {
+          "id": "metro-03-summary",
+          "type": "summary",
+          "title": "Task complete",
+          "text": "You can now ask which metro line to take and follow a transfer instruction."
+        }
+      ]
+    },
+    {
+      "id": "metro-04",
+      "locationId": "metro",
+      "title": "Ask someone to repeat",
+      "estimatedMinutes": 10,
+      "prerequisites": [
+        "metro-03"
+      ],
+      "itemIds": [
+        "phrase-qing-zai-shuo-yi-bian",
+        "phrase-qing-man-yi-dian",
+        "sentence-wo-ting-bu-dong",
+        "phrase-ming-bai-le",
+        "sentence-zai-you-bian-huan-cheng-er-hao-xian",
+        "direction-yi-zhi-zou",
+        "phrase-xiexie"
+      ],
+      "steps": [
+        {
+          "id": "metro-04-intro",
+          "type": "scene_intro",
+          "title": "Ask someone to repeat",
+          "text": "Ask the speaker to repeat or slow down when directions are unclear."
+        },
+        {
+          "id": "metro-04-teach-qing-zai-shuo-yi-bian",
+          "type": "teach_card",
+          "title": "Learn: 请再说一遍",
+          "dimension": "meaning",
+          "itemId": "phrase-qing-zai-shuo-yi-bian",
+          "text": "Please say it again."
+        },
+        {
+          "id": "metro-04-teach-qing-man-yi-dian",
+          "type": "teach_card",
+          "title": "Learn: 请慢一点",
+          "dimension": "meaning",
+          "itemId": "phrase-qing-man-yi-dian",
+          "text": "Please speak more slowly."
+        },
+        {
+          "id": "metro-04-teach-wo-ting-bu-dong",
+          "type": "teach_card",
+          "title": "Learn: 我听不懂",
+          "dimension": "meaning",
+          "itemId": "sentence-wo-ting-bu-dong",
+          "text": "I don't understand."
+        },
+        {
+          "id": "metro-04-teach-ming-bai-le",
+          "type": "teach_card",
+          "title": "Learn: 明白了",
+          "dimension": "meaning",
+          "itemId": "phrase-ming-bai-le",
+          "text": "I understand now."
+        },
+        {
+          "id": "metro-04-listen",
+          "type": "listen_choice",
+          "title": "Listen and choose",
+          "dimension": "listening",
+          "itemId": "sentence-zai-you-bian-huan-cheng-er-hao-xian",
+          "text": "Choose the expression you hear.",
+          "optionItemIds": [
+            "sentence-zai-you-bian-huan-cheng-er-hao-xian",
+            "direction-yi-zhi-zou",
+            "phrase-qing-man-yi-dian"
+          ]
+        },
+        {
+          "id": "metro-04-order-tokens",
+          "type": "order_tokens",
+          "title": "Build the phrase",
+          "dimension": "meaning",
+          "itemId": "phrase-qing-zai-shuo-yi-bian",
+          "text": "Put the Mandarin pieces in the right order.",
+          "tokens": [
+            "请",
+            "再说",
+            "一遍"
+          ]
+        },
+        {
+          "id": "metro-04-repeat",
+          "type": "repeat",
+          "title": "Say it aloud",
+          "dimension": "tone",
+          "itemId": "phrase-qing-zai-shuo-yi-bian",
+          "text": "Listen once, then say the full expression."
+        },
+        {
+          "id": "metro-04-dialogue",
+          "type": "dialogue_turn",
+          "title": "Use it in the scene",
+          "dialogueId": "metro-04-exchange",
+          "text": "Complete the exchange without keeping the full phrase visible."
+        },
+        {
+          "id": "metro-04-summary",
+          "type": "summary",
+          "title": "Task complete",
+          "text": "You can now ask someone to repeat or speak more slowly."
+        }
+      ]
+    }
+  ],
+  "dialogues": [
+    {
+      "id": "cafe-challenge",
+      "locationId": "cafe",
+      "startNodeId": "shopkeeper-question",
+      "nodes": [
+        {
+          "id": "shopkeeper-question",
+          "speaker": "system",
+          "text": "您好，您想喝什么？",
+          "pinyinSyllables": [
+            "Nín",
+            "hǎo",
+            "nín",
+            "xiǎng",
+            "hē",
+            "shén",
+            "me"
+          ],
+          "nextNodeId": "learner-order"
+        },
+        {
+          "id": "learner-order",
+          "speaker": "learner",
+          "itemId": "sentence-wo-yao-yi-bei-kafei",
+          "nextNodeId": "shopkeeper-confirmation"
+        },
+        {
+          "id": "shopkeeper-confirmation",
+          "speaker": "system",
+          "text": "好的，一杯咖啡。",
+          "pinyinSyllables": [
+            "hǎo",
+            "de",
+            "yì",
+            "bēi",
+            "kā",
+            "fēi"
+          ],
+          "terminal": true
+        }
+      ]
+    },
+    {
+      "id": "cafe-02-exchange",
+      "locationId": "cafe",
+      "startNodeId": "cafe-02-question",
+      "nodes": [
+        {
+          "id": "cafe-02-question",
+          "speaker": "system",
+          "text": "热的还是冰的？",
+          "pinyinSyllables": [
+            "rè",
+            "de",
+            "hái",
+            "shì",
+            "bīng",
+            "de"
+          ],
+          "nextNodeId": "cafe-02-answer"
+        },
+        {
+          "id": "cafe-02-answer",
+          "speaker": "learner",
+          "itemId": "sentence-wo-yao-bing-de",
+          "nextNodeId": "cafe-02-confirm"
+        },
+        {
+          "id": "cafe-02-confirm",
+          "speaker": "system",
+          "text": "好的。",
+          "pinyinSyllables": [
+            "hǎo",
+            "de"
+          ],
+          "terminal": true
+        }
+      ]
+    },
+    {
+      "id": "cafe-03-exchange",
+      "locationId": "cafe",
+      "startNodeId": "cafe-03-question",
+      "nodes": [
+        {
+          "id": "cafe-03-question",
+          "speaker": "system",
+          "text": "大杯还是小杯？",
+          "pinyinSyllables": [
+            "dà",
+            "bēi",
+            "hái",
+            "shì",
+            "xiǎo",
+            "bēi"
+          ],
+          "nextNodeId": "cafe-03-answer"
+        },
+        {
+          "id": "cafe-03-answer",
+          "speaker": "learner",
+          "itemId": "sentence-wo-yao-da-bei",
+          "nextNodeId": "cafe-03-confirm"
+        },
+        {
+          "id": "cafe-03-confirm",
+          "speaker": "system",
+          "text": "好的。",
+          "pinyinSyllables": [
+            "hǎo",
+            "de"
+          ],
+          "terminal": true
+        }
+      ]
+    },
+    {
+      "id": "cafe-04-exchange",
+      "locationId": "cafe",
+      "startNodeId": "cafe-04-ready",
+      "nodes": [
+        {
+          "id": "cafe-04-ready",
+          "speaker": "system",
+          "text": "好的。",
+          "pinyinSyllables": [
+            "hǎo",
+            "de"
+          ],
+          "nextNodeId": "cafe-04-question"
+        },
+        {
+          "id": "cafe-04-question",
+          "speaker": "learner",
+          "itemId": "question-yi-gong-duoshao-qian",
+          "nextNodeId": "cafe-04-price"
+        },
+        {
+          "id": "cafe-04-price",
+          "speaker": "system",
+          "text": "二十五块。",
+          "pinyinSyllables": [
+            "èr",
+            "shí",
+            "wǔ",
+            "kuài"
+          ],
+          "nextNodeId": "cafe-04-thanks"
+        },
+        {
+          "id": "cafe-04-thanks",
+          "speaker": "learner",
+          "itemId": "phrase-xiexie",
+          "terminal": true
+        }
+      ]
+    },
+    {
+      "id": "market-01-exchange",
+      "locationId": "market",
+      "startNodeId": "market-01-greeting",
+      "nodes": [
+        {
+          "id": "market-01-greeting",
+          "speaker": "system",
+          "text": "您好。",
+          "pinyinSyllables": [
+            "nín",
+            "hǎo"
+          ],
+          "nextNodeId": "market-01-question"
+        },
+        {
+          "id": "market-01-question",
+          "speaker": "learner",
+          "itemId": "question-zhe-ge-duoshao-qian",
+          "nextNodeId": "market-01-price"
+        },
+        {
+          "id": "market-01-price",
+          "speaker": "system",
+          "text": "三块。",
+          "pinyinSyllables": [
+            "sān",
+            "kuài"
+          ],
+          "nextNodeId": "market-01-thanks"
+        },
+        {
+          "id": "market-01-thanks",
+          "speaker": "learner",
+          "itemId": "phrase-xiexie",
+          "terminal": true
+        }
+      ]
+    },
+    {
+      "id": "market-02-exchange",
+      "locationId": "market",
+      "startNodeId": "market-02-question",
+      "nodes": [
+        {
+          "id": "market-02-question",
+          "speaker": "system",
+          "text": "要几个？",
+          "pinyinSyllables": [
+            "yào",
+            "jǐ",
+            "ge"
+          ],
+          "nextNodeId": "market-02-answer"
+        },
+        {
+          "id": "market-02-answer",
+          "speaker": "learner",
+          "itemId": "sentence-wo-yao-liang-ge-pingguo",
+          "nextNodeId": "market-02-confirm"
+        },
+        {
+          "id": "market-02-confirm",
+          "speaker": "system",
+          "text": "好的。",
+          "pinyinSyllables": [
+            "hǎo",
+            "de"
+          ],
+          "terminal": true
+        }
+      ]
+    },
+    {
+      "id": "market-03-exchange",
+      "locationId": "market",
+      "startNodeId": "market-03-first-question",
+      "nodes": [
+        {
+          "id": "market-03-first-question",
+          "speaker": "system",
+          "text": "这个可以吗？",
+          "pinyinSyllables": [
+            "zhè",
+            "ge",
+            "kě",
+            "yǐ",
+            "ma"
+          ],
+          "nextNodeId": "market-03-reject"
+        },
+        {
+          "id": "market-03-reject",
+          "speaker": "learner",
+          "itemId": "sentence-bu-yao-zhe-ge",
+          "nextNodeId": "market-03-second-question"
+        },
+        {
+          "id": "market-03-second-question",
+          "speaker": "system",
+          "text": "那个呢？",
+          "pinyinSyllables": [
+            "nà",
+            "ge",
+            "ne"
+          ],
+          "nextNodeId": "market-03-choose"
+        },
+        {
+          "id": "market-03-choose",
+          "speaker": "learner",
+          "itemId": "sentence-wo-yao-na-ge-da-de",
+          "nextNodeId": "market-03-confirm"
+        },
+        {
+          "id": "market-03-confirm",
+          "speaker": "system",
+          "text": "好的。",
+          "pinyinSyllables": [
+            "hǎo",
+            "de"
+          ],
+          "terminal": true
+        }
+      ]
+    },
+    {
+      "id": "market-04-exchange",
+      "locationId": "market",
+      "startNodeId": "market-04-bag-question",
+      "nodes": [
+        {
+          "id": "market-04-bag-question",
+          "speaker": "system",
+          "text": "要袋子吗？",
+          "pinyinSyllables": [
+            "yào",
+            "dài",
+            "zi",
+            "ma"
+          ],
+          "nextNodeId": "market-04-bag-answer"
+        },
+        {
+          "id": "market-04-bag-answer",
+          "speaker": "learner",
+          "itemId": "phrase-bu-yao-dai-zi",
+          "nextNodeId": "market-04-total"
+        },
+        {
+          "id": "market-04-total",
+          "speaker": "system",
+          "text": "一共十二块。",
+          "pinyinSyllables": [
+            "yí",
+            "gòng",
+            "shí",
+            "èr",
+            "kuài"
+          ],
+          "nextNodeId": "market-04-thanks"
+        },
+        {
+          "id": "market-04-thanks",
+          "speaker": "learner",
+          "itemId": "phrase-xiexie",
+          "terminal": true
+        }
+      ]
+    },
+    {
+      "id": "metro-01-exchange",
+      "locationId": "metro",
+      "startNodeId": "metro-01-greeting",
+      "nodes": [
+        {
+          "id": "metro-01-greeting",
+          "speaker": "system",
+          "text": "您好。",
+          "pinyinSyllables": [
+            "nín",
+            "hǎo"
+          ],
+          "nextNodeId": "metro-01-question"
+        },
+        {
+          "id": "metro-01-question",
+          "speaker": "learner",
+          "itemId": "question-ditie-zhan-zai-nar",
+          "nextNodeId": "metro-01-direction"
+        },
+        {
+          "id": "metro-01-direction",
+          "speaker": "system",
+          "text": "一直走。",
+          "pinyinSyllables": [
+            "yì",
+            "zhí",
+            "zǒu"
+          ],
+          "nextNodeId": "metro-01-thanks"
+        },
+        {
+          "id": "metro-01-thanks",
+          "speaker": "learner",
+          "itemId": "phrase-xiexie",
+          "terminal": true
+        }
+      ]
+    },
+    {
+      "id": "metro-02-exchange",
+      "locationId": "metro",
+      "startNodeId": "metro-02-destination-question",
+      "nodes": [
+        {
+          "id": "metro-02-destination-question",
+          "speaker": "system",
+          "text": "去哪里？",
+          "pinyinSyllables": [
+            "qù",
+            "nǎ",
+            "lǐ"
+          ],
+          "nextNodeId": "metro-02-destination"
+        },
+        {
+          "id": "metro-02-destination",
+          "speaker": "learner",
+          "itemId": "sentence-wo-yao-qu-huoche-zhan",
+          "nextNodeId": "metro-02-ticket-question"
+        },
+        {
+          "id": "metro-02-ticket-question",
+          "speaker": "system",
+          "text": "几张票？",
+          "pinyinSyllables": [
+            "jǐ",
+            "zhāng",
+            "piào"
+          ],
+          "nextNodeId": "metro-02-ticket"
+        },
+        {
+          "id": "metro-02-ticket",
+          "speaker": "learner",
+          "itemId": "sentence-wo-yao-yi-zhang-piao",
+          "nextNodeId": "metro-02-confirm"
+        },
+        {
+          "id": "metro-02-confirm",
+          "speaker": "system",
+          "text": "好的。",
+          "pinyinSyllables": [
+            "hǎo",
+            "de"
+          ],
+          "terminal": true
+        }
+      ]
+    },
+    {
+      "id": "metro-03-exchange",
+      "locationId": "metro",
+      "startNodeId": "metro-03-greeting",
+      "nodes": [
+        {
+          "id": "metro-03-greeting",
+          "speaker": "system",
+          "text": "您好。",
+          "pinyinSyllables": [
+            "nín",
+            "hǎo"
+          ],
+          "nextNodeId": "metro-03-line-question"
+        },
+        {
+          "id": "metro-03-line-question",
+          "speaker": "learner",
+          "itemId": "question-ji-hao-xian",
+          "nextNodeId": "metro-03-line-answer"
+        },
+        {
+          "id": "metro-03-line-answer",
+          "speaker": "system",
+          "text": "一号线。",
+          "pinyinSyllables": [
+            "yí",
+            "hào",
+            "xiàn"
+          ],
+          "nextNodeId": "metro-03-repeat"
+        },
+        {
+          "id": "metro-03-repeat",
+          "speaker": "learner",
+          "itemId": "noun-yi-hao-xian",
+          "nextNodeId": "metro-03-transfer"
+        },
+        {
+          "id": "metro-03-transfer",
+          "speaker": "system",
+          "text": "在右边换乘二号线。",
+          "pinyinSyllables": [
+            "zài",
+            "yòu",
+            "bian",
+            "huàn",
+            "chéng",
+            "èr",
+            "hào",
+            "xiàn"
+          ],
+          "nextNodeId": "metro-03-confirm"
+        },
+        {
+          "id": "metro-03-confirm",
+          "speaker": "learner",
+          "itemId": "phrase-hao-de",
+          "terminal": true
+        }
+      ]
+    },
+    {
+      "id": "metro-04-exchange",
+      "locationId": "metro",
+      "startNodeId": "metro-04-first-direction",
+      "nodes": [
+        {
+          "id": "metro-04-first-direction",
+          "speaker": "system",
+          "text": "在右边换乘二号线。",
+          "pinyinSyllables": [
+            "zài",
+            "yòu",
+            "bian",
+            "huàn",
+            "chéng",
+            "èr",
+            "hào",
+            "xiàn"
+          ],
+          "nextNodeId": "metro-04-confused"
+        },
+        {
+          "id": "metro-04-confused",
+          "speaker": "learner",
+          "itemId": "phrase-qing-zai-shuo-yi-bian",
+          "nextNodeId": "metro-04-repeat-direction"
+        },
+        {
+          "id": "metro-04-repeat-direction",
+          "speaker": "system",
+          "text": "在右边换乘二号线。",
+          "pinyinSyllables": [
+            "zài",
+            "yòu",
+            "bian",
+            "huàn",
+            "chéng",
+            "èr",
+            "hào",
+            "xiàn"
+          ],
+          "nextNodeId": "metro-04-slow-request"
+        },
+        {
+          "id": "metro-04-slow-request",
+          "speaker": "learner",
+          "itemId": "phrase-qing-man-yi-dian",
+          "nextNodeId": "metro-04-simple-direction"
+        },
+        {
+          "id": "metro-04-simple-direction",
+          "speaker": "system",
+          "text": "在右边。换乘二号线。",
+          "pinyinSyllables": [
+            "zài",
+            "yòu",
+            "bian",
+            "huàn",
+            "chéng",
+            "èr",
+            "hào",
+            "xiàn"
+          ],
+          "nextNodeId": "metro-04-understood"
+        },
+        {
+          "id": "metro-04-understood",
+          "speaker": "learner",
+          "itemId": "phrase-ming-bai-le",
+          "terminal": true
+        }
+      ]
+    },
+    {
+      "id": "cafe-final-challenge",
+      "locationId": "cafe",
+      "startNodeId": "cafe-final-greeting",
+      "nodes": [
+        {
+          "id": "cafe-final-greeting",
+          "speaker": "system",
+          "text": "您好，您想喝什么？",
+          "pinyinSyllables": [
+            "nín",
+            "hǎo",
+            "nín",
+            "xiǎng",
+            "hē",
+            "shén",
+            "me"
+          ],
+          "nextNodeId": "cafe-final-order"
+        },
+        {
+          "id": "cafe-final-order",
+          "speaker": "learner",
+          "itemId": "sentence-wo-yao-yi-bei-kafei",
+          "nextNodeId": "cafe-final-temperature-question"
+        },
+        {
+          "id": "cafe-final-temperature-question",
+          "speaker": "system",
+          "text": "热的还是冰的？",
+          "pinyinSyllables": [
+            "rè",
+            "de",
+            "hái",
+            "shì",
+            "bīng",
+            "de"
+          ],
+          "nextNodeId": "cafe-final-temperature"
+        },
+        {
+          "id": "cafe-final-temperature",
+          "speaker": "learner",
+          "itemId": "sentence-wo-yao-bing-de",
+          "nextNodeId": "cafe-final-size-question"
+        },
+        {
+          "id": "cafe-final-size-question",
+          "speaker": "system",
+          "text": "大杯还是小杯？",
+          "pinyinSyllables": [
+            "dà",
+            "bēi",
+            "hái",
+            "shì",
+            "xiǎo",
+            "bēi"
+          ],
+          "nextNodeId": "cafe-final-size"
+        },
+        {
+          "id": "cafe-final-size",
+          "speaker": "learner",
+          "itemId": "sentence-wo-yao-da-bei",
+          "nextNodeId": "cafe-final-ready"
+        },
+        {
+          "id": "cafe-final-ready",
+          "speaker": "system",
+          "text": "好的。",
+          "pinyinSyllables": [
+            "hǎo",
+            "de"
+          ],
+          "nextNodeId": "cafe-final-total-question"
+        },
+        {
+          "id": "cafe-final-total-question",
+          "speaker": "learner",
+          "itemId": "question-yi-gong-duoshao-qian",
+          "nextNodeId": "cafe-final-total"
+        },
+        {
+          "id": "cafe-final-total",
+          "speaker": "system",
+          "text": "二十五块。",
+          "pinyinSyllables": [
+            "èr",
+            "shí",
+            "wǔ",
+            "kuài"
+          ],
+          "nextNodeId": "cafe-final-thanks"
+        },
+        {
+          "id": "cafe-final-thanks",
+          "speaker": "learner",
+          "itemId": "phrase-xiexie",
+          "terminal": true
+        }
+      ]
+    },
+    {
+      "id": "market-final-challenge",
+      "locationId": "market",
+      "startNodeId": "market-final-greeting",
+      "nodes": [
+        {
+          "id": "market-final-greeting",
+          "speaker": "system",
+          "text": "您好。",
+          "pinyinSyllables": [
+            "nín",
+            "hǎo"
+          ],
+          "nextNodeId": "market-final-price-question"
+        },
+        {
+          "id": "market-final-price-question",
+          "speaker": "learner",
+          "itemId": "question-zhe-ge-duoshao-qian",
+          "nextNodeId": "market-final-price"
+        },
+        {
+          "id": "market-final-price",
+          "speaker": "system",
+          "text": "三块。",
+          "pinyinSyllables": [
+            "sān",
+            "kuài"
+          ],
+          "nextNodeId": "market-final-first-choice"
+        },
+        {
+          "id": "market-final-quantity",
+          "speaker": "learner",
+          "itemId": "sentence-wo-yao-liang-ge-pingguo",
+          "nextNodeId": "market-final-bag-question"
+        },
+        {
+          "id": "market-final-first-choice",
+          "speaker": "system",
+          "text": "这个可以吗？",
+          "pinyinSyllables": [
+            "zhè",
+            "ge",
+            "kě",
+            "yǐ",
+            "ma"
+          ],
+          "nextNodeId": "market-final-reject"
+        },
+        {
+          "id": "market-final-reject",
+          "speaker": "learner",
+          "itemId": "sentence-bu-yao-zhe-ge",
+          "nextNodeId": "market-final-second-choice"
+        },
+        {
+          "id": "market-final-second-choice",
+          "speaker": "system",
+          "text": "那个呢？",
+          "pinyinSyllables": [
+            "nà",
+            "ge",
+            "ne"
+          ],
+          "nextNodeId": "market-final-choose"
+        },
+        {
+          "id": "market-final-choose",
+          "speaker": "learner",
+          "itemId": "sentence-wo-yao-na-ge-da-de",
+          "nextNodeId": "market-final-quantity-question"
+        },
+        {
+          "id": "market-final-quantity-question",
+          "speaker": "system",
+          "text": "要几个？",
+          "pinyinSyllables": [
+            "yào",
+            "jǐ",
+            "ge"
+          ],
+          "nextNodeId": "market-final-quantity"
+        },
+        {
+          "id": "market-final-bag-question",
+          "speaker": "system",
+          "text": "要袋子吗？",
+          "pinyinSyllables": [
+            "yào",
+            "dài",
+            "zi",
+            "ma"
+          ],
+          "nextNodeId": "market-final-bag-answer"
+        },
+        {
+          "id": "market-final-bag-answer",
+          "speaker": "learner",
+          "itemId": "phrase-bu-yao-dai-zi",
+          "nextNodeId": "market-final-total"
+        },
+        {
+          "id": "market-final-total",
+          "speaker": "system",
+          "text": "一共十二块。",
+          "pinyinSyllables": [
+            "yí",
+            "gòng",
+            "shí",
+            "èr",
+            "kuài"
+          ],
+          "nextNodeId": "market-final-thanks"
+        },
+        {
+          "id": "market-final-thanks",
+          "speaker": "learner",
+          "itemId": "phrase-xiexie",
+          "terminal": true
+        }
+      ]
+    },
+    {
+      "id": "metro-final-challenge",
+      "locationId": "metro",
+      "startNodeId": "metro-final-greeting",
+      "nodes": [
+        {
+          "id": "metro-final-greeting",
+          "speaker": "system",
+          "text": "您好。",
+          "pinyinSyllables": [
+            "nín",
+            "hǎo"
+          ],
+          "nextNodeId": "metro-final-station-question"
+        },
+        {
+          "id": "metro-final-station-question",
+          "speaker": "learner",
+          "itemId": "question-ditie-zhan-zai-nar",
+          "nextNodeId": "metro-final-station-direction"
+        },
+        {
+          "id": "metro-final-station-direction",
+          "speaker": "system",
+          "text": "一直走。",
+          "pinyinSyllables": [
+            "yì",
+            "zhí",
+            "zǒu"
+          ],
+          "nextNodeId": "metro-final-station-thanks"
+        },
+        {
+          "id": "metro-final-station-thanks",
+          "speaker": "learner",
+          "itemId": "phrase-xiexie",
+          "nextNodeId": "metro-final-ticket-question"
+        },
+        {
+          "id": "metro-final-ticket-question",
+          "speaker": "system",
+          "text": "您好，去哪里？",
+          "pinyinSyllables": [
+            "nín",
+            "hǎo",
+            "qù",
+            "nǎ",
+            "lǐ"
+          ],
+          "nextNodeId": "metro-final-destination"
+        },
+        {
+          "id": "metro-final-destination",
+          "speaker": "learner",
+          "itemId": "sentence-wo-yao-qu-huoche-zhan",
+          "nextNodeId": "metro-final-ticket-count"
+        },
+        {
+          "id": "metro-final-ticket-count",
+          "speaker": "system",
+          "text": "几张票？",
+          "pinyinSyllables": [
+            "jǐ",
+            "zhāng",
+            "piào"
+          ],
+          "nextNodeId": "metro-final-ticket-request"
+        },
+        {
+          "id": "metro-final-ticket-request",
+          "speaker": "learner",
+          "itemId": "sentence-wo-yao-yi-zhang-piao",
+          "nextNodeId": "metro-final-ticket-confirm"
+        },
+        {
+          "id": "metro-final-ticket-confirm",
+          "speaker": "system",
+          "text": "好的。",
+          "pinyinSyllables": [
+            "hǎo",
+            "de"
+          ],
+          "nextNodeId": "metro-final-line-question"
+        },
+        {
+          "id": "metro-final-line-question",
+          "speaker": "learner",
+          "itemId": "question-ji-hao-xian",
+          "nextNodeId": "metro-final-line"
+        },
+        {
+          "id": "metro-final-line",
+          "speaker": "system",
+          "text": "一号线。",
+          "pinyinSyllables": [
+            "yí",
+            "hào",
+            "xiàn"
+          ],
+          "nextNodeId": "metro-final-line-confirm"
+        },
+        {
+          "id": "metro-final-line-confirm",
+          "speaker": "learner",
+          "itemId": "phrase-hao-de",
+          "nextNodeId": "metro-final-transfer"
+        },
+        {
+          "id": "metro-final-transfer",
+          "speaker": "system",
+          "text": "在右边换乘二号线。",
+          "pinyinSyllables": [
+            "zài",
+            "yòu",
+            "bian",
+            "huàn",
+            "chéng",
+            "èr",
+            "hào",
+            "xiàn"
+          ],
+          "nextNodeId": "metro-final-repeat-request"
+        },
+        {
+          "id": "metro-final-repeat-request",
+          "speaker": "learner",
+          "itemId": "phrase-qing-zai-shuo-yi-bian",
+          "nextNodeId": "metro-final-transfer-repeat"
+        },
+        {
+          "id": "metro-final-transfer-repeat",
+          "speaker": "system",
+          "text": "在右边换乘二号线。",
+          "pinyinSyllables": [
+            "zài",
+            "yòu",
+            "bian",
+            "huàn",
+            "chéng",
+            "èr",
+            "hào",
+            "xiàn"
+          ],
+          "nextNodeId": "metro-final-understood"
+        },
+        {
+          "id": "metro-final-understood",
+          "speaker": "learner",
+          "itemId": "phrase-ming-bai-le",
+          "terminal": true
+        }
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "id": "image-cafe-counter",
+      "kind": "image",
+      "status": "ready",
+      "path": "assets/images/cafe-counter.png",
+      "sha256": "a5fd40ea29477c59dd4aefae658044c251ae3867b50a574503f42ef921d5f011",
+      "license": "internal generated asset",
+      "credit": "Mandarin Mission, generated with OpenAI image generation on 2026-07-24"
+    },
+    {
+      "id": "audio-wo-yao",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/wo-yao.wav",
+      "sha256": "631519440087c64a3bf96dff969e29c6fd3ad5d0d88f3833d2f5cb0bb429dc5e",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 我要, generated 2026-07-24; 22.05 kHz mono output converted to PCM16 for app compatibility, no voice cloning or acoustic post-processing"
+    },
+    {
+      "id": "audio-kafei",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/kafei.wav",
+      "sha256": "f679bac69da1f8d66c2cc4f59e402f7ffdc134988c04ba3bf858bf30a26846dd",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.89, synthesis text 喀飞 for displayed 咖啡 pronunciation control, generated 2026-07-24; 22.05 kHz mono output converted to PCM16 for app compatibility, no voice cloning or acoustic post-processing"
+    },
+    {
+      "id": "audio-wo-yao-yi-bei-kafei",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/wo-yao-yi-bei-kafei.wav",
+      "sha256": "2ae006096982585511a20b60829dfd39b1e683c6eec3ef5246af5e7fa8d1ecd9",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 我要一杯咖啡, generated 2026-07-24; 22.05 kHz mono output converted to PCM16 for app compatibility, no voice cloning or acoustic post-processing"
+    },
+    {
+      "id": "audio-re-de",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/re-de.wav",
+      "sha256": "81462d837bce3b175ec137be94b599f5b73dcfccb1aaa0dbea75088eaf5f9515",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 271828, speed 0.94, synthesis text 热的, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-bing-de",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/bing-de.wav",
+      "sha256": "44eebce4045c0f447173f7054e45ca1a52293ca1bb6e3b2531a6a05ebfaee13a",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 冰的, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-re-de-haishi-bing-de",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/re-de-haishi-bing-de.wav",
+      "sha256": "a0a65bf1a0d21758025f42b3da8c53a028661c876d1d645bfbfce34c0486e706",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 热的还是冰的？, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-wo-yao-bing-de",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/wo-yao-bing-de.wav",
+      "sha256": "0c127564cabf8a7502faa6df65824e53dcd62369d83bae72b6d95134b0f64c72",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 我要冰的。, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-da-bei",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/da-bei.wav",
+      "sha256": "3e57238bddac5fa4a6e326dd117d232b154fa1a448e2a07d2b24758948f1d9b1",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 大杯, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-xiao-bei",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/xiao-bei.wav",
+      "sha256": "d619063e9fa5cb74d4509ae76273e9dfa03d3d73cc46f347c2a1cfcbe41496c7",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 小杯, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-da-bei-haishi-xiao-bei",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/da-bei-haishi-xiao-bei.wav",
+      "sha256": "eee299c23df1799309de4164916a948474cf212f13878ef4036c4ea0ba64e4c2",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 大杯还是小杯？, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-wo-yao-da-bei",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/wo-yao-da-bei.wav",
+      "sha256": "8f1b3a7e174127c55807abe11916986dac4b895a343a76f0570c01e978414066",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 我要大杯。, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-yi-gong-duoshao-qian",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/yi-gong-duoshao-qian.wav",
+      "sha256": "561a78e574ec1114b82fd0043af7703f919168e9fc348717dc786eaf6018846d",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 一共多少钱？, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-er-shi-wu-kuai",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/er-shi-wu-kuai.wav",
+      "sha256": "840b887fa36eabb6aaeb8a05ef6b0a35eb52d7ef7c9ea86c7db3602136c4d977",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 二十五块。, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-hao-de",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/hao-de.wav",
+      "sha256": "239018fcac71619c573a8a81b65622981f448797deebae3451992532d3a00879",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 161803, speed 0.94, synthesis text 好的。, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-xiexie",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/xiexie.wav",
+      "sha256": "d26eb479bf16dfc16ea49fc8c39e9591d3433fe92ed5374610e4e6aa256e583b",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 20260726, speed 0.89, synthesis text 谢谢。, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-zhe-ge",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/zhe-ge.wav",
+      "sha256": "003ade22e1e4f11b3bb32cb2bf9c8e15ade2d272604b357e17ce9f47b280bd69",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 这个, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-na-ge",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/na-ge.wav",
+      "sha256": "7384013e06c9477b2c92f211a1b42d6f9c1533ae420c618214510da792dce5ba",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 那个, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-pingguo",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/pingguo.wav",
+      "sha256": "ab2e4e9ed4cd11c0ca620de056132319f7d79463af724fde028f469c8d9e61fe",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 271828, speed 0.89, synthesis text 苹果, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-xiangjiao",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/xiangjiao.wav",
+      "sha256": "4156c1dc3ea29edf41016bba8e484a8afe4094aca98a053c739405f84ef5dfc3",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 香蕉, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-zhe-ge-duoshao-qian",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/zhe-ge-duoshao-qian.wav",
+      "sha256": "ce2c47cb37698b930efdbe2ef7aca45d79356ca0762c9627cb6134df6afc4451",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 这个多少钱？, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-yao-ji-ge",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/yao-ji-ge.wav",
+      "sha256": "3591901603ac23dfc562392d10a3f2cccd189222f4b7100d331063452691a4a5",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 要几个？, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-liang-ge",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/liang-ge.wav",
+      "sha256": "39f7e1b987efcdb3bba62a8785d46e09c1c2c586a47721d6dfda8ec6cd3d37fb",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 两个, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-san-ge",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/san-ge.wav",
+      "sha256": "52d06a176777d617be2fa4b16ef2859a9baec839868eb15939f48dde2e6b1562",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 三个, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-wo-yao-liang-ge-pingguo",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/wo-yao-liang-ge-pingguo.wav",
+      "sha256": "00faf4505b0ad64c34bbc92331f25868c036704257f85670cd4a70619727f0f3",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 我要两个苹果。, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-da-de",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/da-de.wav",
+      "sha256": "45214aacef27717db8586119c8d230584d76358e8561ce5d31205cb6c6dfb33d",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 大的, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-xiao-de",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/xiao-de.wav",
+      "sha256": "5ab5c12f48674b49dd810b54044641af649bafe1710f807eb85b249fb0c55b82",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 小的, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-bu-yao-zhe-ge",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/bu-yao-zhe-ge.wav",
+      "sha256": "54754bec5eb0f92c9a08638c42fdebd5e0a46f8be434d87fb7641a6596da91e6",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 20260726, speed 0.94, synthesis text 不要这个。, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-wo-yao-na-ge-da-de",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/wo-yao-na-ge-da-de.wav",
+      "sha256": "a91899ac2044d8a3862d38c5b40c0e360cf4a59c52246953377ba2c51018d22a",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 我要那个大的。, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-zhe-ge-ke-yi-ma",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/zhe-ge-ke-yi-ma.wav",
+      "sha256": "7664627df2c550e7679c7e86e3efdd75dc077c1e96e760d55a9831c95cf8072e",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 这个可以吗？, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-yao-dai-zi-ma",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/yao-dai-zi-ma.wav",
+      "sha256": "ec8179ddcdd277bc38bde6d3c69ba2fb669deb005e4feb44692e645eff2fe8e9",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 要袋子吗？, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-yao-dai-zi",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/yao-dai-zi.wav",
+      "sha256": "5bb4bd9f2e52a67048cc2b0722cd6465feed38a4f71ce00d55213d3d0770a1d0",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 161803, speed 0.94, synthesis text 要袋子。, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-bu-yao-dai-zi",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/bu-yao-dai-zi.wav",
+      "sha256": "31b69ae0e9915b13ffec575ecd4aa512e94b8e9b6a824a29280e05fa751ae3c9",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 20260726, speed 0.94, synthesis text 不要袋子。, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-yi-gong-shi-er-kuai",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/yi-gong-shi-er-kuai.wav",
+      "sha256": "194ee56d0f279b0296d521664dbb624fd9695d6c2247e3ee5ecf98c338ed7bc1",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 一共十二块。, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-qing-wen",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/qing-wen.wav",
+      "sha256": "420041383fc33c856f7c595f1c0ace4636c540f751bb5b3f65aab2070e0dfe97",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 请问, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-ditie-zhan",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/ditie-zhan.wav",
+      "sha256": "9804ea67cd3ed5b59dfef04955aa27a3f3914235c86fb4eaa4d9249ddd97afef",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 地铁站, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-ditie-zhan-zai-nar",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/ditie-zhan-zai-nar.wav",
+      "sha256": "3a942254374c3038370b4df1d2b810f3882048a2074c253c376139dbb93f663e",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 请问，地铁站在哪里？, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-yi-zhi-zou",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/yi-zhi-zou.wav",
+      "sha256": "ea0d18b6ebbd6145558ab49ba3a041254711e809229f664debd11a33cf4b95e6",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 一直走, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-qu",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/qu.wav",
+      "sha256": "b36a46faba4ff1f2d30dd6be7e9c2e62ca6b0e08a9e8a9e346964eb1805f068a",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 去, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-huoche-zhan",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/huoche-zhan.wav",
+      "sha256": "dadb9af0e2d5e3dc3aad0027794ab4248fe822dfc866d2d9f3989c4ad038bc08",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 20260726, speed 0.89, synthesis text 火车站。, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-yi-zhang-piao",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/yi-zhang-piao.wav",
+      "sha256": "95e98e47d3a155f4eda0c6d67eb42469002f07ad6b69a3d02b7b83ed9fec878d",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 一张票, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-wo-yao-qu-huoche-zhan",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/wo-yao-qu-huoche-zhan.wav",
+      "sha256": "e972cea3ce14fe7781d84c09ba5a74d008df954b1a9b7cbff049c7a0c25b10de",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 我要去火车站。, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-wo-yao-yi-zhang-piao",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/wo-yao-yi-zhang-piao.wav",
+      "sha256": "844921377feb976cc32477ad36858c75a93d73f87c15d37f756c2aa1aeb36358",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 我要一张票。, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-ji-hao-xian",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/ji-hao-xian.wav",
+      "sha256": "6deee4632775f32ebad5da2bc6a6c6e0d43f269acc791bda30847e20a558ef9c",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 777, speed 0.94, synthesis text 去火车站，坐几号线？, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-yi-hao-xian",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/yi-hao-xian.wav",
+      "sha256": "e2ceb2ee7c5bf6c3533f6df79db04a51f11a91ac92191cc63b1c2ea0e41c30c7",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 一号线, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-zuo-bian",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/zuo-bian.wav",
+      "sha256": "6163c9abca5899300c0dab7098497b1f7bb61dcd4774db1ea2ab1345d32822bb",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 左边, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-you-bian",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/you-bian.wav",
+      "sha256": "e13c93b90b255f73e449c63df08e1da10a345cc7e7babd42b74282f82cc95347",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 右边, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-huan-cheng",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/huan-cheng.wav",
+      "sha256": "c3f269083ba36f0be816a944a6670e6aca084a1e6866c8d6f0bb96c9886d47e4",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 换乘, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-zai-you-bian-huan-cheng-er-hao-xian",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/zai-you-bian-huan-cheng-er-hao-xian.wav",
+      "sha256": "e3473b8882fbb9043252fa236ac1aa47786cf5e8a79f66c6b0158b15714f48b6",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 在右边换乘二号线。, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-qing-zai-shuo-yi-bian",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/qing-zai-shuo-yi-bian.wav",
+      "sha256": "a4a65615f45d69876908990e66019e8f72d95ed89f48586119877435101e519c",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 请再说一遍。, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-qing-man-yi-dian",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/qing-man-yi-dian.wav",
+      "sha256": "d0943edee75e0225d05601db372467c14f475e89679e40c41a8c407ca7bf15e1",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 请慢一点。, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-wo-ting-bu-dong",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/wo-ting-bu-dong.wav",
+      "sha256": "a53cfd445d9686fcca00c10d69709cf4dd3ac0bdc4bd566d74cb79465e0b980a",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 我听不懂。, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    },
+    {
+      "id": "audio-ming-bai-le",
+      "kind": "audio",
+      "status": "ready",
+      "path": "assets/audio/cosyvoice/ming-bai-le.wav",
+      "sha256": "4e0900410603529f164480a72bf40345dfa2445cf70bec81ab9d33d78c973661",
+      "license": "Apache-2.0 model and tooling; generated TTS audio",
+      "credit": "CosyVoice-300M-SFT with built-in 中文女 speaker, seed 1986, speed 0.94, synthesis text 明白了。, generated 2026-07-26; 22.05 kHz mono PCM16 generated TTS audio, no voice cloning or acoustic post-processing; user listening approval recorded 2026-07-26"
+    }
+  ]
+}

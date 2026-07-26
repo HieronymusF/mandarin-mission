@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mandarin_mission/app/app.dart';
 import 'package:mandarin_mission/data/content/course_content_models.dart';
 import 'package:mandarin_mission/data/content/course_content_provider.dart';
+import 'package:mandarin_mission/data/content/course_content_repository.dart';
 import 'package:mandarin_mission/data/local/app_database.dart';
 import 'package:mandarin_mission/data/local/app_database_provider.dart';
 
@@ -17,7 +18,14 @@ void main() {
     });
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [appDatabaseProvider.overrideWithValue(database)],
+        overrides: [
+          appDatabaseProvider.overrideWithValue(database),
+          courseContentRepositoryProvider.overrideWithValue(
+            CourseContentRepository(
+              assetPath: CourseContentRepository.bundledCafeCourseAsset,
+            ),
+          ),
+        ],
         child: const MandarinMissionApp(),
       ),
     );
@@ -109,7 +117,7 @@ void main() {
     _expectLeadingContentAligned(
       tester,
       card: find.byKey(const Key('listen-result-banner')),
-      content: find.text('That is the complete café order.'),
+      content: find.text('Correct — that’s what you heard.'),
       padding: 16,
       leadingWidth: 24,
       gap: 12,
@@ -191,8 +199,19 @@ void main() {
     await tester.tap(find.byKey(const Key('lesson-primary-action')));
     await tester.pumpAndSettle();
 
+    expect(find.text('The exchange is complete.'), findsOneWidget);
+    expect(find.text('Continue'), findsOneWidget);
+    expect(find.byKey(const Key('dialogue-said-aloud')), findsNothing);
+    await tester.tap(find.byKey(const Key('lesson-primary-action')));
+    await tester.pumpAndSettle();
+
     expect(find.text('Coffee ordered!'), findsOneWidget);
     expect(find.text('11 / 11'), findsOneWidget);
+    expect(find.text('Mission complete'), findsOneWidget);
+    expect(find.text('You practiced understanding Mandarin.'), findsOneWidget);
+    expect(find.text('You completed the speaking practice.'), findsOneWidget);
+    expect(find.text('Available after a successful review.'), findsOneWidget);
+    expect(find.text('Café stamp earned'), findsNothing);
     _expectLeadingContentAligned(
       tester,
       card: find.byKey(const Key('summary-star-understanding-card')),

@@ -81,8 +81,8 @@ class OrderTokensStep extends StatelessWidget {
           LessonChoiceFeedback(
             key: const Key('order-result'),
             correct: correct,
-            correctText: 'The café order is in the right order.',
-            incorrectText: 'Those pieces need a different order.',
+            correctText: 'Correct — that’s the right order.',
+            incorrectText: 'Not quite — try a different order.',
           ),
         ],
       ],

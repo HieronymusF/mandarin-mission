@@ -8,6 +8,8 @@ import 'package:mandarin_mission/app/app.dart';
 import 'package:mandarin_mission/data/audio/audio_providers.dart';
 import 'package:mandarin_mission/data/audio/audio_service.dart';
 import 'package:mandarin_mission/data/audio/recording_service.dart';
+import 'package:mandarin_mission/data/content/course_content_provider.dart';
+import 'package:mandarin_mission/data/content/course_content_repository.dart';
 import 'package:mandarin_mission/data/local/app_database.dart';
 import 'package:mandarin_mission/data/local/app_database_provider.dart';
 import 'package:mandarin_mission/features/lesson/application/lesson_providers.dart';
@@ -31,6 +33,11 @@ void main() {
       ProviderScope(
         overrides: [
           appDatabaseProvider.overrideWithValue(database),
+          courseContentRepositoryProvider.overrideWithValue(
+            CourseContentRepository(
+              assetPath: CourseContentRepository.bundledCafeCourseAsset,
+            ),
+          ),
           audioServiceProvider.overrideWithValue(audioService),
           recordingServiceProvider.overrideWithValue(recordingService),
         ],

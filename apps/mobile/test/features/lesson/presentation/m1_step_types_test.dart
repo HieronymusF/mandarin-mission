@@ -5,6 +5,9 @@ import 'package:mandarin_mission/core/theme/app_theme.dart';
 import 'package:mandarin_mission/data/content/course_content_models.dart';
 import 'package:mandarin_mission/features/lesson/presentation/steps/image_choice_step.dart';
 import 'package:mandarin_mission/features/lesson/presentation/steps/order_tokens_step.dart';
+import 'package:mandarin_mission/features/lesson/presentation/steps/scene_intro_step.dart';
+import 'package:mandarin_mission/features/lesson/presentation/steps/summary_step.dart';
+import 'package:mandarin_mission/features/lesson/presentation/steps/teach_card_step.dart';
 import 'package:mandarin_mission/features/lesson/presentation/steps/tone_contrast_step.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -14,6 +17,91 @@ void main() {
 
   setUp(() {
     TestWidgetsFlutterBinding.ensureInitialized();
+  });
+
+  testWidgets('teach card does not invent a lesson-wide build order', (
+    tester,
+  ) async {
+    final item = package.knowledgeItem('sentence-order-coffee');
+    await tester.pumpWidget(
+      _StepTestApp(
+        builder: (context, setState) => TeachCardStep(
+          item: item,
+          supportText: item.english,
+          audioAssetPath: null,
+        ),
+      ),
+    );
+
+    expect(find.text('SENTENCE'), findsOneWidget);
+    expect(find.text('Build the order'), findsNothing);
+    expect(find.text(item.english), findsOneWidget);
+  });
+
+  testWidgets('scene intro does not invent café-only lesson copy', (
+    tester,
+  ) async {
+    const step = CourseLessonStep(
+      id: 'market-intro',
+      type: 'scene_intro',
+      title: 'Ask about this item',
+      text: 'You see an item you like. Ask whether it is suitable.',
+    );
+    await tester.pumpWidget(
+      _StepTestApp(
+        builder: (context, setState) =>
+            const SceneIntroStep(step: step, locationTitle: 'Market'),
+      ),
+    );
+
+    expect(find.text(step.text!), findsOneWidget);
+    expect(find.text('MARKET'), findsOneWidget);
+    expect(find.text('At the market'), findsNothing);
+    expect(find.text('CAFÉ'), findsNothing);
+    expect(find.text('At the café counter'), findsNothing);
+    expect(find.text('你好！'), findsNothing);
+    expect(
+      find.text('You will learn one complete order, then use it yourself.'),
+      findsNothing,
+    );
+  });
+
+  testWidgets('scene intro does not infer a sentence from Metro', (
+    tester,
+  ) async {
+    const step = CourseLessonStep(
+      id: 'metro-intro',
+      type: 'scene_intro',
+      title: 'Find the metro station',
+      text: 'You need the metro. Ask where the station is.',
+    );
+    await tester.pumpWidget(
+      _StepTestApp(
+        builder: (context, setState) =>
+            const SceneIntroStep(step: step, locationTitle: 'Metro'),
+      ),
+    );
+
+    expect(find.text(step.text!), findsOneWidget);
+    expect(find.text('METRO'), findsOneWidget);
+    expect(find.text('At the metro'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('summary uses the lesson outcome instead of café-only copy', (
+    tester,
+  ) async {
+    await tester.pumpWidget(const _StepTestApp(builder: _summaryStep));
+
+    expect(find.text('Mission complete'), findsOneWidget);
+    expect(
+      find.text('You can now choose a hot or iced drink.'),
+      findsOneWidget,
+    );
+    expect(find.text('You practiced understanding Mandarin.'), findsOneWidget);
+    expect(find.text('You completed the speaking practice.'), findsOneWidget);
+    expect(find.text('Available after a successful review.'), findsOneWidget);
+    expect(find.text('Café stamp earned'), findsNothing);
   });
 
   testWidgets('image choice keeps Mandarin options usable at 200%', (
@@ -103,11 +191,18 @@ void main() {
       await tester.pump();
     }
     expect(find.byKey(const Key('order-result')), findsOneWidget);
+    expect(find.text('Correct — that’s the right order.'), findsOneWidget);
     await tester.tap(find.byKey(const Key('ordered-token-1')));
     await tester.pump();
     expect(find.byKey(const Key('order-result')), findsNothing);
     expect(tester.takeException(), isNull);
   });
+}
+
+Widget _summaryStep(BuildContext context, StateSetter setState) {
+  return const SummaryStep(
+    supportText: 'You can now choose a hot or iced drink.',
+  );
 }
 
 void _useSmallView(WidgetTester tester) {
