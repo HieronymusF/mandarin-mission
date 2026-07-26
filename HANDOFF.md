@@ -1,14 +1,14 @@
 # Mandarin Mission 项目交接
 
-> 最后更新：2026-07-26 23:08（Asia/Hong_Kong）
+> 最后更新：2026-07-27 00:00（Asia/Hong_Kong）
 > 项目：`D:\mandarin-mission\mandarin-mission`
-> Git：本地分支 `feat/m2-course-draft` 基于 `91f9b75`，有未提交的 M2 内容与文档改动；`origin/main` 仍为 `91f9b75`，GitHub Pre-release `v0.1.1` 仍指向 `f02ccdc`
+> Git：M2 已通过 PR [#20](https://github.com/HieronymusF/mandarin-mission/pull/20) 合并到 `main`；内容发布提交与 tag `v0.2.0` 均为 `07154a1`，当前仅剩本交接记录的独立文档补丁
 
 本文件是本项目唯一的实时交接入口。每次新对话或新任务必须先按根目录 `AGENTS.md` 的顺序读取全局协议、本文件、`AGENT_LESSONS.md` 和 `docs/handoff/ai-agent-handoff.md`，再核验仓库与 GitHub 当前状态。`AGENT_LESSONS.md` 保存去重后的项目特定复用经验；详细且相对稳定的项目基线在 `docs/handoff/ai-agent-handoff.md`。
 
 ## 当前正在做什么
 
-- 用户已批准“展示完整 M2，并成为正式 Release”。`content/fixtures/m2-course.json` 现为 `0.2.7` / `release`，固化 Café → Market → Metro 3 个地点、12 节课、52 个知识点、15 段对话和 53 个 `ready` 资产；`CourseContentRepository` 默认直接加载该包，`MM_USE_M2_DRAFT` 开关和 Draft asset 名称已移除。`cafe-course.json` 只保留作 M1 回归基线。App 版本已升至 `0.2.0+3`。本轮内容校验 2 包、learning core format 9 files / analyze 0 issues / 23 tests、Flutter format 67 files / analyze 0 issues / 68 tests全部通过；Release APK 为 64,512,944 bytes，SHA-256 `98e5a187567147899205a29986ff0b533e188820dffb81ec1636f7d61fb3e601`。当前 Release 仍使用 debug key 签名，且本轮 `adb devices` 无已连接真机，因此没有把默认 Release APK 的新一轮真机安装冒充为已完成。GitHub 发布正在执行，最终 PR、`main` SHA、tag、远端资产与 CI 仍需写回。
+- 完整 M2 已成为默认正式内容并交付。`content/fixtures/m2-course.json` 为 `0.2.7` / `release`，固化 Café → Market → Metro 3 个地点、12 节课、52 个知识点、15 段对话和 53 个 `ready` 资产；`CourseContentRepository` 默认直接加载该包，`MM_USE_M2_DRAFT` 开关和 Draft asset 名称已移除，`cafe-course.json` 只保留作 M1 回归基线。App 版本为 `0.2.0+3`。功能 PR [#20](https://github.com/HieronymusF/mandarin-mission/pull/20) 的 `mobile`、`learning-core`、`api` 三项 CI 全绿后，以 merge commit `07154a1` 合并到 `main`；合并后的 `main` CI run [`30209138974`](https://github.com/HieronymusF/mandarin-mission/actions/runs/30209138974) 再次全绿。GitHub 已发布 Pre-release [`v0.2.0`](https://github.com/HieronymusF/mandarin-mission/releases/tag/v0.2.0)，tag 指向 `07154a1`。远端 `app-release.apk` 状态为 `uploaded`，大小 64,512,944 bytes，SHA-256 `98e5a187567147899205a29986ff0b533e188820dffb81ec1636f7d61fb3e601` 与本地一致。内容包是正式 `release`；APK 仍使用 Android Debug 证书，因此只作为安装验收包并标记 Pre-release，不冒充商店正式签名包。本轮 `adb devices` 无已连接真机，默认 Release APK 的新一轮真机安装仍是独立验收边界。
 - M2 地点终局与单线解锁的最小实现已完成：运行时把未内嵌的 location `challengeId` 合成为 `dialogue_turn + summary` 两步课程；`journeyProgressProvider` 汇总课程与终局的 `lesson_progress_entries`，按先修课逐节开放、四课后开放终局、终局完成后开放下一地点。M1 的 `cafe-challenge` 已内嵌在 `cafe-01`，不会出现重复挑战卡。Journey Widget 测试跑通 Café 四课 → Café 终局 → Market，并在重新创建 ProviderScope 后确认解锁持久化；真实 M2 Repository 测试核对三个终局都能合成课程。
 - 新增 `apps/mobile/integration_test/m2_device_acceptance_test.dart`，已在 Sony `XQ-DQ72`（Android 15，`QV770PBLJ4`）通过：49/49 条新增 M2 音频逐条经过真实 `AudioServiceImpl` 并从 `playing` 到 `stopped`；真实 M2 包的 12 课、3 个终局、15 条完成进度、208 条掌握度状态、一次到期复习和 Provider 重载全部通过。测试把播放器音量设为 0，并使用隔离内存数据库，不污染手机正式学习数据；它证明真机技术链路，不冒充人工逐页 UX 或真实进程冷启动。
 - 新增 `apps/mobile/integration_test/m2_process_persistence_app.dart` 作为只安装一次的磁盘冷启动验收入口。Sony 首次进程 PID `21038` 把 15 条课程/终局完成记录、208 条掌握度和 1 次复习写入独立 106,496-byte Drift 文件；ADB 强制停止后确认 PID 为空，第二次进程 PID `21209` 从同一文件恢复全部记录、解锁和真实 Journey，日志为 `M2_DISK_VERIFY_PASS`。UI hierarchy 列出 12 课与 3 个终局均为 `Completed`，首屏显示 `Practice again`；截图为 `m2-disk-seed.png` 与 `m2-disk-verify.png`。验收后只删除该明确测试数据库文件，并用 `install -r` 恢复默认 Café Debug。本轮移动端门禁为 format 67 files / 0 changed、analyze 0 issues、62 tests。
@@ -134,8 +134,8 @@
 
 1. **默认 Release 真机复验**：连接 Sony 后安装不带任何 `dart-define` 的当前 APK，确认初始 Journey 展示 3 个地点、12 节课和 3 个地点终局；本轮设备未连接，因此该项仍是独立验收边界。
 2. **保持 language lock**：修改任何汉字、拼音、英文、步骤文案或对话顺序时提升 Release patch 版本，重跑内容门禁，并只让受影响单元交回英文、中文专业 Agent 复核。
-3. **M2 入口切片已交付**：PR #18 和合并后的 `main` CI 均通过，Pre-release `v0.1.1` 已提供 `0.1.1+2` APK；无需再次推送该功能分支。
-4. **发布边界**：本轮只完成本地内容 Release、默认入口和 Release 模式 APK；未获用户明确授权，不提交、不推送、不创建 GitHub Release。Android 仍使用 Debug 签名；若准备商店发布，必须配置独立 release keystore、安全存储和商店版构建验证。
+3. **M2 正式内容已交付**：PR #20、合并后的 `main` CI 与 Pre-release `v0.2.0` 均已完成；tag 固定指向内容发布提交 `07154a1`，无需再次推送 `feat/m2-course-draft`。
+4. **发布边界**：M2 内容包已经是正式 `release`，GitHub 已提供 `0.2.0+3` 安装验收包；Android 仍使用 Debug 签名。若准备商店发布，必须另行配置独立 release keystore、安全存储和商店版构建验证，不能把当前 Pre-release APK 改名冒充商店包。
 5. **延期真实来电分支**：当前设备无 SIM，未来具备可呼入设备时，再验证录音中的来电中断与返回 App 后恢复；不要用 Home 或 ADB 模拟冒充真实来电证据。
 6. **完成项目 Skill 与 Hook 的 UI 侧启用确认**：`$verify-mandarin-mission` 仍未出现在本会话 Skills 列表，Hook 也尚未由用户在 `/hooks` 中复核并信任。
 
