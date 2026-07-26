@@ -11,7 +11,7 @@
 | 模块 | 状态 | 一句话评价 |
 |---|---|---|
 | 纯 Dart 核心 `packages/learning_core` | ✅ 已实现 | 项目最扎实的部分，纯函数 + 完整测试 |
-| 课程内容工程 `content/` | ✅ 已实现 | schema + validator + 1 套 fixture，校验严谨 |
+| 课程内容工程 `content/` | ✅ 已实现 | schema + validator + 默认 M2 Release Fixture + M1 Café 回归 Fixture，校验严谨 |
 | 移动端 `apps/mobile` 数据层 | ✅ 已实现 | Drift 6 表约束扎实，Repository 全事务化 |
 | 移动端 UI/课程播放器 | ✅ 基线已实现 | shadcn 主题、Journey 和数据驱动 11 步自动流程走通；含简单汉字书写，步骤组件与提交逻辑已分层 |
 | 移动端复习功能 | ✅ 本地闭环已实现 | Journey 真实入口、四维题型、自评、补救和失败重试均已接入本地队列 |
@@ -43,6 +43,7 @@
 
 - `schema/course-package.schema.json` — JSON Schema Draft 2020-12，`additionalProperties:false` 全开，定义 10 种 step 类型。
 - `fixtures/cafe-course.json` — 1 location / 3 知识点 / 1 lesson（11 步）/ 1 dialogue / 4 assets。咖啡场景图已通过真机构图确认；三条包内 CosyVoice 音频含 path/SHA-256/Apache-2.0 来源与生成参数，并通过整组人工试听、APK 打包和 Sony 真机播放。整个包已升为 `release`。
+- `fixtures/m2-course.json` — `0.2.7` / `release`，3 locations / 52 知识点 / 12 lessons / 15 dialogues / 53 ready assets。11 节新增课程和 3 个地点终局已完成英文编辑 Agent、中文教学 Agent 双审及主 Agent 集成，14/14 均复核通过并 language lock；49 条新增普通话音频已完成用户试听、唯一选择、App asset 复制、path/SHA-256/credit 写回、Flutter 资源加载测试与 APK 内哈希核对。Sony `XQ-DQ72` 已逐条完成 49 条新增音频的 Android 播放，通过课程控制器完成 12 课、3 个终局、208 条掌握度状态、一次到期复习和 Provider 重载，并由不同 Android PID 从同一独立 Drift 文件恢复全部记录与解锁。新增范围 14/14 单元人工逐页 UX 已完成。2026-07-26 用户批准后，M2 已成为默认 Provider 输入，旧 `MM_USE_M2_DRAFT` 构建开关已移除；`fixtures/cafe-course.json` 保留作 M1 回归基线。
 - `lib/mandarin_mission_content.dart` — 5 行，暴露 asset 路径常量。
 
 **审视点**：
@@ -86,9 +87,9 @@
 - 课程通用文案尚未接入 i18n，但内容标题与教学数据继续来自 Fixture；
 - `shadcn_ui` 为 `0.x` 依赖，必须按 ADR 0002 单独升级并做截图回归。
 
-#### 3.3 Journey 页 ⚠️（课程进度与复习已接线，其余动态状态待做）
+#### 3.3 Journey 页 ⚠️（课程、终局、线性解锁与复习已接线）
 
-`journey_page.dart` 已迁移代码优先 UI。课程入口现在按内容包 location `order` 与 `lessonIds` 生成，标题、步骤数和路由 ID 来自对应 lesson；两地点测试包已覆盖排序和第二课程卡。当前正式 Fixture 仍只有 `cafe-01`。每张卡读取自己的 `lesson_progress_entries`：未开始、进行中和已完成分别显示真实状态，完成后显示 100% 与 `Practice again`，冷启动后仍保留。到期复习摘要也来自真实队列；连胜、地点解锁和每日任务仍是静态外壳。在这些状态接线时再引入对应 ViewModel，当前不为了形式提前建立空状态层。
+`journey_page.dart` 已迁移代码优先 UI。课程入口按内容包 location `order` 与 `lessonIds` 生成，标题、步骤数和路由 ID 来自内容；未内嵌的 location `challengeId` 会成为独立终局卡。`journeyProgressProvider` 汇总 `lesson_progress_entries`：先修课完成后开放下一课，四课完成后开放终局，终局完成后开放下一个地点；重新创建 ProviderScope 后仍从数据库恢复。默认 M2 Release Fixture 显示 Café、Market、Metro 的 12 节课和 3 个地点终局。到期复习摘要也来自真实队列；连胜和每日任务仍是静态外壳。
 
 #### 3.4 复习功能 ✅（本地闭环）
 
@@ -166,7 +167,7 @@
 | 2 | CI | ✅ | `core-ci.yml` 三 job |
 | 3 | Schema + Fixture + validator | ✅ | `content/schema`、`content_validator.dart` |
 | 4 | Drift 表 + migration 测试 | ⚠️ 部分 | 6 表完整；migration 测试只验 v1 自洽，无真实迁移 |
-| 5 | Journey 外壳 | ✅ | shadcn 视觉、真实到期摘要和 `cafe-01` 持久化完成状态已接线；连胜/解锁/每日任务待后续接线 |
+| 5 | Journey 外壳 | ✅ | shadcn 视觉、真实到期摘要、课程/终局进度和 Café → Market → Metro 线性解锁已接线；连胜/每日任务待后续接线 |
 | 6 | 数据驱动课程步骤 | ✅ 已实现 | 10/10 step 类型已实现，并通过自动测试、Android 模拟器与 Sony 真机验收 |
 | 7 | 持久化练习和掌握度 | ✅ | `lesson_progress_repository.dart` + 集成测试 |
 | 8 | 复习分箱算法与本地 UI | ✅ | `review_scheduler.dart`、队列、Journey 入口和四维会话闭环 |
@@ -196,7 +197,7 @@
 
 ### P1 — 架构债（扩大规模前必须纠正）
 3. **纯规则散落在非 domain 层**——`_confidenceFor`、`_compareQueueItems`、`score` 应迁移到 `learning_core` 并补单元测试。
-4. **Journey 动态状态只完成一部分**——课程完成进度与到期摘要已接线；连胜、解锁和每日任务接入时建立对应 ViewModel，不预建空层。
+4. **Journey 动态状态仍只完成一部分**——课程完成、地点终局、线性解锁与到期摘要已接线；连胜和每日任务仍是静态外壳。
 
 ### P2 — 一致性与健壮性
 5. **schema 与 validator 不一致**——补 sha256 校验，或在 schema 去掉。

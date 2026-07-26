@@ -7,12 +7,14 @@ import '../../../data/content/course_content_models.dart';
 class LessonHeader extends StatelessWidget {
   const LessonHeader({
     required this.lesson,
+    required this.locationTitle,
     required this.stepIndex,
     required this.onBack,
     super.key,
   });
 
   final CourseLesson lesson;
+  final String locationTitle;
   final int stepIndex;
   final VoidCallback onBack;
 
@@ -49,7 +51,7 @@ class LessonHeader extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'CAFÉ MISSION',
+                        '${locationTitle.toUpperCase()} MISSION',
                         style: theme.textTheme.small.copyWith(
                           color: theme.colorScheme.primary,
                           fontWeight: FontWeight.w700,

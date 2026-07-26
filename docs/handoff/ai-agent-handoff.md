@@ -155,7 +155,8 @@ docs/                              流程、设计系统、ADR、项目状态和
 - 忘记 −2、模糊不变、记得 +1、提示后不升级、同日补救最多两次；
 - `content_validator.dart`：稳定 ID、引用、拼音、对话可达性和资产状态校验；
 - `content/schema/course-package.schema.json`：课程数据契约；
-- `content/fixtures/cafe-course.json`：当前“点咖啡”Draft Fixture。
+- `content/fixtures/m2-course.json`：当前 App 默认加载的 M2 Release Fixture。
+- `content/fixtures/cafe-course.json`：保留作 M1 回归基线的“点咖啡”Release Fixture。
 
 ### 移动端数据层
 
@@ -308,8 +309,8 @@ M1 放行条件与当前状态：
 ### P1
 
 - `_confidenceFor`、复习队列排序和部分 score 规则仍散落在 Repository/presentation，应迁移到纯 Dart 并补测试；
-- Journey 动态进度、连胜和解锁尚未接真实状态；
-- schema 定义 10 种步骤，播放器只实现其中 7 种。
+- Journey 的课程进度、地点终局和 Café → Market → Metro 线性解锁已接真实本地状态；连胜和每日任务仍是静态外壳。
+- schema 定义的 10 种步骤均已实现；M2 的真实磁盘/不同 Android 进程冷启动已在 Sony 真机通过，新增范围 14/14 单元人工逐页 UX 也已全部完成。Market final challenge 的 6 个 learner 回合、Metro 01—04 的 43 个步骤和 Metro final challenge 的 8 个 learner 回合均通过，最终 Journey 的 12 课与 3 个地点终局全部为 `Completed`。2026-07-26 用户已批准默认入口与正式发布；`m2-course.json` 当前为 `release`，默认 Provider 直接加载它，旧 `MM_USE_M2_DRAFT` 开关已移除。
 
 ### P2
 

@@ -97,7 +97,14 @@ class HanziPinyinText extends StatelessWidget {
         if (!constraints.hasBoundedWidth) {
           return line;
         }
-        return Align(alignment: Alignment.topCenter, child: line);
+        return Align(
+          alignment: Alignment.topCenter,
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.topCenter,
+            child: line,
+          ),
+        );
       },
     );
   }

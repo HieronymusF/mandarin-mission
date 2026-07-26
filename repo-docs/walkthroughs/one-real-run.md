@@ -6,7 +6,7 @@
 
 ## Step 1: 用户从 Journey 打开一个任务
 
-App 启动后先进入 Journey。页面按内容包中的地点顺序读取每个 `lessonIds`，为每节课生成入口；当前正式 Fixture 只有 `cafe` 和 `cafe-01`，所以运行时仍只显示一个真实地点。点击课程卡后，Journey 把对应稳定课程 ID 交给课程路由。路由只负责选择页面，不在这里拼课程内容或保存进度。
+App 启动后先进入 Journey。页面按默认 M2 Release 内容包中的地点顺序读取每个 `lessonIds`，为 Café、Market、Metro 的 12 节课生成入口，并为三个地点生成独立终局。点击课程卡后，Journey 把对应稳定课程 ID 交给课程路由。路由只负责选择页面，不在这里拼课程内容或保存进度。
 
 [Journey 的课程入口](../../apps/mobile/lib/features/journey/presentation/journey_page.dart) 和 [App 路由](../../apps/mobile/lib/app/router.dart) 共同证明了这一步。每张卡分别读取对应 lesson ID 的持久化课程进度；`cafe-01` 完成后会显示 100% 与 `Practice again`，冷启动后仍保留。Journey 也继续读取本地到期摘要。多地点 Widget 测试用顺序相反的 Café 与 Market 输入，确认页面按 `order` 显示两张课程卡，而不是继续依赖 `cafe-01` 硬编码。
 
@@ -14,7 +14,9 @@ App 启动后先进入 Journey。页面按内容包中的地点顺序读取每�
 
 课程页不能直接相信 JSON。Repository 先从安装包读取 Fixture，解析顶层对象，再调用纯 Dart 校验器检查稳定 ID、跨对象引用、步骤要求、拼音与汉字对齐、对话可达性和 release 资产状态。只有问题列表为空时，数据才会变成 App 使用的课程对象。
 
-当前 [点咖啡课程数据](../../content/fixtures/cafe-course.json) 包含 1 个地点、3 个知识点、1 节十一步课程、1 段对话和 4 个资产。咖啡场景图是带 path、SHA-256、内部生成许可和署名的 `ready` 资产，第二版构图已获用户真机确认；三个音频资产带 path、SHA-256、Apache-2.0 CosyVoice 来源与生成参数，课程与复习媒体路径均可解析。三条音频已通过整组人工试听、APK 打包和 Sony 真机逐条播放，因此内容包已升为 `release`。
+默认 [M2 正式课程数据](../../content/fixtures/m2-course.json) 包含 3 个地点、52 个知识点、12 节课、15 段对话和 53 个 `ready` 资产。49 条新增普通话音频已完成试听、资源写回、APK 核对和 Sony 技术播放；新增范围 14/14 单元也已完成人工逐页 UX。M1 [点咖啡课程数据](../../content/fixtures/cafe-course.json) 继续保留为单课回归基线。
+
+Repository 默认资产常量直接指向 M2 Release，不再读取 `MM_USE_M2_DRAFT` 编译标志。Journey 会显示按先修关系锁定的课程和三个地点终局；自动测试覆盖四课后开放终局、完成终局后开放下一地点和冷启动恢复。本文继续用 `cafe-01` 作为最小代表案例，因为它完整展示 11 步学习闭环；这不表示 App 默认范围仍只有一课。
 
 这段入口位于 [内容 Repository](../../apps/mobile/lib/data/content/course_content_repository.dart)，交叉引用规则位于 [内容校验器](../../packages/learning_core/lib/src/content_validator.dart)。无效 JSON、缺失引用或不可达对话会在 UI 建模前变成明确错误。
 
@@ -34,12 +36,12 @@ App 启动后先进入 Journey。页面按内容包中的地点顺序读取每�
 | 7 | 从选项中听辨整句 | `listen_choice` | `listening` |
 | 8 | 把词块排成完整订单 | `order_tokens` | `meaning` |
 | 9 | 录音、自听或降级自评 | `repeat` | `tone` |
-| 10 | 先脱稿说出订单，或打开 phrase ticket 后发送回复 | `dialogue_turn` | 综合应用 |
+| 10 | 先脱稿说出订单，或打开 phrase ticket 后发送回复；查看系统收尾后继续 | `dialogue_turn` | 综合应用 |
 | 11 | 查看总结并完成课程 | `summary` | 完成入口 |
 
 [课程 Controller](../../apps/mobile/lib/features/lesson/application/lesson_providers.dart) 负责状态和提交，[课程页面](../../apps/mobile/lib/features/lesson/presentation/lesson_overview_page.dart) 负责组合对应步骤 Widget。未知 step type 会显示不可用提示，而不是静默跳过。
 
-第 10 步属于预设对话，不做 AI 语音识别。页面初始隐藏标准答案并禁用发送；用户可以先说出订单并选择 `I said it aloud`，也可以打开 `Use phrase ticket` 查看整句。完成其中一个可观察动作后，`Send reply` 才能进入总结页。
+第 10 步属于预设对话，不做 AI 语音识别。页面初始隐藏标准答案并禁用发送；用户可以先说出订单并选择 `I said it aloud`，也可以打开 `Use phrase ticket` 查看整句。完成其中一个可观察动作后，`Send reply` 会显示系统终止回复；再点 `Continue` 才进入总结页。相同播放器也能沿 `nextNodeId` 推进多轮对话，并在每个 learner 轮次重新执行动作门禁。
 
 ## Step 4: 每次练习先写本地事务
 

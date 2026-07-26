@@ -51,4 +51,34 @@ void main() {
     final line = tester.getRect(find.byKey(const Key('hanzi-pinyin-line')));
     expect(line.center.dx, closeTo(host.center.dx, 0.01));
   });
+
+  testWidgets('scales a long teaching phrase within narrow card content', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: SizedBox(
+              key: Key('phrase-host'),
+              width: 285,
+              child: HanziPinyinText(
+                hanzi: '热的还是冰的？',
+                pinyinSyllables: ['rè', 'de', 'hái', 'shì', 'bīng', 'de'],
+                hanziFontSize: 52,
+                pinyinFontSize: 20,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(tester.takeException(), isNull);
+    final host = tester.getRect(find.byKey(const Key('phrase-host')));
+    final line = tester.getRect(find.byKey(const Key('hanzi-pinyin-line')));
+    expect(line.left, greaterThanOrEqualTo(host.left));
+    expect(line.right, lessThanOrEqualTo(host.right));
+    expect(line.center.dx, closeTo(host.center.dx, 0.01));
+  });
 }

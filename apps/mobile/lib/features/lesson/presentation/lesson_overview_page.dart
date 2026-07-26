@@ -234,6 +234,9 @@ class _LessonPlayerPageState extends ConsumerState<_LessonPlayerPage>
               children: [
                 LessonHeader(
                   lesson: lesson,
+                  locationTitle: widget.content.package
+                      .location(lesson.locationId)
+                      .title,
                   stepIndex: state.stepIndex,
                   onBack: () async {
                     await _endMediaSession();
@@ -339,7 +342,10 @@ class _LessonPlayerPageState extends ConsumerState<_LessonPlayerPage>
       case 'scene_intro':
         return _StepPresentation(
           eyebrow: 'YOUR MISSION',
-          body: SceneIntroStep(step: step),
+          body: SceneIntroStep(
+            step: step,
+            locationTitle: package.location(lesson.locationId).title,
+          ),
           primaryLabel: "I'm ready",
           onPrimary: () async => next(),
         );
@@ -350,10 +356,6 @@ class _LessonPlayerPageState extends ConsumerState<_LessonPlayerPage>
           body: TeachCardStep(
             item: item,
             audioAssetPath: package.audioAssetPathForItem(item.id),
-            lessonItems: lesson.itemIds
-                .take(2)
-                .map(package.knowledgeItem)
-                .toList(growable: false),
             supportText: step.text,
           ),
           primaryLabel: 'Got it',
@@ -528,20 +530,35 @@ class _LessonPlayerPageState extends ConsumerState<_LessonPlayerPage>
         );
       case 'dialogue_turn':
         final dialogue = package.dialogue(step.dialogueId!);
+        final dialogueNodeId = state.dialogueNodeId ?? dialogue.startNodeId;
+        final dialogueComplete =
+            dialogue.turnFrom(dialogueNodeId).learnerNode == null;
         final replyMethod = state.dialogueReplyMethod;
         return _StepPresentation(
           eyebrow: 'THE CHALLENGE',
           body: DialogueStep(
             package: package,
             dialogue: dialogue,
+            currentNodeId: dialogueNodeId,
             supportText: step.text,
             selectedReplyMethod: replyMethod,
             onReplyMethodChanged: controller.selectDialogueReplyMethod,
           ),
-          primaryLabel: replyMethod == null
+          primaryLabel: dialogueComplete
+              ? 'Continue'
+              : replyMethod == null
               ? 'Choose how to reply'
               : 'Send reply',
-          onPrimary: replyMethod == null ? null : () async => next(),
+          onPrimary: dialogueComplete
+              ? () async => next()
+              : replyMethod == null
+              ? null
+              : () async {
+                  controller.advanceDialogue(
+                    dialogue: dialogue,
+                    stepCount: lesson.steps.length,
+                  );
+                },
         );
       case 'summary':
         return _StepPresentation(

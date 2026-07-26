@@ -31,10 +31,12 @@ class SummaryStep extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Café stamp earned', style: theme.textTheme.h3),
+                Text('Mission complete', style: theme.textTheme.h3),
                 const SizedBox(height: AppSpacing.xxs),
                 Text(
-                  'You handled your first real-world order.',
+                  (supportText ?? '').isNotEmpty
+                      ? supportText!
+                      : 'You completed this lesson.',
                   style: theme.textTheme.muted,
                 ),
               ],
@@ -47,27 +49,23 @@ class SummaryStep extends StatelessWidget {
         const _StarCard(
           id: 'understanding',
           title: 'Understanding',
-          description: 'You chose the right meaning.',
+          description: 'You practiced understanding Mandarin.',
           earned: true,
         ),
         const SizedBox(height: AppSpacing.sm),
         const _StarCard(
           id: 'speaking',
           title: 'Speaking',
-          description: 'You completed the café reply.',
+          description: 'You completed the speaking practice.',
           earned: true,
         ),
         const SizedBox(height: AppSpacing.sm),
         const _StarCard(
           id: 'memory',
           title: 'Memory',
-          description: "Available after tomorrow's review.",
+          description: 'Available after a successful review.',
           earned: false,
         ),
-        if ((supportText ?? '').isNotEmpty) ...[
-          const SizedBox(height: AppSpacing.md),
-          Text(supportText!, style: theme.textTheme.muted),
-        ],
       ],
     );
   }

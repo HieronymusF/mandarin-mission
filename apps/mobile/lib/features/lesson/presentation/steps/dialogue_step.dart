@@ -10,6 +10,7 @@ class DialogueStep extends StatelessWidget {
   const DialogueStep({
     required this.package,
     required this.dialogue,
+    required this.currentNodeId,
     required this.supportText,
     required this.selectedReplyMethod,
     required this.onReplyMethodChanged,
@@ -18,6 +19,7 @@ class DialogueStep extends StatelessWidget {
 
   final CoursePackage package;
   final CourseDialogue dialogue;
+  final String currentNodeId;
   final String? supportText;
   final String? selectedReplyMethod;
   final ValueChanged<String> onReplyMethodChanged;
@@ -25,9 +27,12 @@ class DialogueStep extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
-    final prompt = dialogue.node(dialogue.startNodeId);
-    final learnerNode = dialogue.node(prompt.nextNodeId!);
-    final answer = package.knowledgeItem(learnerNode.itemId!);
+    final turn = dialogue.turnFrom(currentNodeId);
+    final learnerNode = turn.learnerNode;
+    final dialogueComplete = learnerNode == null;
+    final answer = learnerNode == null
+        ? null
+        : package.knowledgeItem(learnerNode.itemId!);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -40,7 +45,7 @@ class DialogueStep extends StatelessWidget {
             children: [
               AppLeadingRow(
                 leading: AppIconTile(
-                  icon: LucideIcons.coffee,
+                  icon: LucideIcons.messageCircle,
                   backgroundColor: theme.colorScheme.muted,
                   foregroundColor: theme.colorScheme.foreground,
                 ),
@@ -48,28 +53,32 @@ class DialogueStep extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Barista', style: theme.textTheme.h3),
+                    Text('Scene partner', style: theme.textTheme.h3),
                     const SizedBox(height: AppSpacing.xxs),
                     Text(
-                      'Hello, what would you like to drink?',
+                      dialogueComplete
+                          ? 'The exchange is complete.'
+                          : 'Read, then take your turn.',
                       style: theme.textTheme.muted,
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: AppSpacing.md),
-              HanziPinyinText(
-                hanzi: prompt.text!,
-                pinyinSyllables: prompt.pinyinSyllables,
-                hanziFontSize: 20,
-                pinyinFontSize: 12,
-                pinyinColor: theme.colorScheme.mutedForeground,
-              ),
+              for (final systemNode in turn.systemNodes) ...[
+                const SizedBox(height: AppSpacing.md),
+                HanziPinyinText(
+                  hanzi: systemNode.text!,
+                  pinyinSyllables: systemNode.pinyinSyllables,
+                  hanziFontSize: 20,
+                  pinyinFontSize: 12,
+                  pinyinColor: theme.colorScheme.mutedForeground,
+                ),
+              ],
             ],
           ),
         ),
-        const SizedBox(height: AppSpacing.md),
-        if (selectedReplyMethod == 'phrase-ticket')
+        if (!dialogueComplete) const SizedBox(height: AppSpacing.md),
+        if (!dialogueComplete && selectedReplyMethod == 'phrase-ticket')
           ShadCard(
             key: const Key('dialogue-answer-card'),
             width: double.infinity,
@@ -82,14 +91,14 @@ class DialogueStep extends StatelessWidget {
                 Text('Phrase ticket', style: theme.textTheme.h3),
                 const SizedBox(height: AppSpacing.md),
                 HanziPinyinText(
-                  hanzi: answer.hanzi,
+                  hanzi: answer!.hanzi,
                   pinyinSyllables: answer.pinyinSyllables,
                   hanziFontSize: 28,
                 ),
               ],
             ),
           )
-        else
+        else if (!dialogueComplete)
           ShadCard(
             key: const Key('dialogue-reply-status-card'),
             width: double.infinity,
@@ -108,37 +117,47 @@ class DialogueStep extends StatelessWidget {
                 Text(
                   selectedReplyMethod == 'said-aloud'
                       ? 'Reply ready'
-                      : 'Say your order without looking at the answer.',
+                      : 'Say your reply without looking at the answer.',
                   style: theme.textTheme.small,
                   textAlign: TextAlign.center,
                 ),
               ],
             ),
           ),
-        if ((supportText ?? '').isNotEmpty) ...[
+        if (!dialogueComplete && selectedReplyMethod == 'phrase-ticket') ...[
+          const SizedBox(height: AppSpacing.md),
+          Text(
+            'Say the phrase aloud, then send your reply.',
+            style: theme.textTheme.muted,
+          ),
+        ] else if (!dialogueComplete &&
+            selectedReplyMethod == null &&
+            (supportText ?? '').isNotEmpty) ...[
           const SizedBox(height: AppSpacing.md),
           Text(supportText!, style: theme.textTheme.muted),
         ],
-        const SizedBox(height: AppSpacing.md),
-        ShadButton.outline(
-          key: const Key('dialogue-said-aloud'),
-          height: AppLayout.controlHeight,
-          onPressed: () => onReplyMethodChanged('said-aloud'),
-          leading: const Icon(LucideIcons.mic, size: 16),
-          child: Text(
-            selectedReplyMethod == 'said-aloud'
-                ? 'Said aloud ✓'
-                : 'I said it aloud',
+        if (!dialogueComplete) ...[
+          const SizedBox(height: AppSpacing.md),
+          ShadButton.outline(
+            key: const Key('dialogue-said-aloud'),
+            height: AppLayout.controlHeight,
+            onPressed: () => onReplyMethodChanged('said-aloud'),
+            leading: const Icon(LucideIcons.mic, size: 16),
+            child: Text(
+              selectedReplyMethod == 'said-aloud'
+                  ? 'Said aloud ✓'
+                  : 'I said it aloud',
+            ),
           ),
-        ),
-        const SizedBox(height: AppSpacing.sm),
-        ShadButton.outline(
-          key: const Key('dialogue-use-ticket'),
-          height: AppLayout.controlHeight,
-          onPressed: () => onReplyMethodChanged('phrase-ticket'),
-          leading: const Icon(LucideIcons.ticket, size: 16),
-          child: const Text('Use phrase ticket'),
-        ),
+          const SizedBox(height: AppSpacing.sm),
+          ShadButton.outline(
+            key: const Key('dialogue-use-ticket'),
+            height: AppLayout.controlHeight,
+            onPressed: () => onReplyMethodChanged('phrase-ticket'),
+            leading: const Icon(LucideIcons.ticket, size: 16),
+            child: const Text('Use phrase ticket'),
+          ),
+        ],
       ],
     );
   }

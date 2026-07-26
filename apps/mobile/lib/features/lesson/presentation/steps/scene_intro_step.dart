@@ -6,9 +6,14 @@ import '../../../../data/content/course_content_models.dart';
 import '../../../../shared/presentation/app_leading_row.dart';
 
 class SceneIntroStep extends StatelessWidget {
-  const SceneIntroStep({required this.step, super.key});
+  const SceneIntroStep({
+    required this.step,
+    required this.locationTitle,
+    super.key,
+  });
 
   final CourseLessonStep step;
+  final String locationTitle;
 
   @override
   Widget build(BuildContext context) {
@@ -16,8 +21,6 @@ class SceneIntroStep extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(step.text ?? '', style: theme.textTheme.muted),
-        const SizedBox(height: AppSpacing.xl),
         ShadCard(
           key: const Key('scene-intro-card'),
           width: double.infinity,
@@ -29,17 +32,15 @@ class SceneIntroStep extends StatelessWidget {
             children: [
               AppLeadingRow(
                 leading: AppIconTile(
-                  icon: LucideIcons.coffee,
+                  icon: LucideIcons.mapPin,
                   backgroundColor: theme.colorScheme.card,
                   foregroundColor: theme.colorScheme.accentForeground,
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const ShadBadge.secondary(child: Text('CAFÉ')),
-                    const SizedBox(height: AppSpacing.xs),
-                    Text('At the café counter', style: theme.textTheme.h3),
-                  ],
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: ShadBadge.secondary(
+                    child: Text(locationTitle.toUpperCase()),
+                  ),
                 ),
               ),
               const SizedBox(height: AppSpacing.xl),
@@ -55,12 +56,7 @@ class SceneIntroStep extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('你好！', style: theme.textTheme.h3),
-                          const SizedBox(height: AppSpacing.xxs),
-                          Text(
-                            'Nǐ hǎo! · Hello!',
-                            style: theme.textTheme.muted,
-                          ),
+                          Text(step.text ?? '', style: theme.textTheme.muted),
                         ],
                       ),
                     ),
@@ -75,24 +71,6 @@ class SceneIntroStep extends StatelessWidget {
               ),
             ],
           ),
-        ),
-        const SizedBox(height: AppSpacing.md),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(
-              LucideIcons.sparkles,
-              size: 16,
-              color: theme.colorScheme.primary,
-            ),
-            const SizedBox(width: AppSpacing.xs),
-            Expanded(
-              child: Text(
-                'You will learn one complete order, then use it yourself.',
-                style: theme.textTheme.small,
-              ),
-            ),
-          ],
         ),
       ],
     );

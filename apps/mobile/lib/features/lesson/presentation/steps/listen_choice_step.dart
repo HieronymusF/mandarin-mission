@@ -58,9 +58,8 @@ class ListenChoiceStep extends StatelessWidget {
           LessonChoiceFeedback(
             key: const Key('listen-result-banner'),
             correct: selectedIsCorrect,
-            correctText: 'That is the complete café order.',
-            incorrectText:
-                'Not quite — you heard a full order, not only “I want.”',
+            correctText: 'Correct — that’s what you heard.',
+            incorrectText: 'Not quite — listen again.',
           ),
       ],
     );

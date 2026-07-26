@@ -13,3 +13,4 @@ dependencies:
 flutter:
   assets:
     - fixtures/cafe-course.json
+    - fixtures/m2-course.json

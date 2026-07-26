@@ -1,11 +1,14 @@
 # 课程内容制作指南
 
-> 当前状态：v0.1，只支持开发期 Draft 内容包。
+> 当前状态：内容工具同时支持 `draft` 与 `release`；App 默认加载 M2 `0.2.7` 正式课程包。
+
+M2 的 3 个地点、12 节课、稳定 ID、先修关系和每课学习目标统一定义在 [M2 课程蓝图](requirements/m2-curriculum.md)。M2 `0.2.7` 保留已双审并 language lock 的课程文本；49 条新增音频已完成用户试听、唯一选择、App asset 复制、元数据写回和 APK 资源核对，地点终局多轮播放与新增范围 14/14 单元人工逐页 UX 也已完成。2026-07-26 用户批准后，该包已提升为 `release` 并成为默认入口。
 
 ## 目录
 
 - `content/schema/course-package.schema.json`：课程包 JSON Schema。
-- `content/fixtures/cafe-course.json`：首个“点咖啡”开发 Fixture。
+- `content/fixtures/m2-course.json`：App 默认加载的 M2 `0.2.7` Release Fixture。
+- `content/fixtures/cafe-course.json`：保留用于 M1 回归和专项测试的“点咖啡”Release Fixture。
 - `packages/learning_core/bin/validate_content.dart`：跨引用与发布状态校验器。
 
 ## 本地校验
@@ -21,7 +24,7 @@ dart run bin/validate_content.dart ../../content/fixtures
 成功输出：
 
 ```text
-Validated 1 content package(s).
+Validated 2 content package(s).
 ```
 
 CI 还会执行格式检查、静态分析和全部单元测试。
@@ -56,6 +59,8 @@ CI 还会执行格式检查、静态分析和全部单元测试。
 
 当前 `cafe-course.json` 已为 `release`：咖啡场景图和三个音频均为 `ready`。图片已记录包内路径、SHA-256、内部生成许可与署名，第二版构图已获用户真机确认；三个包内 CosyVoice 中文音频已记录来源、许可、生成参数、合成文本差异和 SHA-256，并通过整组普通话人工试听、APK 打包与 Sony 真机逐条播放。
 
+`m2-course.json` 为 `0.2.7` / `release`：包含 3 个地点、12 节课、52 个知识点、15 段对话和 53 个 `ready` 资产。Café 02—04、Market 01—04、Metro 01—04 和三个地点终局共 14 个审核单元已完成独立英文编辑 Agent、中文教学 Agent 双审及主 Agent 集成，课程文本已 language lock；`0.2.6` 的共享反馈文案与 `0.2.7` 的数据驱动场景引入又由两名原 Agent 对 12 课和 3 个合成终局复核为 15/15 通过。场景引入只呈现 location Badge 与本步 authored `step.text`，不得从地点名推导 `At the ...` 等场景句。两名专业 Agent 都以 AI 身份审核，不冒充真人或母语者；49 条新增普通话音频已从各轮用户可接受候选中收敛为唯一选择，复制到 `apps/mobile/assets/audio/cosyvoice/`，并写回 path、SHA-256、Apache-2.0 来源和生成参数。该 Fixture 已进入 `content/pubspec.yaml`，`CourseContentRepository` 默认直接加载它；不再存在 `MM_USE_M2_DRAFT` 入口开关。`cafe-course.json` 继续作为 M1 回归基线。
+
 ### TTS 课程音频
 
 TTS 可以作为开发预览，也可以在许可和内容审核完整时作为正式课程资产。正式候选必须同时满足：
@@ -64,7 +69,7 @@ TTS 可以作为开发预览，也可以在许可和内容审核完整时作为�
 - `license` 记录许可，`credit` 记录模型、版本、声线、生成日期和必要的发音处理；
 - `path` 与实际 App asset 一致，`sha256` 与文件内容一致；
 - TTS 不得称为真人音频；
-- 普通话母语者或国际中文教师逐条审核声调、变调、轻声、儿化、停顿和自然度；
+- 普通话母语者或国际中文教师逐条审核声调、变调、轻声、儿化、停顿和自然度；长句还要逐分句检查语速是否均匀，对话音频要与前后轮次连续试听，确认信息焦点、对比重音和句末语气符合角色意图；用户指出过快、吞音或韵律问题后，重生成候选必须先围绕该问题预筛，若只调整一个分句，还要检查拼接点、音色和整句连续性，明显没有改善的版本不再转交用户；同一 speaker 标签在 seed、文本边界或分段合成变化后也必须与已批准声线参考连续比较，自动音高/频谱指标只用于排除明显离群项，不能断言性别或替代人工确认说话人身份、音色与发音；
 - 任何重新生成或后处理都必须重新计算哈希并复测打包播放。
 
 MeloTTS 0.1.2 与官方中文模型曾作为免费本地候选，但因短音发音不完整、跨片段音色不一致和确定性长句电音而在三轮人工试听中被淘汰。最终音频使用 Apache-2.0 `CosyVoice-300M-SFT` 内置 `中文女`、seed 1986 生成：“我要”与长句速度 0.94，“咖啡”速度 0.89。为稳定 `kā fēi` 的一声和复合韵母，“咖啡”的合成文本为同音“喀飞”，显示文本仍为“咖啡”；该差异已写入资产 credit。原始 22.05 kHz 单声道 float WAV 仅做 PCM16 容器兼容转换，没有真人克隆或声学后处理；最终三条已通过整组人工试听和新 APK 真机逐条播放。
@@ -77,7 +82,7 @@ MeloTTS 0.1.2 与官方中文模型曾作为免费本地候选，但因短音发
 4. 按场景引入、教学卡、意义/听音、跟读、对话和总结组织步骤。
 5. 终局挑战只引用已学习的词句，并保证从开始节点可到达终止节点。
 6. 运行内容校验器。
-7. 完成英语母语编辑、普通话音频和国际中文教师审核。
+7. 由主 Agent 按 [M2 课程蓝图的专业 Agent 双审记录](requirements/m2-curriculum.md#52-专业-agent-双审记录) 分别编排英文编辑 Agent 与中文教学 Agent，集成修订并复核；language lock 后再完成普通话音频审核。
 8. 资产全部就绪后才把状态改为 `release`。
 
 首批互动步骤的内容约束：
@@ -85,6 +90,7 @@ MeloTTS 0.1.2 与官方中文模型曾作为免费本地候选，但因短音发
 - `image_choice` 使用一张场景图和至少两个知识点选项，`itemId` 必须出现在 `optionItemIds` 中；图片 `planned` 时 App 会明确降级为中文+拼音文字选择，但不能据此放行正式内容。当前咖啡场景图已为 `ready`。
 - `tone_contrast` 的 `optionTexts` 是同一目标的带调拼音候选，必须包含目标知识点的准确 `pinyin`；不要用不同词义冒充声调干扰项。
 - `order_tokens` 按正确顺序保存词块；拼接后必须能重建目标汉字，句末标点可省略。
+- 当前 `dialogue_turn` 页面沿 `nextNodeId` 逐轮推进，连续 `system` 节点会在同一轮依次显示，每个 `learner` 节点重新要求 `I said it aloud` 或 phrase ticket 后才可发送；两类终止节点都有明确完成态。M2 的 11 节新增课程和 3 个地点终局共用该播放器，自动测试覆盖完整图、每轮门禁与终止状态。
 
 ## 校验器当前阻止的问题
 

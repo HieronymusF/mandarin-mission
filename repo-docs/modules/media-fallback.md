@@ -17,6 +17,8 @@
 
 到期复习的 listening 题也复用同一条内容路径。复习条目从 `audioAssetId` 解析 `ready` 音频并显示播放器；`planned`、缺失或无路径时显示书面降级。只有走书面降级后揭晓答案才会记录 `usedHint: true`，正常播放路径揭晓不会被误记为提示。
 
+[M2 真机集成测试](../../apps/mobile/integration_test/m2_device_acceptance_test.dart) 在 Sony `XQ-DQ72` 上从 M2 包筛出相对 Café Release 新增的 49 条音频，逐条调用真实 `AudioServiceImpl`，并等待状态从 `playing` 到 `stopped`。测试把播放器音量设为 0，验证的是 Android 资产加载、解码和播放完成链，不是听感；普通话听感由此前用户逐条试听结论单独负责。
+
 播放失败时，`Try again` 会用当前 asset 路径重新调用播放器；录音失败时，`Try recording again` 会在当前口语步骤重新开始录制。已保存录音的回放失败时，控件会保留临时文件，显示专用错误说明，并通过 `Try playback again` 重试同一路径。三条路径都保留课程上下文，不要求用户退出页面。
 
 ## 录音权限不是一个布尔值

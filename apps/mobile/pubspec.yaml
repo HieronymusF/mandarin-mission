@@ -1,7 +1,7 @@
 name: mandarin_mission
 description: "Mandarin Mission mobile learning app."
 publish_to: 'none'
-version: 0.1.1+2
+version: 0.2.0+3
 
 environment:
   sdk: ^3.12.2
@@ -28,6 +28,8 @@ dev_dependencies:
   build_runner: ^2.15.0
   drift_dev: 2.34.0
   flutter_test:
+    sdk: flutter
+  integration_test:
     sdk: flutter
   flutter_lints: ^6.0.0
 
