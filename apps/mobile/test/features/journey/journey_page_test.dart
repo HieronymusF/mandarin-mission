@@ -14,6 +14,10 @@ void main() {
   testWidgets('renders locations and lessons from the content package', (
     tester,
   ) async {
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(800, 1800);
     final database = AppDatabase(NativeDatabase.memory());
     addTearDown(database.close);
     final package = CoursePackage.fromJson(

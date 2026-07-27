@@ -150,7 +150,11 @@ void main() {
 }
 
 Future<void> _openLesson(WidgetTester tester) async {
-  await tester.ensureVisible(find.byKey(const Key('open-lesson-test-01')));
+  await tester.scrollUntilVisible(
+    find.byKey(const Key('open-lesson-test-01')),
+    240,
+    scrollable: find.byType(Scrollable).first,
+  );
   await tester.pumpAndSettle();
   await tester.tap(find.byKey(const Key('open-lesson-test-01')));
   await tester.pumpAndSettle();
