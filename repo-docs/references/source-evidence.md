@@ -22,6 +22,7 @@
 | Pass 14 | Sony Metro 01—04 共 43 个步骤、教学/听辨/跟读音频入口、听辨/语序正确路径、四次无录音自评、2/2/3/3 个 learner 对话、总结页与逐课 Journey 截图 | 27 个教学/听辨/跟读入口均逐项触发；长句卡片与总结页无溢出；系统/学习者终止、每轮门禁重置和 Metro 01 → 04 线性解锁正确 | 可以关闭四节 Metro 课程的人工逐页 UX；Metro final challenge 与发布批准仍是独立边界。最终 logcat 环形缓冲不能用于重建 27 次完整 AudioTrack 创建计数 |
 | Pass 15 | Sony Metro final challenge 的 8 个 learner 回合、phrase ticket 状态、总结页、最终 Journey UI hierarchy 与截图、清空后的 PID logcat | 询路、购票、问线路与请求重复完整走通；每个 learner 回合动作门禁都重新锁定；“明白了。”终止后进入 `Metro challenge complete`，最终 Journey 的 12 课与 3 个地点终局全部为 `Completed`；rendering/fatal 模式计数为 0 | 新增范围 14/14 单元人工逐页 UX 已关闭；默认 Provider 与 `release` 仍需单独产品批准，本轮未改代码、未录音、未重跑自动化门禁 |
 | Pass 16 | 用户发布决定、M2 Fixture 状态与名称、默认 Repository、内容/核心/移动端门禁、Release APK | `m2-course.json` 现为 `0.2.7` / `release`；默认 Repository 直接加载 M2，Draft 编译开关已移除；内容校验 2 包、核心 23 tests、移动端 68 tests 与 Release APK 构建通过 | 可以把 M2 写成默认正式内容包；本轮没有连接真机，APK 仍使用 debug key，且未提交、推送或发布 GitHub Release |
+| Pass 17 | App 生产路由与 Feature、客户端依赖、Android manifest、Go handler、README 公开 MVP 范围 | 生产 App 只有 Journey/课程/复习，客户端没有远端认证或支付接线，Go API 只有健康/就绪/元数据；公开 MVP 另有设置/客服/法律、账号/同步/删除、订阅、分析/崩溃、完整游戏化和 6 个地点/约 30 节要求 | M2 Release 与 GitHub Pre-release 只能表述为可玩内容原型完成，不能推导为公开 MVP 或商店候选；当前下一步必须是 App 产品完成门禁 |
 
 ## 理解摘要
 
@@ -67,8 +68,9 @@
 | 复习入口从本地到期队列读取，单次必做上限为 8 | [复习 Provider](../../apps/mobile/lib/features/review/application/review_providers.dart)、[复习流程测试](../../apps/mobile/test/app/review_flow_test.dart) | 已确认 | 超出部分显示为可选巩固 | walkthrough、本地闭环模块 |
 | `ready` 音频路径必须由 `audioAssetId` 解析，课程与复习 listening 题共用该路径；`planned` 或缺失资源进入书面降级并记录提示 | [内容模型](../../apps/mobile/lib/data/content/course_content_models.dart)、[复习 Provider](../../apps/mobile/lib/features/review/application/review_providers.dart)、[复习流程测试](../../apps/mobile/test/app/review_flow_test.dart)、[M2 真机集成测试](../../apps/mobile/integration_test/m2_device_acceptance_test.dart) | 已确认 | M1 三条 CosyVoice 已过 Sony 真机；M2 49 条在音量为 0 的 Sony 真机测试中逐条完成 Android 播放，技术播放证据与此前人工听感证据分开 | walkthrough、媒体模块 |
 | 媒体 UI 区分播放状态、资产降级、权限分支、服务不可用、录音和回放 | [媒体组件测试](../../apps/mobile/test/shared/presentation/media_controls_test.dart)、[媒体 Controller 测试](../../apps/mobile/test/data/audio/audio_controller_test.dart) | 已确认 | Sony 真机已覆盖授权、普通/永久拒绝、设置返回恢复、录音、音量提示、回放、重录、Home 和步骤返回清理；服务不可用真机分支及来电恢复仍待验证 | 媒体模块、quality review |
-| 本地学习闭环跨冷启动保留，并可在飞行模式完成 | [进度 Repository](../../apps/mobile/lib/data/progress/lesson_progress_repository.dart)、[Journey 页面](../../apps/mobile/lib/features/journey/presentation/journey_page.dart)、[复习流程](../../apps/mobile/lib/features/review/application/review_providers.dart)、[M2 磁盘冷启动验收](../../apps/mobile/integration_test/m2_process_persistence_app.dart) | 已确认 | M1 已验证完成、复习与飞行模式；M2 由不同 Android PID 从同一独立 Drift 文件恢复 15 条完成、208 条掌握度、一次复习和完整解锁。人工走查又依次确认 Café 终局开放 Market、Market 终局开放 Metro、Metro 01—04 逐课开放，并在完成 Metro final challenge 后看到 12 课与 3 个地点终局全部为 `Completed`。默认 Release APK 仍缺本轮重新安装证据 | walkthrough、本地闭环模块 |
+| 本地学习闭环跨冷启动保留，并可在飞行模式完成 | [进度 Repository](../../apps/mobile/lib/data/progress/lesson_progress_repository.dart)、[Journey 页面](../../apps/mobile/lib/features/journey/presentation/journey_page.dart)、[复习流程](../../apps/mobile/lib/features/review/application/review_providers.dart)、[M2 磁盘冷启动验收](../../apps/mobile/integration_test/m2_process_persistence_app.dart) | 已确认 | M1 已验证完成、复习与飞行模式；M2 由不同 Android PID 从同一独立 Drift 文件恢复 15 条完成、208 条掌握度、一次复习和完整解锁。人工走查又依次确认 Café 终局开放 Market、Market 终局开放 Metro、Metro 01—04 逐课开放，并在完成 Metro final challenge 后看到 12 课与 3 个地点终局全部为 `Completed`。2026-07-27 无 `dart-define` 的 `0.2.0+3` 默认 Release APK 在 Sony `XQ-DQ72` 覆盖安装并冷启动，UI hierarchy 再次核对 12 节课与 3 个终局完整存在；该包仍为 debug key 签名的 Pre-release 验收包 | walkthrough、本地闭环模块 |
 | Go 服务当前只提供 `/healthz`、`/readyz`、`/v1/meta` | [HTTP handler](../../services/api/internal/httpapi/handler.go)、[handler 测试](../../services/api/internal/httpapi/handler_test.go) | 已确认 | `/readyz` 仍是固定 ready；无 DB、认证、同步或语音代理 | code map、README |
+| 当前生产 App 没有设置/客服/隐私/账号/订阅入口 | [App 路由](../../apps/mobile/lib/app/router.dart)、[Feature 目录](../../apps/mobile/lib/features/)、[移动端依赖](../../apps/mobile/pubspec.yaml) | 已确认 | 这些能力已进入公开 MVP 完成门禁，但尚无生产实现；不能把文档计划写成已完成 | README、项目现状、公开 MVP 完成门禁 |
 | CI 会验证生成文件、Flutter、纯 Dart 内容与调度、Go API 和容器构建 | [Project CI](../../.github/workflows/core-ci.yml) | 已确认 | 本轮只检查了 workflow 定义；未在此次文档构建中重跑整套 CI | README、code map |
 
 ## 会改变当前解释的检查
@@ -80,5 +82,6 @@
 3. Go API 开始消费 Outbox 或参与课程/复习主路径。
 4. TTS Provider、声线、参数、合成文本、音频文件或 Android 媒体生命周期行为变更。
 5. 默认课程资产、Journey 解锁规则、`app_test.dart`、`journey_page_test.dart`、`review_flow_test.dart` 或 CI 命令改变主闭环的可观察结果。
+6. 设置/客服/法律、账号/同步/删除、订阅、分析/崩溃或完整游戏化进入生产路由与数据路径。
 
 证据状态：除特别标注外，本页基于当前源码已确认。
