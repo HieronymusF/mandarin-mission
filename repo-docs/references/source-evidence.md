@@ -24,6 +24,7 @@
 | Pass 16 | 用户发布决定、M2 Fixture 状态与名称、默认 Repository、内容/核心/移动端门禁、Release APK | `m2-course.json` 现为 `0.2.7` / `release`；默认 Repository 直接加载 M2，Draft 编译开关已移除；内容校验 2 包、核心 23 tests、移动端 68 tests 与 Release APK 构建通过 | 可以把 M2 写成默认正式内容包；本轮没有连接真机，APK 仍使用 debug key，且未提交、推送或发布 GitHub Release |
 | Pass 17 | App 生产路由与 Feature、客户端依赖、Android manifest、Go handler、README 公开 MVP 范围 | 生产 App 只有 Journey/课程/复习，客户端没有远端认证或支付接线，Go API 只有健康/就绪/元数据；公开 MVP 另有设置/客服/法律、账号/同步/删除、订阅、分析/崩溃、完整游戏化和 6 个地点/约 30 节要求 | M2 Release 与 GitHub Pre-release 只能表述为可玩内容原型完成，不能推导为公开 MVP 或商店候选；当前下一步必须是 App 产品完成门禁 |
 | Pass 18 | Settings 生产路由、主导航、包信息/外链边界、本地数据清理、Widget/Repository 测试、Debug APK 与 Android 模拟器 UI hierarchy | Journey/Review/Settings 主导航和设置首切片已进入生产路径；未配置真实资源时没有假外链；清理动作删除学习者数据并保留课程包；77 个 Flutter 测试与 Debug APK 通过 | 只能关闭设置与信任中心首切片的自动门禁和模拟器视觉；真实支持/法律资源、完整 G1/G2、Sony 真机和公开 MVP 仍未关闭 |
+| Pass 19 | 首次使用生产门禁、异步偏好存储、Settings 重看路由、Widget 测试、Debug APK、Android 模拟器冷启动与 UI hierarchy | 首次启动只显示引导；完成后进入 Journey 并在新进程启动时保持完成；Settings 重看不改写标记；83 个 Flutter 测试与 Debug APK 通过 | 可以关闭首次引导首切片的自动门禁和 Android 模拟器视觉；Sony 真机、完整设置、真实支持/法律资源与完整 G1/G2 仍未关闭 |
 
 ## 理解摘要
 
@@ -72,6 +73,7 @@
 | 本地学习闭环跨冷启动保留，并可在飞行模式完成 | [进度 Repository](../../apps/mobile/lib/data/progress/lesson_progress_repository.dart)、[Journey 页面](../../apps/mobile/lib/features/journey/presentation/journey_page.dart)、[复习流程](../../apps/mobile/lib/features/review/application/review_providers.dart)、[M2 磁盘冷启动验收](../../apps/mobile/integration_test/m2_process_persistence_app.dart) | 已确认 | M1 已验证完成、复习与飞行模式；M2 由不同 Android PID 从同一独立 Drift 文件恢复 15 条完成、208 条掌握度、一次复习和完整解锁。人工走查又依次确认 Café 终局开放 Market、Market 终局开放 Metro、Metro 01—04 逐课开放，并在完成 Metro final challenge 后看到 12 课与 3 个地点终局全部为 `Completed`。2026-07-27 无 `dart-define` 的 `0.2.0+3` 默认 Release APK 在 Sony `XQ-DQ72` 覆盖安装并冷启动，UI hierarchy 再次核对 12 节课与 3 个终局完整存在；该包仍为 debug key 签名的 Pre-release 验收包 | walkthrough、本地闭环模块 |
 | Go 服务当前只提供 `/healthz`、`/readyz`、`/v1/meta` | [HTTP handler](../../services/api/internal/httpapi/handler.go)、[handler 测试](../../services/api/internal/httpapi/handler_test.go) | 已确认 | `/readyz` 仍是固定 ready；无 DB、认证、同步或语音代理 | code map、README |
 | 当前生产 App 已有 Settings 入口、帮助/隐私/条款状态页、本地数据清理和版本信息 | [App 路由](../../apps/mobile/lib/app/router.dart)、[Settings Feature](../../apps/mobile/lib/features/settings/)、[设置测试](../../apps/mobile/test/features/settings/settings_page_test.dart)、[数据清理测试](../../apps/mobile/test/features/settings/local_data_repository_test.dart) | 已确认 | 真实支持邮箱/网页、正式隐私政策/条款、完整客服、账号和订阅仍未实现；不得把首切片写成 G1/G2 已通过 | README、项目现状、公开 MVP 完成门禁 |
+| 当前生产 App 首次启动会显示单页引导，完成后持久化进入 Journey，并可从 Settings 重看 | [App 启动门禁](../../apps/mobile/lib/app/app.dart)、[引导 Feature](../../apps/mobile/lib/features/onboarding/)、[引导测试](../../apps/mobile/test/features/onboarding/onboarding_page_test.dart) | 已确认 | Android 模拟器已验证完成与冷启动；Sony 真机视觉、完整 G1/G2 和产品负责人最终验收仍未完成 | README、代码地图、公开 MVP 完成门禁 |
 | CI 会验证生成文件、Flutter、纯 Dart 内容与调度、Go API 和容器构建 | [Project CI](../../.github/workflows/core-ci.yml) | 已确认 | 本轮只检查了 workflow 定义；未在此次文档构建中重跑整套 CI | README、code map |
 
 ## 会改变当前解释的检查

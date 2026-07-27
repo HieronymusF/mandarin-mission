@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../features/journey/presentation/journey_page.dart';
 import '../features/lesson/presentation/lesson_overview_page.dart';
+import '../features/onboarding/presentation/onboarding_page.dart';
 import '../features/review/presentation/review_page.dart';
 import '../features/settings/presentation/data_management_page.dart';
 import '../features/settings/presentation/settings_page.dart';
@@ -44,6 +45,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: 'data',
                 builder: (context, state) => const DataManagementPage(),
+              ),
+              GoRoute(
+                path: 'onboarding',
+                builder: (context, state) => const OnboardingPage(replay: true),
               ),
             ],
           ),

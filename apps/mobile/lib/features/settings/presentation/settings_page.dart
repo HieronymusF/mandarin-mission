@@ -58,6 +58,14 @@ class SettingsPage extends ConsumerWidget {
                 child: Column(
                   children: [
                     _SettingsRouteEntry(
+                      key: const Key('open-onboarding-settings'),
+                      icon: LucideIcons.compass,
+                      title: 'How this app works',
+                      subtitle: 'Review the first-use guide',
+                      onPressed: () => context.go('/settings/onboarding'),
+                    ),
+                    const Divider(height: 1),
+                    _SettingsRouteEntry(
                       key: const Key('open-help-settings'),
                       icon: LucideIcons.circleHelp,
                       title: 'Help & support',
