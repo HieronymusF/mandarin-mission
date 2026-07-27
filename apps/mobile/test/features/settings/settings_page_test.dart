@@ -13,6 +13,7 @@ import 'package:mandarin_mission/data/local/app_database_provider.dart';
 import 'package:mandarin_mission/features/settings/application/trust_center_providers.dart';
 import 'package:mandarin_mission/features/settings/data/local_data_repository.dart';
 import 'package:mandarin_mission/features/settings/data/trust_center_data_source.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 void main() {
   testWidgets('main navigation opens settings while lessons stay focused', (
@@ -136,6 +137,88 @@ void main() {
       tester.getTopLeft(titleFinder).dx,
       closeTo(tester.getTopLeft(subtitleFinder).dx, 0.01),
     );
+  });
+
+  testWidgets('shows honest app preferences and unavailable services', (
+    tester,
+  ) async {
+    await _pumpApp(tester);
+    await _openSettings(tester);
+    await _revealOnPage(
+      tester,
+      const Key('settings-page'),
+      find.byKey(const Key('open-app-preferences-settings')),
+    );
+    await tester.tap(find.byKey(const Key('open-app-preferences-settings')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('app-preferences-page')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('back-from-app-preferences')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('settings-page')), findsOneWidget);
+
+    await _revealOnPage(
+      tester,
+      const Key('settings-page'),
+      find.byKey(const Key('open-app-preferences-settings')),
+    );
+    await tester.tap(find.byKey(const Key('open-app-preferences-settings')));
+    await tester.pumpAndSettle();
+    expect(find.text('Interface language'), findsOneWidget);
+    expect(find.text('English'), findsOneWidget);
+    expect(find.text('Learning content'), findsOneWidget);
+    expect(find.text('Simplified Chinese'), findsOneWidget);
+    final interfaceLanguageFinder = find.text('Interface language');
+    final interfaceLanguageLabel = tester.widget<Text>(interfaceLanguageFinder);
+    final theme = ShadTheme.of(tester.element(interfaceLanguageFinder));
+    expect(interfaceLanguageLabel.style?.color, theme.colorScheme.primary);
+
+    await _revealOnPage(
+      tester,
+      const Key('app-preferences-page'),
+      find.text('Audio & microphone'),
+    );
+    expect(find.text('Audio & microphone'), findsOneWidget);
+
+    await _revealOnPage(
+      tester,
+      const Key('app-preferences-page'),
+      find.text('Account & sync'),
+    );
+    expect(find.text('Notifications'), findsOneWidget);
+    expect(find.text('Analytics & crash collection'), findsOneWidget);
+    expect(find.text('Account & sync'), findsOneWidget);
+    expect(find.text('Not connected'), findsNWidgets(2));
+    expect(find.text('Not available'), findsOneWidget);
+  });
+
+  testWidgets('app preferences remain usable at 200 percent text scale', (
+    tester,
+  ) async {
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(360, 800);
+    tester.platformDispatcher.textScaleFactorTestValue = 2;
+
+    await _pumpApp(tester);
+    await _openSettings(tester);
+    await _revealOnPage(
+      tester,
+      const Key('settings-page'),
+      find.byKey(const Key('open-app-preferences-settings')),
+    );
+    await tester.tap(find.byKey(const Key('open-app-preferences-settings')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('app-preferences-page')), findsOneWidget);
+    await _revealOnPage(
+      tester,
+      const Key('app-preferences-page'),
+      find.text('Account & sync'),
+    );
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('keeps the policy page open when an external link fails', (

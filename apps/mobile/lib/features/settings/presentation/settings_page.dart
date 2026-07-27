@@ -21,7 +21,7 @@ class SettingsPage extends ConsumerWidget {
             Text('Settings', style: theme.textTheme.h2),
             const SizedBox(height: AppSpacing.xs),
             Text(
-              'Help, privacy, local data, and the build running on this device.',
+              'App preferences, help, privacy, local data, and the build running on this device.',
               style: theme.textTheme.muted,
             ),
             const SizedBox(height: AppSpacing.xl),
@@ -47,9 +47,9 @@ class SettingsPage extends ConsumerWidget {
             ),
             const SizedBox(height: AppSpacing.xxl),
             AppSection(
-              title: Text('Trust & support', style: theme.textTheme.h3),
+              title: Text('App & trust', style: theme.textTheme.h3),
               description: Text(
-                'Find help, see what is published, and control local learning data.',
+                'Review app behavior, find help, and control local learning data.',
                 style: theme.textTheme.muted,
               ),
               child: ShadCard(
@@ -57,6 +57,14 @@ class SettingsPage extends ConsumerWidget {
                 padding: EdgeInsets.zero,
                 child: Column(
                   children: [
+                    _SettingsRouteEntry(
+                      key: const Key('open-app-preferences-settings'),
+                      icon: LucideIcons.settings2,
+                      title: 'App preferences',
+                      subtitle: 'Languages, media, and connected services',
+                      onPressed: () => context.go('/settings/preferences'),
+                    ),
+                    const Divider(height: 1),
                     _SettingsRouteEntry(
                       key: const Key('open-onboarding-settings'),
                       icon: LucideIcons.compass,
