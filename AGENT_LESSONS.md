@@ -4,6 +4,16 @@
 
 涉及稳定仓库行为或行为代码变更时，按根 `AGENTS.md` 的 Repo docs sync gate 核对并最小更新 `repo-docs/`。
 
+## Lesson: 商店发布必须晚于 App 产品完成门禁
+
+- Last confirmed: 2026-07-27
+- Pattern: M2 默认内容、GitHub Pre-release 和默认 Release 真机复验完成后，把 release keystore 和商店签名当成自然下一步；但生产路由只有 Journey/课程/复习，Go 服务只有健康/就绪/元数据端点，客服、隐私、账号、同步、删除、订阅和公开 MVP 内容均未实现。
+- Prevention rule: 推荐任何商店签名、素材或审核动作前，先按 `docs/requirements/public-mvp-completion.md` 审计 G1—G6。M1/M2、绿 CI、真机内容验收和 GitHub Pre-release 只证明各自范围，不得升级为“App 已完成”或商店候选。功能开发需要的 Apple/Google 沙箱配置可以提前做，但正式上架工作必须最后开始。
+- Verification: G1—G6 每项都有生产实现、自动/手工证据和真实支持/法律信息；任一未关闭时，`HANDOFF.md` 的下一步仍是 App 产品开发或质量修复。
+- Evidence: `apps/mobile/lib/app/router.dart`、`apps/mobile/lib/features/`、`services/api/internal/httpapi/handler.go`，以及 2026-07-27 用户对上架优先级的纠正。
+- Status: active
+- Promoted to: `docs/requirements/public-mvp-completion.md`
+
 ## Lesson: 内容签核必须枚举全部发布单元并编排专业 Agent
 
 - Last confirmed: 2026-07-26

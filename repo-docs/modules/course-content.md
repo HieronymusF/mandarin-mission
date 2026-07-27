@@ -22,7 +22,7 @@
 
 当前 [对话步骤页面](../../apps/mobile/lib/features/lesson/presentation/steps/dialogue_step.dart) 会从当前系统节点沿 `nextNodeId` 读取一个完整话轮：连续的系统节点会按顺序共同显示，到达 learner 节点后暂停。学习者每一轮都要重新选择脱稿自报或 phrase ticket，完成可观察动作后才能发送；系统终止节点会先显示收尾再允许继续，学习者终止节点则在该次动作后结束步骤。[课程状态](../../apps/mobile/lib/features/lesson/application/lesson_providers.dart) 保存当前节点，离开课程页后由 `autoDispose` 清理。
 
-[多轮对话测试](../../apps/mobile/test/features/lesson/presentation/dialogue_flow_test.dart) 覆盖连续系统节点、每轮门禁重置、两类终止节点和离页清理，并直接遍历 M2 的 Café、Market、Metro 三个终局，分别完成 5、6、8 个 learner 轮次。Repository 测试证明三个 `challengeId` 都能合成为可路由课程；Journey 测试再覆盖“四课完成 → Café 终局开放 → 完成终局 → Market 开放”，并在重新创建 ProviderScope 后确认解锁仍由数据库恢复。[M2 真机集成测试](../../apps/mobile/integration_test/m2_device_acceptance_test.dart) 在 Sony `XQ-DQ72` 上通过真实课程控制器完成 12 课与 3 个终局，并核对 15 条完成进度、208 条掌握度状态、一次到期复习和 Provider 重载。独立验收还补齐了真实进程冷启动和新增范围 14/14 单元人工逐页 UX。用户已批准内容发布；本轮无设备连接，因此默认 Release APK 的重新安装仍需单独复验。
+[多轮对话测试](../../apps/mobile/test/features/lesson/presentation/dialogue_flow_test.dart) 覆盖连续系统节点、每轮门禁重置、两类终止节点和离页清理，并直接遍历 M2 的 Café、Market、Metro 三个终局，分别完成 5、6、8 个 learner 轮次。Repository 测试证明三个 `challengeId` 都能合成为可路由课程；Journey 测试再覆盖“四课完成 → Café 终局开放 → 完成终局 → Market 开放”，并在重新创建 ProviderScope 后确认解锁仍由数据库恢复。[M2 真机集成测试](../../apps/mobile/integration_test/m2_device_acceptance_test.dart) 在 Sony `XQ-DQ72` 上通过真实课程控制器完成 12 课与 3 个终局，并核对 15 条完成进度、208 条掌握度状态、一次到期复习和 Provider 重载。独立验收还补齐了真实进程冷启动和新增范围 14/14 单元人工逐页 UX。用户批准内容发布后，无 `dart-define` 的 `0.2.0+3` 默认 Release APK 又在同一 Sony 上完成覆盖安装和冷启动；真实 Journey UI hierarchy 核对出三个地点各 4 节课与 1 个终局。
 
 ## 数据进入 App 前经过两层约束
 

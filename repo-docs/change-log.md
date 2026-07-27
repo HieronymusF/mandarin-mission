@@ -2,6 +2,8 @@
 
 ## 2026-07-27
 
+- 11:32 +08:00：按用户纠正重新划分“内容里程碑、公开 MVP、商店发布”。源码审计确认生产路由只有 Journey/课程/复习，Go API 只有健康/就绪/元数据端点，客服、隐私/条款、数据控制、账号、同步、删除、订阅和完整运营功能尚未实现。新增 `docs/requirements/public-mvp-completion.md` 作为 G1—G6 单一门禁，明确当前是公开 MVP 产品开发，正式签名、素材和审核提交必须最后开始；同步 README、开发方案、项目现状、实时交接、详细 Agent 基线、经验与 repo guide。Synced through 92f748b + current documentation patch。
+- 11:18 +08:00：关闭默认 Release 真机复验门禁。先核对本地与 GitHub Pre-release `v0.2.0` 的 `app-release.apk` 均为 64,512,944 bytes，SHA-256 均为 `98e5a187567147899205a29986ff0b533e188820dffb81ec1636f7d61fb3e601`；APK manifest 为 `com.hieronymusf.mandarinmission` / `0.2.0+3`，Android Debug 证书。Sony `XQ-DQ72` 从旧 `0.1.1+2` 经 `adb install -r` 覆盖升级，`firstInstallTime` 未改变；冷启动后真实 Journey UI hierarchy 精确匹配 Café、Market、Metro 各 4 节课和 1 个地点终局，共 12 节课与 3 个终局，前台 PID 的 fatal、Flutter error 与 `RenderFlex overflowed` 匹配数为 0。repo-docs Sync Gate 为 `foreground patch`；同步 README、课程内容模块与源码证据。Synced through 92f748b + current documentation patch。
 - 00:00 +08:00：完整 M2 通过 PR [#20](https://github.com/HieronymusF/mandarin-mission/pull/20) 的 `mobile`、`learning-core`、`api` 三项 CI，并以 merge commit `07154a1` 合并到 `main`；合并后的 `main` CI run [`30209138974`](https://github.com/HieronymusF/mandarin-mission/actions/runs/30209138974) 再次全绿。App 版本为 `0.2.0+3`，内容包保持 `0.2.7` / `release`，GitHub 发布 Pre-release [`v0.2.0`](https://github.com/HieronymusF/mandarin-mission/releases/tag/v0.2.0)，tag 指向 `07154a1`。Release 资产 `app-release.apk` 为 64,512,944 bytes，远端状态 `uploaded`，SHA-256 `98e5a187567147899205a29986ff0b533e188820dffb81ec1636f7d61fb3e601` 与本地一致。内容包是正式 Release；APK 仍由 Android Debug 证书签名，因此只作为安装验收包并标记 Pre-release，不是商店签名包。本轮无连接真机，默认 Release APK 的新一轮安装复验仍单列为后续边界。repo-docs Sync Gate 为 `foreground patch`。Synced through 07154a1 + current documentation patch。
 
 ## 2026-07-26
@@ -70,6 +72,6 @@
 - 验证：移动端 format、analyze、46 tests 和 debug APK 通过；`validate_repo_docs.py` 为 0 errors。代码地图因每个目录按规则重复“重要代码”表头保留 1 条 broad-value warning。
 - 当时基线为 8ebcb77；同时核对 2026-07-22 当前 `feat/audio-playback-recording` 未提交工作树。
 
-当前同步锚点：Synced through 07154a1 + current documentation patch。
+当前同步锚点：Synced through 92f748b + current documentation patch。
 
 后续只记录会改变读者模型、阅读路径或证据范围的更新；临时调试状态继续放在根目录 `HANDOFF.md`。
