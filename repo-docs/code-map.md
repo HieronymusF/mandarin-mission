@@ -4,10 +4,10 @@
 
 | 路径 | 职责 | 关键代码 | 与主流程的关系 |
 | --- | --- | --- | --- |
-| `apps/mobile/lib/app/` | 组装 App 与页面路由 | `MandarinMissionApp`、`appRouterProvider` | 把 Journey、课程和复习三个入口连起来 |
+| `apps/mobile/lib/app/` | 组装 App、主导航与页面路由 | `MandarinMissionApp`、`appRouterProvider`、`MainNavigationShell` | 连接 Journey、Review、Settings；课程保持独立 |
 | `apps/mobile/lib/core/` | 保存可执行主题、字体与布局令牌 | `AppLayout`、`AppTextStyles`、`buildAppTheme` | 统一主流程各页面的尺寸和视觉语义 |
 | `apps/mobile/lib/data/` | 读取内容、包装媒体、持久化进度、查询复习 | `CourseContentRepository`、`LessonProgressRepository`、`ReviewQueueRepository` | 是课程数据与本地事务的边界 |
-| `apps/mobile/lib/features/` | 按 Journey、lesson、review 组织状态与页面 | `LessonPlayerController`、`ReviewSessionController` | 推进 walkthrough 中的用户可见状态 |
+| `apps/mobile/lib/features/` | 按 Journey、lesson、review、settings 组织状态与页面 | `LessonPlayerController`、`ReviewSessionController`、`SettingsActionController` | 推进学习主流程与信任外壳的用户可见状态 |
 | `apps/mobile/lib/shared/` | 提供已复用或正在验证的跨功能 Widget | `AudioPlayerBar`、`RecordingControls`、`AppLeadingRow` | 支撑媒体交互和统一布局 |
 | `apps/mobile/integration_test/` | 在真实 Android 设备验证跨层课程、媒体和磁盘恢复 | `m2_device_acceptance_test.dart`、`m2_process_persistence_app.dart` | 逐条播放 M2 音频、跑通课程链路，并用不同 Android 进程读取同一 Drift 文件 |
 | `packages/learning_core/lib/` | 保存不依赖 Flutter 的学习规则与内容校验 | `ReviewScheduler`、`ContentValidator` | 决定内容能否进入 App、复习何时到期 |
@@ -23,7 +23,8 @@
 | 重要代码 | 功能 | 关键符号 | 调用方 / 使用方 |
 | --- | --- | --- | --- |
 | [App 入口组装](../apps/mobile/lib/app/app.dart) | 把 shadcn 主题与 Material 路由外壳组合起来 | `MandarinMissionApp` | `main.dart` |
-| [页面路由](../apps/mobile/lib/app/router.dart) | 定义 `/`、`/lessons/:lessonId`、`/review` | `appRouterProvider` | App 外壳、Journey |
+| [页面路由](../apps/mobile/lib/app/router.dart) | 定义 `/`、`/review`、`/settings/*` 与独立课程路由 | `appRouterProvider` | App 外壳、Journey、Review、Settings |
+| [主导航](../apps/mobile/lib/app/main_navigation_shell.dart) | 提供 Journey、Review、Settings 三个稳定入口 | `MainNavigationShell` | 非课程页面 |
 
 最接近的回归入口是 [完整 App Widget 测试](../apps/mobile/test/app/app_test.dart)。
 
@@ -48,6 +49,7 @@ UI 规则的文字入口仍是根目录 `WIDGET_LIBRARY.md` 与 `docs/design-sys
 | [进度写入](../apps/mobile/lib/data/progress/lesson_progress_repository.dart) | 在事务内保存练习、课程完成和 Outbox | `LessonProgressRepository` | lesson/review controllers |
 | [复习查询](../apps/mobile/lib/data/review/review_queue_repository.dart) | 查找到期项并按失败与维度排序 | `ReviewQueueRepository` | `ReviewSessionController` |
 | [媒体状态入口](../apps/mobile/lib/data/audio/audio_providers.dart) | 注入播放/录音服务与 Controller | `audioControllerProvider`、`recordingControllerProvider` | 媒体 Widget |
+| [本地数据清理](../apps/mobile/lib/features/settings/data/local_data_repository.dart) | 在事务内清除学习者数据并保留已安装课程包 | `DriftLocalDataRepository` | 数据管理页 |
 
 修改数据契约时先跑 `apps/mobile/test/data/` 和迁移测试；修改媒体状态先跑 `apps/mobile/test/data/audio/`。
 
@@ -62,8 +64,12 @@ UI 规则的文字入口仍是根目录 `WIDGET_LIBRARY.md` 与 `docs/design-sys
 | [对话步骤](../apps/mobile/lib/features/lesson/presentation/steps/dialogue_step.dart) | 顺序显示一个或多个系统节点，并为当前 learner 节点提供脱稿自报与 phrase ticket | `DialogueStep` | 课程页面 |
 | [复习状态](../apps/mobile/lib/features/review/application/review_providers.dart) | 建立最多 8 项会话并处理补救、失败重试 | `ReviewSessionController` | 复习页面、Journey 摘要 |
 | [复习页面](../apps/mobile/lib/features/review/presentation/review_page.dart) | 呈现加载、空、错误、题目与完成状态 | `ReviewPage` | `/review` 路由 |
+| [设置状态](../apps/mobile/lib/features/settings/application/trust_center_providers.dart) | 注入包信息、外链与本地数据 Repository，管理提交/失败反馈 | `SettingsActionController` | Settings 子页面 |
+| [设置主页](../apps/mobile/lib/features/settings/presentation/settings_page.dart) | 展示离线边界、信任入口与实际版本信息 | `SettingsPage` | `/settings` 路由 |
+| [信任信息页](../apps/mobile/lib/features/settings/presentation/trust_info_page.dart) | 离线说明帮助、隐私与条款状态；只为有效配置显示外部动作 | `TrustInfoPage` | Settings 主页 |
+| [数据管理页](../apps/mobile/lib/features/settings/presentation/data_management_page.dart) | 说明清除范围、二次确认并反馈成功或失败 | `DataManagementPage` | Settings 主页 |
 
-课程主路径由 [课程端到端测试](../apps/mobile/test/app/app_test.dart) 覆盖，多轮对话由 [对话流程测试](../apps/mobile/test/features/lesson/presentation/dialogue_flow_test.dart) 覆盖，多地点入口由 [Journey 内容驱动测试](../apps/mobile/test/features/journey/journey_page_test.dart) 覆盖，复习主路径由 [复习流程测试](../apps/mobile/test/app/review_flow_test.dart) 覆盖。
+课程主路径由 [课程端到端测试](../apps/mobile/test/app/app_test.dart) 覆盖，多轮对话由 [对话流程测试](../apps/mobile/test/features/lesson/presentation/dialogue_flow_test.dart) 覆盖，多地点入口由 [Journey 内容驱动测试](../apps/mobile/test/features/journey/journey_page_test.dart) 覆盖，复习主路径由 [复习流程测试](../apps/mobile/test/app/review_flow_test.dart) 覆盖；设置导航、状态、外链和数据清理由 [设置测试](../apps/mobile/test/features/settings/settings_page_test.dart) 与同目录数据测试覆盖。
 
 ## `apps/mobile/lib/shared/`
 
@@ -72,9 +78,9 @@ UI 规则的文字入口仍是根目录 `WIDGET_LIBRARY.md` 与 `docs/design-sys
 | [媒体播放条](../apps/mobile/lib/shared/presentation/audio_player_bar.dart) | 呈现加载、播放、暂停、进度与错误 | `AudioPlayerBar` | 听力与教学步骤 |
 | [录音控件](../apps/mobile/lib/shared/presentation/recording_controls.dart) | 呈现权限、录音、音量、回放和重录 | `RecordingControls` | 口语步骤 |
 | [Widget 统一入口](../apps/mobile/lib/shared/presentation/app_widgets.dart) | 导出项目共享 Widget | library exports | 新页面与测试 |
-| [布局候选](../apps/mobile/lib/shared/presentation/app_page_layout.dart) | 提供内容框、滚动页与 Section | `AppContentFrame`、`AppPageScrollView` | 当前主要由测试和文档引用 |
+| [页面布局](../apps/mobile/lib/shared/presentation/app_page_layout.dart) | 提供内容框、滚动页与 Section | `AppContentFrame`、`AppPageScrollView` | Settings 页面与测试 |
 
-`app_page_layout.dart` 尚缺两个真实生产调用点，继续抽象前先核对根目录交接；媒体组件的近期验证入口是 `apps/mobile/test/shared/`。
+`app_page_layout.dart` 已由 Settings 生产页面复用；媒体组件的近期验证入口是 `apps/mobile/test/shared/`。
 
 ## `apps/mobile/integration_test/`
 

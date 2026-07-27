@@ -45,7 +45,11 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.byKey(const Key('open-lesson-cafe-01')));
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('open-lesson-cafe-01')),
+      240,
+      scrollable: find.byType(Scrollable).first,
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('open-lesson-cafe-01')));
     await tester.pumpAndSettle();

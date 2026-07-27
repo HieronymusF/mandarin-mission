@@ -32,9 +32,13 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Your Mandarin journey'), findsOneWidget);
-    expect(find.text('11 short steps'), findsOneWidget);
-    await tester.ensureVisible(find.byKey(const Key('open-lesson-cafe-01')));
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('open-lesson-cafe-01')),
+      240,
+      scrollable: find.byType(Scrollable).first,
+    );
     await tester.pumpAndSettle();
+    expect(find.text('11 short steps'), findsOneWidget);
     await tester.tap(find.byKey(const Key('open-lesson-cafe-01')));
     await tester.pumpAndSettle();
 
@@ -239,6 +243,12 @@ void main() {
     await tester.tap(find.byKey(const Key('lesson-primary-action')));
     await tester.pumpAndSettle();
     expect(find.text('Your Mandarin journey'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('open-lesson-cafe-01')),
+      240,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
     expect(find.text('Completed'), findsOneWidget);
     expect(find.text('Practice again'), findsOneWidget);
 
