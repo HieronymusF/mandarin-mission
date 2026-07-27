@@ -1,14 +1,15 @@
 # Mandarin Mission 项目交接
 
-> 最后更新：2026-07-27 11:32（Asia/Hong_Kong）
+> 最后更新：2026-07-27 12:56（Asia/Hong_Kong）
 > 项目：`D:\mandarin-mission\mandarin-mission`
-> Git：本轮文档发布从 `main` / `origin/main` 的 `92f748b` 开始；内容发布提交与 tag `v0.2.0` 均为 `07154a1`。当前分支、提交、PR、CI 和合并状态须从 Git/GitHub 实时核验，不从本行推断
+> Git：当前本地分支 `agent/app-settings-trust-center`，基线为与 `main` / `origin/main` 一致的 `39e442a`；设置与信任中心功能提交为 `0a282ca`，已推送并创建 Draft PR [#23](https://github.com/HieronymusF/mandarin-mission/pull/23)。内容发布提交与 tag `v0.2.0` 均为 `07154a1`。当前分支、提交、PR、CI 和合并状态须从 Git/GitHub 实时核验，不从本行推断
 
 本文件是本项目唯一的实时交接入口。每次新对话或新任务必须先按根目录 `AGENTS.md` 的顺序读取全局协议、本文件、`AGENT_LESSONS.md` 和 `docs/handoff/ai-agent-handoff.md`，再核验仓库与 GitHub 当前状态。`AGENT_LESSONS.md` 保存去重后的项目特定复用经验；详细且相对稳定的项目基线在 `docs/handoff/ai-agent-handoff.md`。
 
 ## 当前正在做什么
 
-- 2026-07-27 产品优先级已纠正：上架不是 M1/M2 或 GitHub Pre-release 之后的当前任务，App 必须先按公开 MVP 边界完整做完。源码审计确认生产路由只有 Journey、课程、复习，`features/` 只有 `journey/lesson/review`；Go API 只有健康、就绪和元数据端点；设置、客服、隐私/条款、数据控制、账号、同步、删除账号、订阅、分析/崩溃以及完整每日任务/连胜/印章均未实现。新增 `docs/requirements/public-mvp-completion.md` 作为“App 完成后再上架”的单一权威门禁，并同步纠正 README、开发方案、项目现状和 repo-docs。当前阶段是公开 MVP 产品开发；正式签名、商店素材和审核提交只有 G1—G6 全部通过后才开始。
+- 2026-07-27 完成公开 MVP 的“设置与信任中心”首切片：`ShellRoute` 提供 Journey/Review/Settings 主导航，课程路由保持独立；`features/settings/` 提供帮助、隐私、条款状态页、本地数据管理和实际 App 版本信息。支持/政策外部动作只接受显式 `dart-define` 的有效 `https` URL 或支持邮箱，缺失时只显示未配置状态；没有假链接。清除动作在 Drift 事务内删除进度、掌握度、练习、口语与 Outbox，保留已安装课程包，并在二次确认后刷新 Journey/Review 派生状态。用户随后标出四个 Settings 条目标题层级不足、副标题多行居中的问题；失败测试确认标题没有显式字号，现用既有 `large` 令牌设为 18px/600，并让标题与 14px/400 副标题显式左对齐。验证通过：Flutter format 77 files / 0 changed、analyze 0 issues、78 tests、发布前 Settings 定向 10 tests、`git diff --check`；Debug APK 为 210,099,220 bytes，SHA-256 `c6322459a710fbcee86170e273c67d8ad867d026d52decfb40add258b0bc93e3`。隔离 Android 模拟器已核对 Settings 页面、三项导航语义和 `Version 0.2.0 (3)`；修复后截图位于 `D:\Codex\UserData\.codex\visualizations\2026\07\27\019fa1b8-3091-77a3-bd16-2714a98ded6b\app-settings-typography-fixed.png`，前台 PID 的 overflow、FlutterError 与 fatal 匹配数为 0。本轮未连接 Sony 真机。功能提交 `0a282ca` 已推送到 `origin/agent/app-settings-trust-center`，Draft PR #23 已创建；最新 head 的远端 CI 须实时核验。
+- 产品优先级仍是公开 MVP 产品开发，不是上架。`docs/requirements/public-mvp-completion.md` 是“App 完成后再上架”的单一权威门禁；设置首切片不能推导为 G1/G2 已通过。当前仍缺首次引导、真实客服/法律资源、完整设置、账号/同步/删除、订阅、分析/崩溃、完整每日任务/连胜/印章、6 个地点/约 30 节课和跨平台系统验收；正式签名、商店素材和审核提交只有 G1—G6 全部通过后才开始。
 - 完整 M2 已成为默认正式内容并交付。`content/fixtures/m2-course.json` 为 `0.2.7` / `release`，固化 Café → Market → Metro 3 个地点、12 节课、52 个知识点、15 段对话和 53 个 `ready` 资产；`CourseContentRepository` 默认直接加载该包，`MM_USE_M2_DRAFT` 开关和 Draft asset 名称已移除，`cafe-course.json` 只保留作 M1 回归基线。App 版本为 `0.2.0+3`。功能 PR [#20](https://github.com/HieronymusF/mandarin-mission/pull/20) 的 `mobile`、`learning-core`、`api` 三项 CI 全绿后，以 merge commit `07154a1` 合并到 `main`；合并后的 `main` CI run [`30209138974`](https://github.com/HieronymusF/mandarin-mission/actions/runs/30209138974) 再次全绿。GitHub 已发布 Pre-release [`v0.2.0`](https://github.com/HieronymusF/mandarin-mission/releases/tag/v0.2.0)，tag 指向 `07154a1`。远端 `app-release.apk` 状态为 `uploaded`，大小 64,512,944 bytes，SHA-256 `98e5a187567147899205a29986ff0b533e188820dffb81ec1636f7d61fb3e601` 与本地一致。内容包是正式 `release`；APK 仍使用 Android Debug 证书，因此只作为安装验收包并标记 Pre-release，不冒充商店正式签名包。2026-07-27 已在 Sony `XQ-DQ72`（`QV770PBLJ4`）用 `adb install -r` 将旧 `0.1.1+2` 覆盖升级为这份无 `dart-define` 的 `0.2.0+3`，`firstInstallTime` 保持不变。冷启动后的真实 Journey UI hierarchy 精确匹配 Café、Market、Metro 各 4 节课和 1 个地点终局，共 12 节课与 3 个终局；前台 PID `27577` 的 fatal、Flutter error 与 `RenderFlex overflowed` 匹配数为 0。截图为 `mm-default-release-journey.png`、`mm-default-release-journey-mid.png` 与 `mm-default-release-journey-bottom.png`。默认 Release 真机复验门禁已关闭。
 - M2 地点终局与单线解锁的最小实现已完成：运行时把未内嵌的 location `challengeId` 合成为 `dialogue_turn + summary` 两步课程；`journeyProgressProvider` 汇总课程与终局的 `lesson_progress_entries`，按先修课逐节开放、四课后开放终局、终局完成后开放下一地点。M1 的 `cafe-challenge` 已内嵌在 `cafe-01`，不会出现重复挑战卡。Journey Widget 测试跑通 Café 四课 → Café 终局 → Market，并在重新创建 ProviderScope 后确认解锁持久化；真实 M2 Repository 测试核对三个终局都能合成课程。
 - 新增 `apps/mobile/integration_test/m2_device_acceptance_test.dart`，已在 Sony `XQ-DQ72`（Android 15，`QV770PBLJ4`）通过：49/49 条新增 M2 音频逐条经过真实 `AudioServiceImpl` 并从 `playing` 到 `stopped`；真实 M2 包的 12 课、3 个终局、15 条完成进度、208 条掌握度状态、一次到期复习和 Provider 重载全部通过。测试把播放器音量设为 0，并使用隔离内存数据库，不污染手机正式学习数据；它证明真机技术链路，不冒充人工逐页 UX 或真实进程冷启动。
@@ -118,8 +119,8 @@
 
 ## 卡在了哪里
 
-- 无代码构建阻塞。
-- 公开 MVP 产品尚未完成，这是当前真实差距，不是外部阻塞：App 缺设置/客服/法律/数据控制，后端缺账号/会话/同步/删除/权益，内容只到 3 个地点/12 节，游戏化、订阅、分析/崩溃和完整跨平台质量门禁未关闭。
+- 无代码构建或 GitHub 认证阻塞。Draft PR #23 已打开；不得把创建时启动的 CI 当成最终结果，必须核验最新 head SHA 对应的 `mobile`、`learning-core`、`api` 三项 job。
+- 公开 MVP 产品尚未完成，这是当前真实差距，不是代码构建阻塞：设置首切片已落地，但首次引导、真实客服/法律资源与完整设置仍缺；后端缺账号/会话/同步/删除/权益，内容只到 3 个地点/12 节，游戏化、订阅、分析/崩溃和完整跨平台质量门禁未关闭。
 - G2/G3/G4 最终验收还需要产品负责人提供真实运营/法律主体、支持邮箱与网页、首发地区/年龄、登录方式和订阅商品口径；这些信息不阻塞页面结构、数据清单和服务端契约先行开发，但占位值不能被标成完成。
 - M2 文本、49 条音频听感与资产门禁、Sony 真机技术播放、12 课、3 个终局、一次到期复习、Provider 重载、真实磁盘/不同 Android 进程冷启动恢复、新增范围 14/14 单元人工逐页 UX、默认入口、内容包 `release` 决策与无开关 `0.2.0+3` 默认 Release 安装复验均已关闭。
 - 新 11 步课程的三种新增步骤、完整完成页、6 项复习与两次冷启动持久化已在 Sony 真机通过；当前没有代码或设备闭环阻塞。
@@ -131,14 +132,14 @@
 - Sony 真机媒体主路径通过：第 5 步播放时获取音频焦点，以 24 kHz 单声道解码，完成后释放焦点；第 6 步从未授权状态进入 App 权限用途说明并获得系统授权，以 44.1 kHz 录制本地 M4A。用户提供的约 7 秒录音为 115,228 bytes（约 0.9 MB/分钟），同一文件回放完成、状态复位，重新录制删除当前文件；录音中按 Home 会停止录音、释放焦点并删除本次临时文件。测试产生的单个孤儿录音已按明确路径删除，未导出或读取音频内容。
 - Sony 真机第 7 步交互修复通过：初始页显示 `I said it aloud`、`Use phrase ticket` 和禁用的 `Choose how to reply`；前者显示 `Reply ready`，后者显示整句 phrase ticket，两者都会启用 `Send reply`，点击后进入 `Step 8 of 8`。修复前后截图为 `mandarin-step7-blocked.png`、`mandarin-step7-fixed.png`，phrase ticket 状态为 `mandarin-step7-ticket.png`。
 - 本轮已连接 Sony 真机并新增书写修复、录音停止态、录音中音量提示、普通拒绝、永久拒绝与设置返回恢复截图；普通权限分支不再只依赖模拟器证据。
-- `AppContentFrame`、`AppPageScrollView`、`AppSection`、`AppListRow` 当前只被测试和文档引用，没有真实生产页面调用；它们是部分完成的候选组件，不得当作已验证的生产抽象继续扩展。
+- `AppPageScrollView`、`AppSection`、`AppListRow` 已由 Settings 生产页面复用；`AppContentFrame` 的生产复用仍有限。继续抽象前仍要按真实页面和测试证据核对，不因组件存在就扩大接口。
 
 ## 下一步要做什么
 
-1. **实现第一个公开 MVP 切片“App 设置与信任中心”**：建立主导航及设置入口，交付帮助/联系客服、隐私政策、服务条款、数据管理、App 版本信息，以及加载/失败/离线/无障碍测试；没有真实邮箱或 URL 时只保留未完成状态，不上线假链接。
-2. **完成账号与同步设计/实现**：先冻结身份、会话、匿名数据合并、Outbox 同步、跨用户拒绝和账号删除契约，再接 API/DB 与客户端；保持未登录可用本地核心课程。
-3. **补齐公开 MVP 产品**：扩到 6 个地点/约 30 节课，完成真实每日任务/连胜/印章、订阅权益、基础语音、分析与崩溃监控，再执行弱网、升级、无障碍、安全、购买、删除账号和封闭测试门禁。
-4. **最后才上架**：只有 `docs/requirements/public-mvp-completion.md` 的 G1—G6 全部通过，才配置正式签名、制作商店资料和提交审核。保持 M2 language lock；真实来电、项目 Skill/Hook UI 启用确认作为相应质量/工具边界继续跟踪。
+1. **核验 Draft PR #23 的最新 CI**：确认最新 head SHA 对应的 `mobile`、`learning-core`、`api` 三项 job 全部结束且通过；用户尚未授权合并，不自动把 PR 转为 Ready 或合并。补 Sony 真机视觉时必须和本轮模拟器证据分开记录，不能覆盖或清除正式学习数据。
+2. **继续关闭 G1/G2 信任外壳**：补首次使用引导、其余真实设置项、可收件支持渠道、正式隐私政策/服务条款和客服流程；产品资源未提供时保持未配置状态，不造假值。
+3. **完成账号与同步设计/实现**：先冻结身份、会话、匿名数据合并、Outbox 同步、跨用户拒绝和账号删除契约，再接 API/DB 与客户端；保持未登录可用本地核心课程。
+4. **补齐公开 MVP 后最后上架**：扩到 6 个地点/约 30 节课，完成游戏化、订阅、基础语音、分析/崩溃和系统验收；只有 G1—G6 全部通过，才配置正式签名、制作商店资料和提交审核。
 
 ## 哪些坑不要再踩
 
