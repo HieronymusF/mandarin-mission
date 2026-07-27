@@ -70,12 +70,13 @@ UI 规则的文字入口仍是根目录 `WIDGET_LIBRARY.md` 与 `docs/design-sys
 | [设置状态](../apps/mobile/lib/features/settings/application/trust_center_providers.dart) | 注入包信息、外链与本地数据 Repository，管理提交/失败反馈 | `SettingsActionController` | Settings 子页面 |
 | [偏好状态](../apps/mobile/lib/features/settings/application/app_preferences_providers.dart) | 读取通知/诊断选择，写入成功后更新页面；读取和保存失败保持可恢复状态 | `AppPreferencesController` | App preferences 页面 |
 | [偏好存储](../apps/mobile/lib/features/settings/data/app_preferences_store.dart) | 用异步偏好 API 保存两个默认关闭的版本化布尔选择 | `SharedPreferencesAppPreferencesStore` | 偏好状态 Provider |
+| [隐私数据清单](../apps/mobile/lib/features/settings/data/privacy_data_inventory.dart) | 把当前版本的本机存储、临时录音、不发送数据和清除边界集中为纯 Dart 清单 | `currentPrivacyDataInventory` | Privacy 页面、版本一致性测试 |
 | [设置主页](../apps/mobile/lib/features/settings/presentation/settings_page.dart) | 展示离线边界、偏好/信任入口与实际版本信息 | `SettingsPage` | `/settings` 路由 |
 | [偏好与服务状态页](../apps/mobile/lib/features/settings/presentation/app_preferences_page.dart) | 如实展示语言、媒体与服务边界，并提供可持久化、可撤回的本地通知/诊断选择 | `AppPreferencesPage` | `/settings/preferences`、Settings 主页 |
-| [信任信息页](../apps/mobile/lib/features/settings/presentation/trust_info_page.dart) | 离线说明帮助、隐私与条款状态；只为有效配置显示外部动作 | `TrustInfoPage` | Settings 主页 |
+| [信任信息页](../apps/mobile/lib/features/settings/presentation/trust_info_page.dart) | 离线说明帮助、隐私与条款状态；Privacy 展示版本化数据清单，只为有效配置显示外部动作 | `TrustInfoPage` | Settings 主页 |
 | [数据管理页](../apps/mobile/lib/features/settings/presentation/data_management_page.dart) | 说明清除范围、二次确认并反馈成功或失败 | `DataManagementPage` | Settings 主页 |
 
-课程主路径由 [课程端到端测试](../apps/mobile/test/app/app_test.dart) 覆盖，多轮对话由 [对话流程测试](../apps/mobile/test/features/lesson/presentation/dialogue_flow_test.dart) 覆盖，多地点入口由 [Journey 内容驱动测试](../apps/mobile/test/features/journey/journey_page_test.dart) 覆盖，复习主路径由 [复习流程测试](../apps/mobile/test/app/review_flow_test.dart) 覆盖；首次门禁、偏好失败、持久化和重看由 [引导测试](../apps/mobile/test/features/onboarding/onboarding_page_test.dart) 覆盖，设置导航、通知/诊断选择的持久化与撤回、读取/保存失败、200% 字号、外链和数据清理由 [设置测试](../apps/mobile/test/features/settings/settings_page_test.dart) 与同目录数据测试覆盖。
+课程主路径由 [课程端到端测试](../apps/mobile/test/app/app_test.dart) 覆盖，多轮对话由 [对话流程测试](../apps/mobile/test/features/lesson/presentation/dialogue_flow_test.dart) 覆盖，多地点入口由 [Journey 内容驱动测试](../apps/mobile/test/features/journey/journey_page_test.dart) 覆盖，复习主路径由 [复习流程测试](../apps/mobile/test/app/review_flow_test.dart) 覆盖；首次门禁、偏好失败、持久化和重看由 [引导测试](../apps/mobile/test/features/onboarding/onboarding_page_test.dart) 覆盖，设置导航、通知/诊断选择的持久化与撤回、隐私数据清单、读取/保存失败、200% 字号、外链和数据清理由 [设置测试](../apps/mobile/test/features/settings/settings_page_test.dart)、[清单版本测试](../apps/mobile/test/features/settings/privacy_data_inventory_test.dart) 与同目录数据测试覆盖。
 
 ## `apps/mobile/lib/shared/`
 
