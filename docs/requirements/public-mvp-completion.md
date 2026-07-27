@@ -111,7 +111,7 @@
 
 第二个开发切片“App 首次使用引导”已按 [`app-first-use-onboarding.md`](app-first-use-onboarding.md) 完成生产接线、自动测试、Debug APK 和 Android 模拟器闭环；Sony 真机视觉与完整 G1/G2 仍单列为未完成门禁。
 
-第三个开发切片“App 偏好与服务状态”已按 [`app-preferences-status.md`](app-preferences-status.md) 完成并进入 Draft PR #25，head `f03220e` 的远端 CI 三项通过：Settings 可查看当前语言、离线音频、可选麦克风，以及通知、分析/崩溃、账号/同步尚未接入的真实状态。它不提供无效开关，也不把这些服务标成完成；PR 评审/合并、真实通知/选择控制和 Sony 真机视觉仍待后续关闭。
+第三个开发切片“App 偏好与服务状态”已按 [`app-preferences-status.md`](app-preferences-status.md) 完成并进入 Draft PR #25，最新代码提交 `f03220e` 及已观察到的 PR heads 远端 CI 三项通过：Settings 可查看当前语言、离线音频、可选麦克风，以及通知、分析/崩溃、账号/同步尚未接入的真实状态。它不提供无效开关，也不把这些服务标成完成；PR 评审/合并、真实通知/选择控制和 Sony 真机视觉仍待后续关闭。
 
 ## 6. 上架阶段仍需完成的事项
 
