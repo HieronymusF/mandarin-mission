@@ -144,6 +144,16 @@
 - Status: active
 - Promoted to: `docs/content-authoring.md`
 
+## Lesson: 语序题的干扰项必须随机且在一次答题内稳定
+
+- Last confirmed: 2026-07-27
+- Pattern: `order_tokens` 用固定 `.reversed` 生成词块区，看似保证了初始答案错误，实际让所有题都能按从右向左的固定模式完成。这是 `reasoning-error`：实现只避免了正确顺序，没有检查交互是否仍能测量语序回忆。
+- Prevention rule: 语序、拼接或排序练习进入步骤时只生成一次干扰顺序，本次答题内选择、撤回和父级重建都保持稳定；三个以上选项同时避开正确顺序与固定完全倒序。内容数据继续保存唯一正确顺序，不为随机展示改写内容包。
+- Verification: 至少用一个四词题先证明旧实现为完全倒序，再断言新顺序既非正确顺序也非完全倒序；选择并撤回首个词块后，词块区恢复为同一初始顺序。最后在真实课程页面核对可见词块顺序和运行日志。
+- Evidence: 2026-07-27 `order_tokens_step.dart`、`m1_step_types_test.dart`、Android 模拟器 Café 01 Step 8 截图 `build-the-phrase-shuffled.png`；完整移动端 analyze、86 tests 与 Debug APK 通过。
+- Status: active
+- Promoted to: `repo-docs/walkthroughs/one-real-run.md`
+
 ## Lesson: Riverpod 生命周期清理不能在卸载后读取 ref
 
 - Last confirmed: 2026-07-23

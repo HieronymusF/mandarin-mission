@@ -39,6 +39,8 @@ Repository 默认资产常量直接指向 M2 Release，不再读取 `MM_USE_M2_D
 | 10 | 先脱稿说出订单，或打开 phrase ticket 后发送回复；查看系统收尾后继续 | `dialogue_turn` | 综合应用 |
 | 11 | 查看总结并完成课程 | `summary` | 完成入口 |
 
+`order_tokens` 的内容数据仍按正确语序保存，但进入该步骤时，词块区只生成一次随机顺序；本次答题内选择或撤回词块不会重新洗牌。三个以上词块还会避开正确顺序和旧的完全倒序，防止用户只靠固定的从右向左模式完成题目。
+
 [课程 Controller](../../apps/mobile/lib/features/lesson/application/lesson_providers.dart) 负责状态和提交，[课程页面](../../apps/mobile/lib/features/lesson/presentation/lesson_overview_page.dart) 负责组合对应步骤 Widget。未知 step type 会显示不可用提示，而不是静默跳过。
 
 第 10 步属于预设对话，不做 AI 语音识别。页面初始隐藏标准答案并禁用发送；用户可以先说出订单并选择 `I said it aloud`，也可以打开 `Use phrase ticket` 查看整句。完成其中一个可观察动作后，`Send reply` 会显示系统终止回复；再点 `Continue` 才进入总结页。相同播放器也能沿 `nextNodeId` 推进多轮对话，并在每个 learner 轮次重新执行动作门禁。

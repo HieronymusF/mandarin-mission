@@ -197,6 +197,58 @@ void main() {
     expect(find.byKey(const Key('order-result')), findsNothing);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('token bank shuffles once instead of using a fixed reverse', (
+    tester,
+  ) async {
+    var selected = <int>[];
+    const step = CourseLessonStep(
+      id: 'shuffle-order',
+      type: 'order_tokens',
+      tokens: ['我', '想', '去', '北京'],
+    );
+    await tester.pumpWidget(
+      _StepTestApp(
+        builder: (context, setState) => OrderTokensStep(
+          step: step,
+          orderedTokenIndexes: selected,
+          onToggleToken: (index) => setState(() {
+            selected = [...selected];
+            selected.contains(index)
+                ? selected.remove(index)
+                : selected.add(index);
+          }),
+        ),
+      ),
+    );
+
+    final initialOrder = _visibleTokenBankIndexes(tester);
+    expect(initialOrder, isNot(equals([0, 1, 2, 3])));
+    expect(initialOrder, isNot(equals([3, 2, 1, 0])));
+
+    final firstIndex = initialOrder.first;
+    await tester.tap(find.byKey(Key('order-token-$firstIndex')));
+    await tester.pump();
+    await tester.tap(find.byKey(Key('ordered-token-$firstIndex')));
+    await tester.pump();
+
+    expect(_visibleTokenBankIndexes(tester), initialOrder);
+  });
+}
+
+List<int> _visibleTokenBankIndexes(WidgetTester tester) {
+  final bank = tester.widget<Wrap>(
+    find
+        .descendant(
+          of: find.byType(OrderTokensStep),
+          matching: find.byType(Wrap),
+        )
+        .last,
+  );
+  return bank.children.map((child) {
+    final key = child.key! as ValueKey<String>;
+    return int.parse(key.value.replaceFirst('order-token-', ''));
+  }).toList();
 }
 
 Widget _summaryStep(BuildContext context, StateSetter setState) {
