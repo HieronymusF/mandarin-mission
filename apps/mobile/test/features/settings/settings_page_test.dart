@@ -10,7 +10,9 @@ import 'package:mandarin_mission/data/content/course_content_provider.dart';
 import 'package:mandarin_mission/data/content/course_content_repository.dart';
 import 'package:mandarin_mission/data/local/app_database.dart';
 import 'package:mandarin_mission/data/local/app_database_provider.dart';
+import 'package:mandarin_mission/features/settings/application/app_preferences_providers.dart';
 import 'package:mandarin_mission/features/settings/application/trust_center_providers.dart';
+import 'package:mandarin_mission/features/settings/data/app_preferences_store.dart';
 import 'package:mandarin_mission/features/settings/data/local_data_repository.dart';
 import 'package:mandarin_mission/features/settings/data/trust_center_data_source.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -139,7 +141,7 @@ void main() {
     );
   });
 
-  testWidgets('shows honest app preferences and unavailable services', (
+  testWidgets('offers honest local choices for optional services', (
     tester,
   ) async {
     await _pumpApp(tester);
@@ -188,8 +190,112 @@ void main() {
     expect(find.text('Notifications'), findsOneWidget);
     expect(find.text('Analytics & crash collection'), findsOneWidget);
     expect(find.text('Account & sync'), findsOneWidget);
-    expect(find.text('Not connected'), findsNWidgets(2));
+    expect(
+      find.byKey(const Key('notification-preference-switch')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const Key('diagnostics-preference-switch')),
+      findsOneWidget,
+    );
+    expect(find.bySemanticsLabel('Notifications'), findsOneWidget);
+    expect(
+      find.bySemanticsLabel('Analytics & crash collection'),
+      findsOneWidget,
+    );
+    expect(find.text('Off'), findsNWidgets(2));
     expect(find.text('Not available'), findsOneWidget);
+  });
+
+  testWidgets('saves, reloads, and withdraws optional choices', (tester) async {
+    final store = _FakeAppPreferencesStore();
+    final database = await _pumpApp(tester, appPreferencesStore: store);
+    await _openAppPreferences(tester);
+    await _revealOnPage(
+      tester,
+      const Key('app-preferences-page'),
+      find.byKey(const Key('diagnostics-preference-switch')),
+    );
+
+    await tester.tap(find.byKey(const Key('notification-preference-switch')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('diagnostics-preference-switch')));
+    await tester.pumpAndSettle();
+    expect(store.preferences.notificationsEnabled, isTrue);
+    expect(store.preferences.diagnosticsEnabled, isTrue);
+
+    await _pumpApp(tester, database: database, appPreferencesStore: store);
+    await _openAppPreferences(tester);
+    await _revealOnPage(
+      tester,
+      const Key('app-preferences-page'),
+      find.byKey(const Key('diagnostics-preference-switch')),
+    );
+    expect(
+      _switchValue(tester, const Key('notification-preference-switch')),
+      isTrue,
+    );
+    expect(
+      _switchValue(tester, const Key('diagnostics-preference-switch')),
+      isTrue,
+    );
+
+    await tester.tap(find.byKey(const Key('diagnostics-preference-switch')));
+    await tester.pumpAndSettle();
+    expect(store.preferences.diagnosticsEnabled, isFalse);
+  });
+
+  testWidgets('keeps the previous choice when saving fails', (tester) async {
+    final store = _FakeAppPreferencesStore(
+      saveNotifications: (_) async {
+        throw StateError('preferences unavailable');
+      },
+    );
+    await _pumpApp(tester, appPreferencesStore: store);
+    await _openAppPreferences(tester);
+    await _revealOnPage(
+      tester,
+      const Key('app-preferences-page'),
+      find.byKey(const Key('notification-preference-switch')),
+    );
+
+    await tester.tap(find.byKey(const Key('notification-preference-switch')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('app-preferences-save-error')), findsOneWidget);
+    expect(store.preferences.notificationsEnabled, isFalse);
+    expect(
+      _switchValue(tester, const Key('notification-preference-switch')),
+      isFalse,
+    );
+  });
+
+  testWidgets('retries when locally stored choices cannot be read', (
+    tester,
+  ) async {
+    var shouldFail = true;
+    final store = _FakeAppPreferencesStore(
+      read: () async {
+        if (shouldFail) throw StateError('preferences unavailable');
+        return const AppPreferences();
+      },
+    );
+    await _pumpApp(tester, appPreferencesStore: store);
+    await _openAppPreferences(tester);
+    await _revealOnPage(
+      tester,
+      const Key('app-preferences-page'),
+      find.byKey(const Key('retry-app-preferences')),
+    );
+    expect(find.byKey(const Key('app-preferences-load-error')), findsOneWidget);
+
+    shouldFail = false;
+    await tester.tap(find.byKey(const Key('retry-app-preferences')));
+    await tester.pumpAndSettle();
+    expect(
+      find.byKey(const Key('notification-preference-switch')),
+      findsOneWidget,
+    );
   });
 
   testWidgets('app preferences remain usable at 200 percent text scale', (
@@ -218,6 +324,14 @@ void main() {
       const Key('app-preferences-page'),
       find.text('Account & sync'),
     );
+    for (final key in const [
+      Key('notification-preference-switch'),
+      Key('diagnostics-preference-switch'),
+    ]) {
+      final rect = tester.getRect(find.byKey(key));
+      expect(rect.width, greaterThanOrEqualTo(44));
+      expect(rect.height, greaterThanOrEqualTo(44));
+    }
     expect(tester.takeException(), isNull);
   });
 
@@ -432,18 +546,22 @@ Future<AppDatabase> _pumpApp(
   _FakeTrustCenterDataSource? source,
   TrustCenterConfig config = const TrustCenterConfig(),
   LocalDataRepository? localDataRepository,
+  AppPreferencesStore? appPreferencesStore,
+  AppDatabase? database,
   Future<void> Function(AppDatabase database)? seed,
 }) async {
-  final database = AppDatabase(NativeDatabase.memory());
-  if (seed != null) await seed(database);
-  addTearDown(() async {
-    await tester.pumpWidget(const SizedBox.shrink());
-    await database.close();
-  });
+  final resolvedDatabase = database ?? AppDatabase(NativeDatabase.memory());
+  if (seed != null) await seed(resolvedDatabase);
+  if (database == null) {
+    addTearDown(() async {
+      await tester.pumpWidget(const SizedBox.shrink());
+      await resolvedDatabase.close();
+    });
+  }
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
-        appDatabaseProvider.overrideWithValue(database),
+        appDatabaseProvider.overrideWithValue(resolvedDatabase),
         courseContentRepositoryProvider.overrideWithValue(
           CourseContentRepository(
             assetPath: CourseContentRepository.bundledCafeCourseAsset,
@@ -454,14 +572,17 @@ Future<AppDatabase> _pumpApp(
         ),
         trustCenterConfigProvider.overrideWithValue(config),
         localDataRepositoryProvider.overrideWithValue(
-          localDataRepository ?? DriftLocalDataRepository(database),
+          localDataRepository ?? DriftLocalDataRepository(resolvedDatabase),
+        ),
+        appPreferencesStoreProvider.overrideWithValue(
+          appPreferencesStore ?? _FakeAppPreferencesStore(),
         ),
       ],
       child: const MandarinMissionApp(),
     ),
   );
   await tester.pumpAndSettle();
-  return database;
+  return resolvedDatabase;
 }
 
 final class _ControlledLocalDataRepository implements LocalDataRepository {
@@ -479,6 +600,18 @@ Future<void> _openSettings(WidgetTester tester) async {
   expect(find.byKey(const Key('settings-page')), findsOneWidget);
 }
 
+Future<void> _openAppPreferences(WidgetTester tester) async {
+  await _openSettings(tester);
+  await _revealOnPage(
+    tester,
+    const Key('settings-page'),
+    find.byKey(const Key('open-app-preferences-settings')),
+  );
+  await tester.tap(find.byKey(const Key('open-app-preferences-settings')));
+  await tester.pumpAndSettle();
+  expect(find.byKey(const Key('app-preferences-page')), findsOneWidget);
+}
+
 Future<void> _revealOnPage(
   WidgetTester tester,
   Key pageKey,
@@ -490,6 +623,36 @@ Future<void> _revealOnPage(
   );
   await tester.scrollUntilVisible(target, 200, scrollable: scrollable.first);
   await tester.pumpAndSettle();
+}
+
+bool _switchValue(WidgetTester tester, Key key) {
+  return tester
+      .widget<ShadSwitch>(
+        find.descendant(of: find.byKey(key), matching: find.byType(ShadSwitch)),
+      )
+      .value;
+}
+
+final class _FakeAppPreferencesStore implements AppPreferencesStore {
+  _FakeAppPreferencesStore({this.read, this.saveNotifications});
+
+  final Future<AppPreferences> Function()? read;
+  final Future<void> Function(bool enabled)? saveNotifications;
+  AppPreferences preferences = const AppPreferences();
+
+  @override
+  Future<AppPreferences> load() => read?.call() ?? Future.value(preferences);
+
+  @override
+  Future<void> setNotificationsEnabled(bool enabled) async {
+    await saveNotifications?.call(enabled);
+    preferences = preferences.copyWith(notificationsEnabled: enabled);
+  }
+
+  @override
+  Future<void> setDiagnosticsEnabled(bool enabled) async {
+    preferences = preferences.copyWith(diagnosticsEnabled: enabled);
+  }
 }
 
 final class _FakeTrustCenterDataSource implements TrustCenterDataSource {
