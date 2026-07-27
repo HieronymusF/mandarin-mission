@@ -5,6 +5,7 @@ import '../features/journey/presentation/journey_page.dart';
 import '../features/lesson/presentation/lesson_overview_page.dart';
 import '../features/onboarding/presentation/onboarding_page.dart';
 import '../features/review/presentation/review_page.dart';
+import '../features/settings/presentation/app_preferences_page.dart';
 import '../features/settings/presentation/data_management_page.dart';
 import '../features/settings/presentation/settings_page.dart';
 import '../features/settings/presentation/trust_info_page.dart';
@@ -27,6 +28,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             path: '/settings',
             builder: (context, state) => const SettingsPage(),
             routes: [
+              GoRoute(
+                path: 'preferences',
+                builder: (context, state) => const AppPreferencesPage(),
+              ),
               GoRoute(
                 path: 'help',
                 builder: (context, state) =>

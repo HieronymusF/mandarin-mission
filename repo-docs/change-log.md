@@ -2,6 +2,8 @@
 
 ## 2026-07-27
 
+- 14:52 +08:00：App 偏好与服务状态功能提交 `f03220e` 已推送到 `agent/app-preferences-status`，并创建面向 `main@01c9580` 的 Draft PR [#25](https://github.com/HieronymusF/mandarin-mission/pull/25)；代码 head 的 CI run [`30243309445`](https://github.com/HieronymusF/mandarin-mission/actions/runs/30243309445) 与首个文档跟进 head 的 run [`30243857312`](https://github.com/HieronymusF/mandarin-mission/actions/runs/30243857312) 均已通过 `mobile`、`learning-core`、`api`。PR 尚未转为 ready 或合并，真实通知、可选收集控制和 Sony 真机视觉仍是后续边界；合并前必须实时核对最新 head。repo-docs Sync Gate 为 `foreground patch`。Synced through f03220e + current documentation patch。
+- 14:30 +08:00：实现 App 偏好与服务状态切片：Settings 新增 App preferences 入口，离线展示界面/内容语言、课程音频、可选麦克风，以及通知、分析/崩溃、账号/同步尚未接入的真实状态；没有新增依赖、权限请求、数据写入或无效开关。用户圈出的共享小标签现使用既有品牌主绿色，黑色状态值、灰色说明、字号和布局不变；颜色测试先因旧样式未显式设色而失败，修正后通过。入口测试先因入口不存在而失败；第一次最终全量复跑又发现既有 onboarding 测试点击被新增首行挤到导航栏后的入口而超时，测试改为将目标滚动到视口中央。最终 Flutter format 82 files / 0 changed、analyze 0 issues、85 tests、Debug APK 通过。APK 为 249,087,183 bytes，SHA-256 `1d51238ad7950dafd7e0995b9c32e83b306f82479c995bf3920661a9471034b0`。Android 模拟器 `emulator-5554` 覆盖安装最终 APK，完成 Settings → App preferences 视觉与 UI hierarchy 检查；前台 PID 的 overflow、FlutterError、fatal 与 `E/flutter` 计数均为 0，截图为 `app-preferences-top.png`、`app-preferences-services.png`。200% 字号由 Widget 测试覆盖，本轮未安装、启动或清除 Sony 真机数据。repo-docs Sync Gate 为 `foreground patch`。Synced through 01c9580 + current `agent/app-preferences-status` working tree。
 - 13:33 +08:00：实现公开 MVP 的“首次使用引导”首切片：生产启动在主导航前显示单页价值/离线/账号/本地数据说明，使用版本化异步偏好标记保存完成状态，写入失败留页重试、读取失败放行本地核心课程；Settings 可重看且不改写标记。验证：Flutter analyze 0 issues、83 tests、Debug APK；APK 为 249,083,116 bytes，SHA-256 `f1cf172218683a7fcb76a71d3f9430db4c3aa916d5a2ee329823ec8a292157be`。Android 模拟器完成首次拦截、进入 Journey、冷启动不重复和 Settings 重看闭环，前台日志无 overflow、FlutterError 或 fatal；本轮未在 Sony 安装或清除数据。repo-docs Sync Gate 为 `foreground patch`。Synced through 2c5a21d + current `agent/app-first-use-onboarding` working tree。
 - 12:32 +08:00：实现公开 MVP 的“设置与信任中心”首切片：新增 Journey/Review/Settings 主导航，帮助/隐私/条款离线状态页，本地学习数据清理二次确认，以及平台版本信息；外部动作只接受显式配置的有效 `https` URL 或支持邮箱，不提供假链接。清理事务删除学习者进度、掌握度、练习、口语和 Outbox，保留已安装课程包。验证：Flutter format 77 files / 0 changed、analyze 0 issues、77 tests、`git diff --check`；Debug APK 为 177,107,582 bytes，SHA-256 `0aa92dcbe487ef3960dc1fbbec5bba29c947ef088952880f44955bf888b286e9`；隔离 Android 模拟器 Settings 页面和 UI hierarchy 通过。本轮未连接 Sony 真机，真实支持/法律资源仍待产品负责人提供。repo-docs Sync Gate 为 `foreground patch`。Synced through 39e442a + current `agent/app-settings-trust-center` working tree。
 - 11:32 +08:00：按用户纠正重新划分“内容里程碑、公开 MVP、商店发布”。源码审计确认生产路由只有 Journey/课程/复习，Go API 只有健康/就绪/元数据端点，客服、隐私/条款、数据控制、账号、同步、删除、订阅和完整运营功能尚未实现。新增 `docs/requirements/public-mvp-completion.md` 作为 G1—G6 单一门禁，明确当前是公开 MVP 产品开发，正式签名、素材和审核提交必须最后开始；同步 README、开发方案、项目现状、实时交接、详细 Agent 基线、经验与 repo guide。Synced through 92f748b + current documentation patch。
@@ -74,6 +76,6 @@
 - 验证：移动端 format、analyze、46 tests 和 debug APK 通过；`validate_repo_docs.py` 为 0 errors。代码地图因每个目录按规则重复“重要代码”表头保留 1 条 broad-value warning。
 - 当时基线为 8ebcb77；同时核对 2026-07-22 当前 `feat/audio-playback-recording` 未提交工作树。
 
-当前同步锚点：Synced through 92f748b + current documentation patch。
+当前同步锚点：Synced through f03220e + current documentation patch。
 
 后续只记录会改变读者模型、阅读路径或证据范围的更新；临时调试状态继续放在根目录 `HANDOFF.md`。

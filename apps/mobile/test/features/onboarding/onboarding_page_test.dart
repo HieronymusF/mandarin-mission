@@ -102,17 +102,24 @@ void main() {
 
     await tester.tap(find.byKey(const Key('app-nav-settings')));
     await tester.pumpAndSettle();
+    final settingsScroll = find
+        .descendant(
+          of: find.byKey(const Key('settings-page')),
+          matching: find.byType(Scrollable),
+        )
+        .first;
+    final onboardingEntry = find.byKey(const Key('open-onboarding-settings'));
     await tester.scrollUntilVisible(
-      find.byKey(const Key('open-onboarding-settings')),
+      onboardingEntry,
       200,
-      scrollable: find
-          .descendant(
-            of: find.byKey(const Key('settings-page')),
-            matching: find.byType(Scrollable),
-          )
-          .first,
+      scrollable: settingsScroll,
     );
-    await tester.tap(find.byKey(const Key('open-onboarding-settings')));
+    await Scrollable.ensureVisible(
+      tester.element(onboardingEntry),
+      alignment: 0.5,
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(onboardingEntry);
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('onboarding-replay-page')), findsOneWidget);
