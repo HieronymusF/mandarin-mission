@@ -1,14 +1,14 @@
 # Mandarin Mission 项目交接
 
-> 最后更新：2026-07-27 16:44（Asia/Hong_Kong）
+> 最后更新：2026-07-27 16:52（Asia/Hong_Kong）
 > 项目：`D:\mandarin-mission\mandarin-mission`
-> Git：当前本地分支 `agent/privacy-controls` 从 `origin/main@e21e924` 创建；功能提交 `e33aa12` 已推送，Draft PR [#27](https://github.com/HieronymusF/mandarin-mission/pull/27) 面向 `main`，Project CI run [`30251039467`](https://github.com/HieronymusF/mandarin-mission/actions/runs/30251039467) 已触发但尚未形成三项最终结论；后续文档提交、最新 HEAD、远端 SHA 与 CI 仍须实时核验
+> Git：当前本地分支 `agent/privacy-controls` 从 `origin/main@e21e924` 创建；功能提交 `e33aa12` 与首次状态提交 `d619230` 已推送。Draft PR [#27](https://github.com/HieronymusF/mandarin-mission/pull/27) 面向 `main`，`d619230` 的 Project CI run [`30251127867`](https://github.com/HieronymusF/mandarin-mission/actions/runs/30251127867) 已通过 `mobile`、`learning-core`、`api`；本行之后的纯文档 closeout 提交、最新 HEAD、远端 SHA 与 CI 仍须实时核验
 
 本文件是本项目唯一的实时交接入口。每次新对话或新任务必须先按根目录 `AGENTS.md` 的顺序读取全局协议、本文件、`AGENT_LESSONS.md` 和 `docs/handoff/ai-agent-handoff.md`，再核验仓库与 GitHub 当前状态。`AGENT_LESSONS.md` 保存去重后的项目特定复用经验；详细且相对稳定的项目基线在 `docs/handoff/ai-agent-handoff.md`。
 
 ## 当前正在做什么
 
-- 2026-07-27 在 `agent/privacy-controls` 完成通知与可选诊断的本地选择切片：新增 `SharedPreferencesAsync` Store 与 Riverpod `AsyncNotifier`，使用 `preferences.notifications.enabled.v1`、`preferences.diagnostics.enabled.v1` 两个默认关闭的版本化布尔值。页面只有写入成功才更新，读取失败提供重试，保存失败保留之前状态；选择可开启、跨 App 进程恢复并再次撤回。界面始终明确通知、分析和崩溃服务未接入，不请求通知权限、不发送数据。首个失败测试先证明旧页面没有开关；模拟器首轮又发现内部 `Switch` 的可点击语义小于 44dp，现以 44×44dp 外层语义/手势修复并加入回归断言。最终 Flutter format 84 files / 0 changed、analyze 0 issues、全量 89 tests 与 Debug APK 通过；APK 为 249,096,035 bytes，SHA-256 `e12cec904974f614444df0ede6a5b7012d6075ccbd27657566a0f8b23d5b7759`。`emulator-5554` 已覆盖安装并验证开/关、不同 PID 恢复、两个唯一可点击的 44dp 开关语义节点与页面视觉；最终 PID `8127` 的 overflow、FlutterError、fatal、`E/flutter` 匹配数为 0，截图为 `app-privacy-controls-final.png`。本轮没有连接 Sony 真机。repo-docs 已以前台 patch 同步，validator 为 0 errors / 1 既有 broad-value warning。功能提交 `e33aa12` 已推送并创建 Draft PR #27；最新远端 CI 仍在运行。
+- 2026-07-27 在 `agent/privacy-controls` 完成通知与可选诊断的本地选择切片：新增 `SharedPreferencesAsync` Store 与 Riverpod `AsyncNotifier`，使用 `preferences.notifications.enabled.v1`、`preferences.diagnostics.enabled.v1` 两个默认关闭的版本化布尔值。页面只有写入成功才更新，读取失败提供重试，保存失败保留之前状态；选择可开启、跨 App 进程恢复并再次撤回。界面始终明确通知、分析和崩溃服务未接入，不请求通知权限、不发送数据。首个失败测试先证明旧页面没有开关；模拟器首轮又发现内部 `Switch` 的可点击语义小于 44dp，现以 44×44dp 外层语义/手势修复并加入回归断言。最终 Flutter format 84 files / 0 changed、analyze 0 issues、全量 89 tests 与 Debug APK 通过；APK 为 249,096,035 bytes，SHA-256 `e12cec904974f614444df0ede6a5b7012d6075ccbd27657566a0f8b23d5b7759`。`emulator-5554` 已覆盖安装并验证开/关、不同 PID 恢复、两个唯一可点击的 44dp 开关语义节点与页面视觉；最终 PID `8127` 的 overflow、FlutterError、fatal、`E/flutter` 匹配数为 0，截图为 `app-privacy-controls-final.png`。本轮没有连接 Sony 真机。repo-docs 已以前台 patch 同步，validator 为 0 errors / 1 既有 broad-value warning。功能提交 `e33aa12` 与 PR 状态提交 `d619230` 已推送并创建 Draft PR #27；`d619230` 的远端 CI 三项全绿，PR 保持 Draft。
 - 2026-07-27 修复全部 `order_tokens` / `Build the phrase` 共用词块区固定完全倒序的问题。根因是共享 Widget 用 `.reversed` 生成展示顺序，导致每题都能机械地从右向左点击；失败测试先得到 `[3, 2, 1, 0]`。现改为进入步骤时只洗牌一次，本次答题内选择、撤回和父级重建保持稳定；三个以上词块还会避开正确顺序与旧完全倒序。当前 M2 的 12 道语序题均为 3—4 个词块。步骤组件 8 tests、Flutter format 82 files / 0 changed、analyze 0 issues、全量 86 tests 与 Debug APK 通过。APK 为 249,088,629 bytes，SHA-256 `8a37365769d0f1a3fe09b0c9b4a708344bdae66343f2fc2341bdffc383592527`。Android 模拟器 `emulator-5554` 已覆盖安装，Café 01 Step 8 实际显示“咖啡 / 要 / 我 / 一杯”，不是答案或旧完全倒序；PID `6616` 无 overflow、FlutterError、fatal 或 `E/flutter`，截图为 `build-the-phrase-shuffled.png`。本轮所有 ADB 命令都显式只针对模拟器，未操作 Sony `QV770PBLJ4`。PR #26 已以 merge commit `e21e924` 合并到 `main`；合并后的独立 CI run `30248150647` 三项全绿。
 - 2026-07-27 在 `agent/app-preferences-status` 完成“App 偏好与服务状态”切片：Settings 新增 App preferences 入口，离线展示 English 界面、Simplified Chinese 学习内容、已下载音频、可选麦克风，以及通知、分析/崩溃、账号/同步尚未接入的真实状态；没有新增依赖、权限请求、数据写入或无效开关。用户圈出的共享小标签现统一使用既有品牌主绿色，保留黑色状态值、灰色说明、字号和布局；颜色测试先因旧标签未显式设色而失败，修正后通过。此前失败测试先因入口不存在而失败；第一次最终全量复跑又发现既有 onboarding 测试点击被新增首行挤到导航栏后的入口而超时，测试改为将目标滚动到视口中央。最终 Flutter format 82 files / 0 changed、analyze 0 issues、85 tests、Debug APK 通过。APK 为 249,087,183 bytes，SHA-256 `1d51238ad7950dafd7e0995b9c32e83b306f82479c995bf3920661a9471034b0`。Android 模拟器 `emulator-5554` 已覆盖安装最终 APK，并完成 Settings → App preferences 视觉/UI hierarchy；前台 PID `5820` 的 overflow、FlutterError、fatal 与 `E/flutter` 计数均为 0，截图为 `app-preferences-top.png`、`app-preferences-services.png`。200% 字号由 Widget 测试覆盖。本轮所有 ADB 命令都显式只针对模拟器，未安装、启动或清除 Sony `QV770PBLJ4` 数据。功能提交 `f03220e` 与文档跟进已通过 PR #25 以 merge commit `4d3bcc2` 合并到 `main`；合并后的独立 `main` CI run `30245211205` 再次三项全绿。
 - 2026-07-27 完成“首次使用引导”首切片：`features/onboarding/` 在生产主导航前显示单页说明，覆盖每天约 10 分钟、已下载内容离线、无需账号、本地数据可控；`SharedPreferencesAsync` 使用版本化键 `onboarding.completed.v1` 保存完成状态，读取失败放行 Journey，写入失败留页重试。完成后进入 Journey 且冷启动不重复，Settings 提供只读重看入口。Widget 测试覆盖首次拦截、成功、读写失败、重看不写入和 200% 字号；Flutter analyze 0 issues、83 tests、Debug APK 构建通过。APK 为 249,083,116 bytes，SHA-256 `f1cf172218683a7fcb76a71d3f9430db4c3aa916d5a2ee329823ec8a292157be`。Android 模拟器 `emulator-5554` 已完成首次页、进入 Journey、冷启动不重复、Settings 重看/返回闭环，前台日志无 overflow、FlutterError 或 fatal；截图为 `app-first-use-onboarding.png`、`app-first-use-replay.png`。Sony `QV770PBLJ4` 虽已连接但本切片所有 ADB 命令都显式只针对模拟器，未安装、未启动、未清除真机数据。功能提交 `0b20380` 已通过 PR #24 的三项 CI，并以 merge commit `01c9580` 合并到 `main`；合并后的独立 `main` CI run `30240937682` 再次三项全绿。
@@ -123,7 +123,7 @@
 
 ## 卡在了哪里
 
-- 无本地构建阻塞。通知/诊断本地选择切片已通过 format、analyze、89 tests、Debug APK 和模拟器跨进程验证；功能提交已推送并创建 Draft PR #27，当前等待最新 head 的 Project CI 三项最终结论，尚未获转 ready 或合并授权。
+- 无本地或已观察到的远端 CI 阻塞。通知/诊断本地选择切片已通过本地 format、analyze、89 tests、Debug APK、模拟器跨进程验证，以及 PR #27 `d619230` 的三项远端 CI；PR 保持 Draft，尚未获转 ready 或合并授权。
 - 公开 MVP 产品尚未完成，这是当前真实差距，不是代码构建阻塞：首次引导、设置、偏好/服务状态和本地通知/诊断选择已落地，但真实通知投递、分析/崩溃服务、客服/法律资源及完整设置仍缺；后端缺账号/会话/同步/删除/权益，内容只到 3 个地点/12 节，游戏化、订阅、分析/崩溃和完整跨平台质量门禁未关闭。
 - G2/G3/G4 最终验收还需要产品负责人提供真实运营/法律主体、支持邮箱与网页、首发地区/年龄、登录方式和订阅商品口径；这些信息不阻塞页面结构、数据清单和服务端契约先行开发，但占位值不能被标成完成。
 - M2 文本、49 条音频听感与资产门禁、Sony 真机技术播放、12 课、3 个终局、一次到期复习、Provider 重载、真实磁盘/不同 Android 进程冷启动恢复、新增范围 14/14 单元人工逐页 UX、默认入口、内容包 `release` 决策与无开关 `0.2.0+3` 默认 Release 安装复验均已关闭。
@@ -140,7 +140,7 @@
 
 ## 下一步要做什么
 
-1. **核验 Draft PR #27 最新 head 的三项 CI**：全部通过后保持 Draft，等待用户决定是否转为 ready 并合并；没有明确授权不自动合并。
+1. **等待用户决定是否把 Draft PR #27 转为 ready 并合并**：执行前先核对最新远端 SHA 和三项 CI；没有明确指令不自动合并。
 2. **继续关闭 G1/G2 信任外壳**：真实通知投递与诊断服务需要先确定实现/数据边界；可收件支持渠道、正式隐私政策/服务条款和客服流程仍需产品负责人提供真实资料。资料未提供时可先冻结逐版本数据清单与 Provider/Adapter 契约，但必须保持未配置状态，不造假值；补 Sony 真机视觉时不能覆盖或清除正式学习数据。
 3. **完成账号与同步，再补齐公开 MVP**：先冻结身份、会话、匿名数据合并、Outbox 同步、跨用户拒绝和账号删除契约，再接 API/DB 与客户端；随后扩到 6 个地点/约 30 节课并完成游戏化、订阅、基础语音、分析/崩溃和系统验收。只有 G1—G6 全部通过，才开始商店发布。
 
