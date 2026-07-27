@@ -1,7 +1,7 @@
 # 公开 MVP App 完成门禁
 
-> 状态：执行中  
-> 最近核对：2026-07-27  
+> 状态：执行中
+> 最近核对：2026-07-27
 > 本文是“App 做到什么程度才能开始上架”的单一权威清单。`README.md` 和 `docs/开发方案.md` 只保存摘要并链接到这里。
 
 ## 1. 产品决定
@@ -142,4 +142,3 @@
 - [Google Play Payments](https://support.google.com/googleplay/android-developer/answer/9858738?hl=en)：通过 Play 分发的数字功能和订阅默认使用 Google Play Billing，适用例外需按地区和政策判断。
 - [Google Play testing for new personal accounts](https://support.google.com/googleplay/android-developer/answer/14151465?hl=en)：2023-11-13 后创建的适用个人账号，在申请正式发布前需满足封闭测试人数和连续时长要求。
 - [Google Play target API requirements](https://support.google.com/googleplay/android-developer/answer/11926878?hl=en-GB_ALL)：目标 API 要求按年度变化，提交前必须重新核对。
-
