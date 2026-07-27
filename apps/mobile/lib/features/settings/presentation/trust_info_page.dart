@@ -5,6 +5,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../../shared/presentation/app_widgets.dart';
 import '../application/trust_center_providers.dart';
+import '../data/privacy_data_inventory.dart';
 import '../data/trust_center_data_source.dart';
 
 enum TrustInfoPageKind { help, privacy, terms }
@@ -69,6 +70,10 @@ class TrustInfoPage extends ConsumerWidget {
                 ],
               ),
             ),
+            if (kind == TrustInfoPageKind.privacy) ...[
+              const SizedBox(height: AppSpacing.xxl),
+              const _PrivacyDataInventoryCard(),
+            ],
             const SizedBox(height: AppSpacing.xl),
             if (uri == null)
               ShadCard(
@@ -132,6 +137,57 @@ class TrustInfoPage extends ConsumerWidget {
                   child: Text(error, style: theme.textTheme.small),
                 ),
               ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PrivacyDataInventoryCard extends StatelessWidget {
+  const _PrivacyDataInventoryCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = ShadTheme.of(context);
+    final inventory = currentPrivacyDataInventory;
+    return AppSection(
+      title: Text(
+        'Data inventory for ${inventory.versionLabel}',
+        style: theme.textTheme.h3,
+      ),
+      description: Text(
+        'This versioned summary describes the current app code. It is not a published legal policy or a store privacy declaration.',
+        style: theme.textTheme.muted,
+      ),
+      child: ShadCard(
+        key: const Key('privacy-data-inventory'),
+        width: double.infinity,
+        padding: AppLayout.cardPadding,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            for (final section in inventory.sections) ...[
+              Text(section.title, style: theme.textTheme.h4),
+              const SizedBox(height: AppSpacing.sm),
+              for (final entry in section.entries) ...[
+                AppLeadingRow(
+                  leadingWidth: AppLayout.noticeIconSlot,
+                  gap: AppSpacing.sm,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  leading: Icon(
+                    LucideIcons.dot,
+                    size: 20,
+                    color: theme.colorScheme.primary,
+                  ),
+                  child: Text(entry, style: theme.textTheme.p),
+                ),
+                if (entry != section.entries.last)
+                  const SizedBox(height: AppSpacing.sm),
+              ],
+              if (section != inventory.sections.last)
+                const Divider(height: AppSpacing.xxl),
             ],
           ],
         ),

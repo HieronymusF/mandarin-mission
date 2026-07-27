@@ -207,6 +207,73 @@ void main() {
     expect(find.text('Not available'), findsOneWidget);
   });
 
+  testWidgets('privacy page discloses the current build data inventory', (
+    tester,
+  ) async {
+    await _pumpApp(tester);
+    await _openSettings(tester);
+    await _revealOnPage(
+      tester,
+      const Key('settings-page'),
+      find.byKey(const Key('open-privacy-settings')),
+    );
+    await tester.tap(find.byKey(const Key('open-privacy-settings')));
+    await tester.pumpAndSettle();
+
+    await _revealOnPage(
+      tester,
+      const Key('trust-info-privacy-page'),
+      find.byKey(const Key('privacy-data-inventory')),
+    );
+    expect(find.text('Data inventory for 0.2.0 (3)'), findsOneWidget);
+    expect(find.text('Stored on this device'), findsOneWidget);
+    expect(find.text('Temporary microphone recording'), findsOneWidget);
+    expect(find.text('Not sent by this build'), findsOneWidget);
+    expect(find.text('When you clear learning data'), findsOneWidget);
+  });
+
+  testWidgets(
+    'privacy data inventory remains usable at 200 percent text scale',
+    (tester) async {
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(360, 800);
+      tester.platformDispatcher.textScaleFactorTestValue = 2;
+
+      await _pumpApp(tester);
+      await _openSettings(tester);
+      await _revealOnPage(
+        tester,
+        const Key('settings-page'),
+        find.byKey(const Key('open-privacy-settings')),
+      );
+      await tester.tap(find.byKey(const Key('open-privacy-settings')));
+      await tester.pumpAndSettle();
+      final privacyPage = find.byKey(const Key('trust-info-privacy-page'));
+      final scrollable = find.descendant(
+        of: privacyPage,
+        matching: find.byType(Scrollable),
+      );
+      final policyStatus = find.byKey(
+        const Key('privacy-resource-unavailable'),
+      );
+      final position = tester.state<ScrollableState>(scrollable.first).position;
+      for (
+        var attempt = 0;
+        attempt < 8 && policyStatus.evaluate().isEmpty;
+        attempt++
+      ) {
+        position.jumpTo(position.maxScrollExtent);
+        await tester.pumpAndSettle();
+      }
+
+      expect(policyStatus, findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets('saves, reloads, and withdraws optional choices', (tester) async {
     final store = _FakeAppPreferencesStore();
     final database = await _pumpApp(tester, appPreferencesStore: store);
