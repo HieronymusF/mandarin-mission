@@ -23,6 +23,7 @@ dependencies:
   permission_handler: ^11.3.1
   record: 7.1.1
   shadcn_ui: 0.55.0
+  shared_preferences: ^2.5.5
   url_launcher: ^6.3.2
   uuid: ^4.5.3
 
