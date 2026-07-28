@@ -2,6 +2,7 @@
 
 ## 2026-07-28
 
+- 09:29 +08:00：Draft PR [#29](https://github.com/HieronymusF/mandarin-mission/pull/29) 的 head `a45a18d` 已通过 Project CI run [`30319797880`](https://github.com/HieronymusF/mandarin-mission/actions/runs/30319797880)，`mobile`、`learning-core`、`api` 三项均为 success。PR 无评论、review 或 Requested Changes；只读复核后台限制、权限失败、调度/撤回补偿、重启接收器、时区重排和隐私边界后未发现阻塞项，已转为 Ready。当前为 `OPEN / READY / MERGEABLE`，未合并。repo-docs Sync Gate 为 `foreground patch`。Synced through a45a18d + current documentation patch.
 - 09:16 +08:00：用户授权发布 Android 本地提醒切片。28 个实现、测试与同步文档文件已提交为 `a78cf66`（`feat: add local learning reminders`），推送到 `origin/agent/local-learning-reminders`，并创建面向 `main@e6a775e` 的 Draft PR [#29](https://github.com/HieronymusF/mandarin-mission/pull/29)。创建时 PR 为 `OPEN / DRAFT / MERGEABLE`，Project CI run [`30319746727`](https://github.com/HieronymusF/mandarin-mission/actions/runs/30319746727) 的 `mobile`、`learning-core`、`api` 尚在运行；未转 ready 或合并。repo-docs Sync Gate 为 `foreground patch`。Synced through a78cf66 + current documentation patch.
 
 ## 2026-07-27
