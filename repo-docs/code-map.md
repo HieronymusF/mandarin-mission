@@ -9,6 +9,7 @@
 | `apps/mobile/lib/data/` | 读取内容、包装媒体、持久化进度、查询复习 | `CourseContentRepository`、`LessonProgressRepository`、`ReviewQueueRepository` | 是课程数据与本地事务的边界 |
 | `apps/mobile/lib/features/` | 按 onboarding、Journey、lesson、review、settings 组织状态与页面 | `OnboardingCompleted`、`LessonPlayerController`、`ReviewSessionController`、`SettingsActionController` | 推进首次体验、学习主流程与信任外壳的用户可见状态 |
 | `apps/mobile/lib/shared/` | 提供已复用或正在验证的跨功能 Widget | `AudioPlayerBar`、`RecordingControls`、`AppLeadingRow` | 支撑媒体交互和统一布局 |
+| `apps/mobile/android/` | 声明 Android 权限、通知接收器、时区重排接收器和最小平台桥接 | `AndroidManifest.xml`、`MainActivity`、`LearningReminderTimezoneReceiver` | 让本地提醒识别系统后台限制，并在系统投递或时区变化时维持当地提醒时间 |
 | `apps/mobile/integration_test/` | 在真实 Android 设备验证跨层课程、媒体和磁盘恢复 | `m2_device_acceptance_test.dart`、`m2_process_persistence_app.dart` | 逐条播放 M2 音频、跑通课程链路，并用不同 Android 进程读取同一 Drift 文件 |
 | `packages/learning_core/lib/` | 保存不依赖 Flutter 的学习规则与内容校验 | `ReviewScheduler`、`ContentValidator` | 决定内容能否进入 App、复习何时到期 |
 | `content/` | 保存版本化课程 Fixture、Schema 与 Flutter asset 常量 | `m2-course.json`、`cafe-course.json`、`course-package.schema.json` | 提供默认 M2 Release 与 M1 回归基线 |
@@ -68,11 +69,12 @@ UI 规则的文字入口仍是根目录 `WIDGET_LIBRARY.md` 与 `docs/design-sys
 | [引导存储](../apps/mobile/lib/features/onboarding/data/onboarding_status_store.dart) | 用异步偏好 API 保存 `onboarding.completed.v1` | `SharedPreferencesOnboardingStatusStore` | 引导状态 Provider |
 | [首次引导页](../apps/mobile/lib/features/onboarding/presentation/onboarding_page.dart) | 单页说明学习方式、离线、账号和本地数据边界；区分首次完成与 Settings 重看 | `OnboardingPage` | App 启动门禁、`/settings/onboarding` |
 | [设置状态](../apps/mobile/lib/features/settings/application/trust_center_providers.dart) | 注入包信息、外链与本地数据 Repository，管理提交/失败反馈 | `SettingsActionController` | Settings 子页面 |
-| [偏好状态](../apps/mobile/lib/features/settings/application/app_preferences_providers.dart) | 读取通知/诊断选择，写入成功后更新页面；读取和保存失败保持可恢复状态 | `AppPreferencesController` | App preferences 页面 |
-| [偏好存储](../apps/mobile/lib/features/settings/data/app_preferences_store.dart) | 用异步偏好 API 保存两个默认关闭的版本化布尔选择 | `SharedPreferencesAppPreferencesStore` | 偏好状态 Provider |
+| [偏好状态](../apps/mobile/lib/features/settings/application/app_preferences_providers.dart) | 编排提醒权限、设备内调度/撤回和通知/诊断偏好；失败时不虚报成功 | `AppPreferencesController` | App preferences 页面 |
+| [偏好存储](../apps/mobile/lib/features/settings/data/app_preferences_store.dart) | 用异步偏好 API 保存提醒启用状态、每日分钟数和默认关闭的诊断选择 | `SharedPreferencesAppPreferencesStore` | 偏好状态 Provider |
+| [本地提醒 Adapter](../apps/mobile/lib/features/settings/data/local_learning_reminder_service.dart) | 在 Android 读取/请求通知权限，按本地时区和稳定 ID 安排或取消不精确每日通知 | `LocalLearningReminderService`、`nextDailyReminder` | 偏好状态 Provider |
 | [隐私数据清单](../apps/mobile/lib/features/settings/data/privacy_data_inventory.dart) | 把当前版本的本机存储、临时录音、不发送数据和清除边界集中为纯 Dart 清单 | `currentPrivacyDataInventory` | Privacy 页面、版本一致性测试 |
 | [设置主页](../apps/mobile/lib/features/settings/presentation/settings_page.dart) | 展示离线边界、偏好/信任入口与实际版本信息 | `SettingsPage` | `/settings` 路由 |
-| [偏好与服务状态页](../apps/mobile/lib/features/settings/presentation/app_preferences_page.dart) | 如实展示语言、媒体与服务边界，并提供可持久化、可撤回的本地通知/诊断选择 | `AppPreferencesPage` | `/settings/preferences`、Settings 主页 |
+| [偏好与服务状态页](../apps/mobile/lib/features/settings/presentation/app_preferences_page.dart) | 如实展示语言、媒体与服务边界；提醒开启时先选时间，再处理 Android 权限与调度反馈 | `AppPreferencesPage` | `/settings/preferences`、Settings 主页 |
 | [信任信息页](../apps/mobile/lib/features/settings/presentation/trust_info_page.dart) | 离线说明帮助、隐私与条款状态；Privacy 展示版本化数据清单，只为有效配置显示外部动作 | `TrustInfoPage` | Settings 主页 |
 | [数据管理页](../apps/mobile/lib/features/settings/presentation/data_management_page.dart) | 说明清除范围、二次确认并反馈成功或失败 | `DataManagementPage` | Settings 主页 |
 
@@ -89,12 +91,23 @@ UI 规则的文字入口仍是根目录 `WIDGET_LIBRARY.md` 与 `docs/design-sys
 
 `app_page_layout.dart` 已由 Settings 生产页面复用；媒体组件的近期验证入口是 `apps/mobile/test/shared/`。
 
+## `apps/mobile/android/`
+
+| 重要代码 | 功能 | 关键符号 | 调用方 / 使用方 |
+| --- | --- | --- | --- |
+| [Android App 入口](../apps/mobile/android/app/src/main/kotlin/com/hieronymusf/mandarin_mission/MainActivity.kt) | 通过最小 MethodChannel 读取系统是否明确限制 App 后台工作 | `ActivityManager.isBackgroundRestricted`、`isBackgroundRestricted` | `LocalLearningReminderService` |
+| [时区重排接收器](../apps/mobile/android/app/src/main/kotlin/com/hieronymusf/mandarin_mission/LearningReminderTimezoneReceiver.kt) | 系统时区变化后只更新稳定提醒 ID 的插件缓存，并复用插件重启接收器重排下一次当地时间 | `TIMEZONE_CHANGED`、`ScheduledNotificationBootReceiver` | Android 系统、通知插件缓存 |
+| [Android Manifest](../apps/mobile/android/app/src/main/AndroidManifest.xml) | 声明录音、重启恢复、本地通知和时区变化接收器 | `RECEIVE_BOOT_COMPLETED`、`ScheduledNotificationReceiver`、`LearningReminderTimezoneReceiver` | Android 系统、通知插件 |
+
+后台限制检测只决定是否允许进入调度流程，不会替用户修改电池设置，也不申请精确闹钟或忽略电池优化权限。
+
 ## `apps/mobile/integration_test/`
 
 | 重要代码 | 功能 | 关键符号 | 调用方 / 使用方 |
 | --- | --- | --- | --- |
 | [M2 真机验收](../apps/mobile/integration_test/m2_device_acceptance_test.dart) | 使用实际 M2 包和 Android 插件执行跨层验收 | `_playToCompletion`、`_completeThroughController` | Sony `XQ-DQ72`，隔离内存数据库 |
 | [M2 磁盘冷启动验收](../apps/mobile/integration_test/m2_process_persistence_app.dart) | 只安装一次验收 APK，首次启动写入隔离 Drift 文件，强制停止后由新进程恢复 | `_bootstrap`、`_seed`、`_verifyDiskState` | Sony `XQ-DQ72`，ADB `force-stop` 与不同 PID |
+| [本地提醒设备测试](../apps/mobile/integration_test/learning_reminder_device_test.dart) | 在 Android 插件环境实际初始化时区与通知通道，并安排后取消一个本地提醒 | `LocalLearningReminderService` | Android 模拟器覆盖 schedule/cancel、重启恢复及 GMT ↔ Asia/Hong_Kong；Sony 覆盖后台熄屏真实到点 |
 
 两个入口都不修改手机的正式学习数据库：前者验证真实设备技术链路，后者验证真实磁盘与进程边界。人工逐页 UX 仍是独立发布门槛。理解课程状态如何写入数据库，可继续阅读[本地学习闭环](modules/local-learning-loop.md)。
 
