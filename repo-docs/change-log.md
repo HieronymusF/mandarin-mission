@@ -1,5 +1,9 @@
 # Repo guide 变更记录
 
+## 2026-07-28
+
+- 09:16 +08:00：用户授权发布 Android 本地提醒切片。28 个实现、测试与同步文档文件已提交为 `a78cf66`（`feat: add local learning reminders`），推送到 `origin/agent/local-learning-reminders`，并创建面向 `main@e6a775e` 的 Draft PR [#29](https://github.com/HieronymusF/mandarin-mission/pull/29)。创建时 PR 为 `OPEN / DRAFT / MERGEABLE`，Project CI run [`30319746727`](https://github.com/HieronymusF/mandarin-mission/actions/runs/30319746727) 的 `mobile`、`learning-core`、`api` 尚在运行；未转 ready 或合并。repo-docs Sync Gate 为 `foreground patch`。Synced through a78cf66 + current documentation patch.
+
 ## 2026-07-27
 
 - 20:12 +08:00：关闭 Android 本地提醒的重启与时区门禁。`emulator-5554` 在 App 未启动时重启后，插件缓存保留且 `ScheduledNotificationBootReceiver` 重建同一 12:30 Alarm。首次 GMT → `Asia/Hong_Kong` 黑盒测试发现旧计划仍锚定 12:30 UTC、当地变成 20:30；新增 `LearningReminderTimezoneReceiver` 监听 `TIMEZONE_CHANGED`，只更新稳定 ID `41001` 的插件缓存时区与下一次当地日期，再复用插件 BootReceiver 重排。覆盖安装后 HKT → GMT 保持当地 12:30，GMT → HKT 在当天已过时后正确排到次日当地 12:30。模拟器最终恢复 GMT，页面 Off、缓存 `[]`、无当前 Alarm 或活动通知；本轮未操作 Sony。Flutter format 90 files / 0 changed、analyze 0 issues、104 tests、Debug APK 通过；APK 为 249,922,800 bytes、SHA-256 `558f461da91514051c52149f899d98bbb07dc6d498597549dff7dccac5accd0c`。repo-docs validator 为 0 errors / 1 既有 broad-value warning，`git diff --check` 通过。未提交、推送、创建 PR 或运行远端 CI。repo-docs Sync Gate 为 `foreground patch`。Synced through e6a775e + current local reminder patch.
