@@ -30,7 +30,7 @@ const currentPrivacyDataInventory = PrivacyDataInventory(
       title: 'Stored on this device',
       entries: [
         'Lesson progress, review answers, speaking self-check scores, and pending local learning events.',
-        'Bundled lesson content and audio, first-use completion, and your notification and diagnostics choices.',
+        'Bundled lesson content and audio, first-use completion, your daily reminder time, and your diagnostics choice.',
       ],
     ),
     PrivacyDataInventorySection(
@@ -44,7 +44,7 @@ const currentPrivacyDataInventory = PrivacyDataInventory(
       title: 'Not sent by this build',
       entries: [
         'No account identity, learning history, recording, transcript, notification token, analytics, crash report, or purchase record is sent to a service.',
-        'Turning on a future-service choice does not request notification permission or start data collection in this build.',
+        'A daily reminder is scheduled only on Android after you choose a time and allow notifications. It uses no push token and starts no data collection.',
       ],
     ),
     PrivacyDataInventorySection(

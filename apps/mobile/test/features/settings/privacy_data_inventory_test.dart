@@ -26,5 +26,11 @@ void main() {
         'When you clear learning data',
       ]),
     );
+    expect(
+      currentPrivacyDataInventory.sections
+          .expand((section) => section.entries)
+          .join(' '),
+      contains('uses no push token'),
+    );
   });
 }

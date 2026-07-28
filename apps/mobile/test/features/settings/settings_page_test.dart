@@ -13,8 +13,10 @@ import 'package:mandarin_mission/data/local/app_database_provider.dart';
 import 'package:mandarin_mission/features/settings/application/app_preferences_providers.dart';
 import 'package:mandarin_mission/features/settings/application/trust_center_providers.dart';
 import 'package:mandarin_mission/features/settings/data/app_preferences_store.dart';
+import 'package:mandarin_mission/features/settings/data/learning_reminder_service.dart';
 import 'package:mandarin_mission/features/settings/data/local_data_repository.dart';
 import 'package:mandarin_mission/features/settings/data/trust_center_data_source.dart';
+import 'package:mandarin_mission/features/settings/presentation/app_preferences_page.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 void main() {
@@ -276,7 +278,14 @@ void main() {
 
   testWidgets('saves, reloads, and withdraws optional choices', (tester) async {
     final store = _FakeAppPreferencesStore();
-    final database = await _pumpApp(tester, appPreferencesStore: store);
+    final reminders = _FakeLearningReminderService();
+    final database = await _pumpApp(
+      tester,
+      appPreferencesStore: store,
+      learningReminderService: reminders,
+      reminderTimePicker: (_, _) async =>
+          const DailyReminderTime(hour: 19, minute: 15),
+    );
     await _openAppPreferences(tester);
     await _revealOnPage(
       tester,
@@ -289,9 +298,19 @@ void main() {
     await tester.tap(find.byKey(const Key('diagnostics-preference-switch')));
     await tester.pumpAndSettle();
     expect(store.preferences.notificationsEnabled, isTrue);
+    expect(store.preferences.notificationReminderMinutes, 19 * 60 + 15);
     expect(store.preferences.diagnosticsEnabled, isTrue);
+    expect(reminders.scheduledTimes, [
+      const DailyReminderTime(hour: 19, minute: 15),
+    ]);
+    expect(reminders.requestCount, 0);
 
-    await _pumpApp(tester, database: database, appPreferencesStore: store);
+    await _pumpApp(
+      tester,
+      database: database,
+      appPreferencesStore: store,
+      learningReminderService: reminders,
+    );
     await _openAppPreferences(tester);
     await _revealOnPage(
       tester,
@@ -307,18 +326,27 @@ void main() {
       isTrue,
     );
 
+    await tester.tap(find.byKey(const Key('notification-preference-switch')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('diagnostics-preference-switch')));
     await tester.pumpAndSettle();
+    expect(store.preferences.notificationsEnabled, isFalse);
     expect(store.preferences.diagnosticsEnabled, isFalse);
+    expect(reminders.cancelCount, 1);
   });
 
   testWidgets('keeps the previous choice when saving fails', (tester) async {
+    final reminders = _FakeLearningReminderService();
     final store = _FakeAppPreferencesStore(
       saveNotifications: (_) async {
         throw StateError('preferences unavailable');
       },
     );
-    await _pumpApp(tester, appPreferencesStore: store);
+    await _pumpApp(
+      tester,
+      appPreferencesStore: store,
+      learningReminderService: reminders,
+    );
     await _openAppPreferences(tester);
     await _revealOnPage(
       tester,
@@ -329,12 +357,195 @@ void main() {
     await tester.tap(find.byKey(const Key('notification-preference-switch')));
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('app-preferences-save-error')), findsOneWidget);
+    expect(
+      find.byKey(const Key('notification-reminder-error')),
+      findsOneWidget,
+    );
     expect(store.preferences.notificationsEnabled, isFalse);
+    expect(reminders.cancelCount, 1);
     expect(
       _switchValue(tester, const Key('notification-preference-switch')),
       isFalse,
     );
+  });
+
+  testWidgets('keeps reminders off when notification permission is denied', (
+    tester,
+  ) async {
+    final store = _FakeAppPreferencesStore();
+    final reminders = _FakeLearningReminderService(
+      permission: LearningReminderPermission.denied,
+      requestResult: LearningReminderPermission.denied,
+    );
+    await _pumpApp(
+      tester,
+      appPreferencesStore: store,
+      learningReminderService: reminders,
+    );
+    await _openAppPreferences(tester);
+    await _revealOnPage(
+      tester,
+      const Key('app-preferences-page'),
+      find.byKey(const Key('notification-preference-switch')),
+    );
+
+    await tester.tap(find.byKey(const Key('notification-preference-switch')));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(const Key('notification-reminder-permission-denied')),
+      findsOneWidget,
+    );
+    expect(store.preferences.notificationsEnabled, isFalse);
+    expect(reminders.requestCount, 1);
+    expect(reminders.scheduledTimes, isEmpty);
+  });
+
+  testWidgets(
+    'links to system settings when notification permission is blocked',
+    (tester) async {
+      final reminders = _FakeLearningReminderService(
+        permission: LearningReminderPermission.permanentlyDenied,
+      );
+      await _pumpApp(tester, learningReminderService: reminders);
+      await _openAppPreferences(tester);
+      await _revealOnPage(
+        tester,
+        const Key('app-preferences-page'),
+        find.byKey(const Key('notification-preference-switch')),
+      );
+
+      await tester.tap(find.byKey(const Key('notification-preference-switch')));
+      await tester.pumpAndSettle();
+      expect(
+        find.byKey(const Key('notification-reminder-permission-blocked')),
+        findsOneWidget,
+      );
+      await tester.tap(find.byKey(const Key('open-notification-settings')));
+      await tester.pumpAndSettle();
+
+      expect(reminders.openSettingsCount, 1);
+      expect(reminders.scheduledTimes, isEmpty);
+    },
+  );
+
+  testWidgets(
+    'keeps reminders off when Android background work is restricted',
+    (tester) async {
+      final store = _FakeAppPreferencesStore();
+      final reminders = _FakeLearningReminderService(
+        backgroundRestricted: true,
+      );
+      await _pumpApp(
+        tester,
+        appPreferencesStore: store,
+        learningReminderService: reminders,
+      );
+      await _openAppPreferences(tester);
+      await _revealOnPage(
+        tester,
+        const Key('app-preferences-page'),
+        find.byKey(const Key('notification-preference-switch')),
+      );
+
+      await tester.tap(find.byKey(const Key('notification-preference-switch')));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.byKey(const Key('notification-reminder-background-restricted')),
+        findsOneWidget,
+      );
+      expect(store.preferences.notificationsEnabled, isFalse);
+      expect(reminders.requestCount, 0);
+      expect(reminders.scheduledTimes, isEmpty);
+
+      await tester.tap(find.byKey(const Key('open-notification-settings')));
+      await tester.pumpAndSettle();
+      expect(reminders.openSettingsCount, 1);
+    },
+  );
+
+  testWidgets('does nothing when reminder time selection is cancelled', (
+    tester,
+  ) async {
+    final store = _FakeAppPreferencesStore();
+    final reminders = _FakeLearningReminderService();
+    await _pumpApp(
+      tester,
+      appPreferencesStore: store,
+      learningReminderService: reminders,
+      reminderTimePicker: (_, _) async => null,
+    );
+    await _openAppPreferences(tester);
+    await _revealOnPage(
+      tester,
+      const Key('app-preferences-page'),
+      find.byKey(const Key('notification-preference-switch')),
+    );
+
+    await tester.tap(find.byKey(const Key('notification-preference-switch')));
+    await tester.pumpAndSettle();
+
+    expect(store.preferences.notificationsEnabled, isFalse);
+    expect(reminders.requestCount, 0);
+    expect(reminders.scheduledTimes, isEmpty);
+  });
+
+  testWidgets('keeps reminders off when local scheduling fails', (
+    tester,
+  ) async {
+    final store = _FakeAppPreferencesStore();
+    final reminders = _FakeLearningReminderService(
+      scheduleError: StateError('scheduler unavailable'),
+    );
+    await _pumpApp(
+      tester,
+      appPreferencesStore: store,
+      learningReminderService: reminders,
+    );
+    await _openAppPreferences(tester);
+    await _revealOnPage(
+      tester,
+      const Key('app-preferences-page'),
+      find.byKey(const Key('notification-preference-switch')),
+    );
+
+    await tester.tap(find.byKey(const Key('notification-preference-switch')));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(const Key('notification-reminder-error')),
+      findsOneWidget,
+    );
+    expect(store.preferences.notificationsEnabled, isFalse);
+  });
+
+  testWidgets('reports when local reminders are unavailable', (tester) async {
+    final store = _FakeAppPreferencesStore();
+    final reminders = _FakeLearningReminderService(
+      permission: LearningReminderPermission.unavailable,
+    );
+    await _pumpApp(
+      tester,
+      appPreferencesStore: store,
+      learningReminderService: reminders,
+    );
+    await _openAppPreferences(tester);
+    await _revealOnPage(
+      tester,
+      const Key('app-preferences-page'),
+      find.byKey(const Key('notification-preference-switch')),
+    );
+
+    await tester.tap(find.byKey(const Key('notification-preference-switch')));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(const Key('notification-reminder-unavailable')),
+      findsOneWidget,
+    );
+    expect(store.preferences.notificationsEnabled, isFalse);
+    expect(reminders.scheduledTimes, isEmpty);
   });
 
   testWidgets('retries when locally stored choices cannot be read', (
@@ -614,6 +825,8 @@ Future<AppDatabase> _pumpApp(
   TrustCenterConfig config = const TrustCenterConfig(),
   LocalDataRepository? localDataRepository,
   AppPreferencesStore? appPreferencesStore,
+  LearningReminderService? learningReminderService,
+  ReminderTimePicker? reminderTimePicker,
   AppDatabase? database,
   Future<void> Function(AppDatabase database)? seed,
 }) async {
@@ -643,6 +856,13 @@ Future<AppDatabase> _pumpApp(
         ),
         appPreferencesStoreProvider.overrideWithValue(
           appPreferencesStore ?? _FakeAppPreferencesStore(),
+        ),
+        learningReminderServiceProvider.overrideWithValue(
+          learningReminderService ?? _FakeLearningReminderService(),
+        ),
+        reminderTimePickerProvider.overrideWithValue(
+          reminderTimePicker ??
+              ((_, _) async => const DailyReminderTime(hour: 19, minute: 0)),
         ),
       ],
       child: const MandarinMissionApp(),
@@ -711,14 +931,68 @@ final class _FakeAppPreferencesStore implements AppPreferencesStore {
   Future<AppPreferences> load() => read?.call() ?? Future.value(preferences);
 
   @override
-  Future<void> setNotificationsEnabled(bool enabled) async {
+  Future<void> setNotificationReminder({
+    required bool enabled,
+    int? minutesSinceMidnight,
+  }) async {
     await saveNotifications?.call(enabled);
-    preferences = preferences.copyWith(notificationsEnabled: enabled);
+    preferences = preferences.copyWith(
+      notificationsEnabled: enabled,
+      notificationReminderMinutes: enabled
+          ? minutesSinceMidnight
+          : preferences.notificationReminderMinutes,
+    );
   }
 
   @override
   Future<void> setDiagnosticsEnabled(bool enabled) async {
     preferences = preferences.copyWith(diagnosticsEnabled: enabled);
+  }
+}
+
+final class _FakeLearningReminderService implements LearningReminderService {
+  _FakeLearningReminderService({
+    this.permission = LearningReminderPermission.granted,
+    LearningReminderPermission? requestResult,
+    this.scheduleError,
+    this.backgroundRestricted = false,
+  }) : requestResult = requestResult ?? permission;
+
+  final LearningReminderPermission permission;
+  final LearningReminderPermission requestResult;
+  final Object? scheduleError;
+  final bool backgroundRestricted;
+  final List<DailyReminderTime> scheduledTimes = [];
+  int requestCount = 0;
+  int cancelCount = 0;
+  int openSettingsCount = 0;
+
+  @override
+  Future<void> cancelDaily() async {
+    cancelCount += 1;
+  }
+
+  @override
+  Future<void> openSystemSettings() async {
+    openSettingsCount += 1;
+  }
+
+  @override
+  Future<bool> isBackgroundRestricted() async => backgroundRestricted;
+
+  @override
+  Future<LearningReminderPermission> permissionStatus() async => permission;
+
+  @override
+  Future<LearningReminderPermission> requestPermission() async {
+    requestCount += 1;
+    return requestResult;
+  }
+
+  @override
+  Future<void> scheduleDaily(DailyReminderTime time) async {
+    if (scheduleError != null) throw scheduleError!;
+    scheduledTimes.add(time);
   }
 }
 

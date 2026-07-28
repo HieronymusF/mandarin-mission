@@ -174,6 +174,16 @@
 - Status: active
 - Promoted to: none
 
+## Lesson: 本地通知必须分别验证后台、重启和时区变化
+
+- Last confirmed: 2026-07-27
+- Pattern: Android 通知权限已授予、插件缓存和 `AlarmManager` 均有正确记录，调度 API 也成功返回，但设备把 App 设为后台受限时，Alarm 超过 inexact 窗口仍不会执行；App 进入前台后才补发。另一个独立缺口是 `zonedSchedule` 会把既有 Alarm 锚定在首次调度时区：只改变系统时区时，用户选择的当地 12:30 可能变成新时区的 20:30。只检查权限、初始缓存或排程记录会同时漏掉后台不可投递和跨时区错点。
+- Prevention rule: 启用本地提醒前用 `ActivityManager.isBackgroundRestricted()` 检查用户施加的后台限制。受限时不请求后续权限、不调度、不保存 On；明确说明原因并提供 App 系统设置入口。不要用精确闹钟或忽略电池优化权限绕过用户选择。每日“当地时间”提醒还必须监听系统时区变化，以同一小时/分钟计算新时区中下一次未来日期并重排；不能假设时区库或 `zonedSchedule` 会自动迁移已存在的 Alarm。
+- Verification: 自动测试模拟后台受限并断言 Off、零权限请求、零调度和可恢复设置入口；正常 Android 设备继续通过 schedule/cancel。真机在 `RUN_ANY_IN_BACKGROUND: ignore` 时必须命中受限提示、缓存为 `[]` 且无 Alarm；用户解除限制后另做真实退后台到点测试。设备层还要在 App 未启动时重启并确认缓存与 Alarm 重建，再双向切换两个时区，确认缓存时区、下一次当地日期和 `AlarmManager` 展示都保持用户选择的当地时间；结束后恢复原时区并清空测试提醒。
+- Evidence: `MainActivity.kt`、`LearningReminderTimezoneReceiver.kt`、`learning_reminder_service.dart`、`app_preferences_providers.dart`、`settings_page_test.dart`，Sony `XQ-DQ72` 的 18:50 逾期 Alarm、`mm-sony-background-restricted.png`，以及 `emulator-5554` 的重启和 GMT ↔ `Asia/Hong_Kong` 黑盒测试。
+- Status: active
+- Promoted to: `docs/requirements/app-preferences-status.md` 与 `repo-docs/references/source-evidence.md`
+
 ## Lesson: 极短 TTS 资产必须先做首尾完整性与对话韵律试听
 
 - Last confirmed: 2026-07-26
